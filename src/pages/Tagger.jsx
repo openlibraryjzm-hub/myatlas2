@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X } from 'lucide-react';
+import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon } from 'lucide-react';
 import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache, getPaginatedItems } from '../services/localDb';
 import { formatLocalAssetUrl } from '../utils/localFiles';
@@ -9,6 +9,7 @@ export default function Tagger({
   posts: propPosts, 
   setPosts: propSetPosts, 
   onExit,
+  onSwitchToImage,
   currentAtlas,
   activeFilters = [],
   searchQuery = '',
@@ -933,16 +934,26 @@ export default function Tagger({
         </div>
       ) : (
         <div className="tagger-workspace" style={{ position: 'relative' }}>
-          {onExit && (
-            <button 
-              className="tagger-settings-trigger" 
-              onClick={handleExitTagger}
-              style={{ position: 'absolute', top: '-10px', right: '0px', zIndex: 10 }}
-              title="Return to Browse Grid"
-            >
-              <X size={14} /> Exit to Grid
-            </button>
-          )}
+          <div style={{ position: 'absolute', top: '-10px', right: '0px', zIndex: 10, display: 'flex', gap: '0.5rem' }}>
+            {onSwitchToImage && (
+              <button 
+                className="tagger-settings-trigger" 
+                onClick={onSwitchToImage}
+                title="Switch to Full Image View (Tab / F)"
+              >
+                <ImageIcon size={14} /> Full Image
+              </button>
+            )}
+            {onExit && (
+              <button 
+                className="tagger-settings-trigger" 
+                onClick={handleExitTagger}
+                title="Return to Browse Grid (Esc)"
+              >
+                <X size={14} /> Exit to Grid
+              </button>
+            )}
+          </div>
           {/* Main Visual Panel - Centered */}
           <div className="tagger-main-panel">
             

@@ -79,7 +79,7 @@ export default function Posts({
   const [collapsedSections, setCollapsedSections] = useState({});
   const [selectedPost, setSelectedPost] = useState(null);
   const [inspectMode, setInspectMode] = useState(false);
-  const [isTaggerMode, setIsTaggerMode] = useState(false);
+  const [viewerMode, setViewerMode] = useState('none'); // 'none' | 'image' | 'tagger'
   const [sidebarMode, setSidebarMode] = useState(0); // 0: Subreddits, 1: General Tags, 2: Copyright/Characters/Artists/Flairs, 3: Metadata
   const [isFullscreenMedia, setIsFullscreenMedia] = useState(false);
   const [hoveredPostTags, setHoveredPostTags] = useState(null);
@@ -89,6 +89,7 @@ export default function Posts({
   // Close post modal helper
   const handleCloseModal = () => {
     setSelectedPost(null);
+    setViewerMode('none');
     setIsFullscreenMedia(false);
   };
 
@@ -117,20 +118,27 @@ export default function Posts({
     }
   };
 
-  // Keyboard shortcut listener for Esc, F, and Arrow keys when in modals
+  // Keyboard shortcut listener for Esc, Tab, F, and Arrow keys when viewing media
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Ignore if typing in an input element
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+        return;
+      }
+
       if (e.key === 'Escape') {
-        if (isFullscreenMedia) {
-          setIsFullscreenMedia(false);
-        } else if (selectedPost) {
+        if (viewerMode !== 'none') {
           handleCloseModal();
         }
-      } else if (e.key === 'f' || e.key === 'F') {
-        if (isFullscreenMedia) {
-          setIsFullscreenMedia(false);
+      } else if (e.key === 'Tab' || e.key === 'f' || e.key === 'F') {
+        if (viewerMode === 'image') {
+          e.preventDefault();
+          setViewerMode('tagger');
+        } else if (viewerMode === 'tagger') {
+          e.preventDefault();
+          setViewerMode('image');
         }
-      } else if (selectedPost && !isFullscreenMedia) {
+      } else if (viewerMode === 'image') {
         if (e.key === 'ArrowLeft') {
           handlePrevPost();
         } else if (e.key === 'ArrowRight') {
@@ -140,11 +148,11 @@ export default function Posts({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFullscreenMedia, selectedPost, currentPostIndex, posts]);
+  }, [viewerMode, selectedPost, currentPostIndex, posts]);
 
-  // Exit tagger mode if filters change
+  // Exit viewer mode if filters change
   useEffect(() => {
-    setIsTaggerMode(false);
+    setViewerMode('none');
   }, [activeFilters, viewMode]);
 
   const inspectTimerRef = React.useRef(null);
@@ -721,15 +729,13 @@ export default function Posts({
         </aside>
       )}
 
-      {isTaggerMode ? (
+      {viewerMode === 'tagger' ? (
         <Tagger 
           posts={posts}
           setPosts={setPosts}
           selectedPostId={selectedPost?.id}
-          onExit={() => {
-            setIsTaggerMode(false);
-            setSelectedPost(null);
-          }}
+          onSwitchToImage={() => setViewerMode('image')}
+          onExit={handleCloseModal}
         />
       ) : (
         <main className="gallery-container">
@@ -771,8 +777,6 @@ export default function Posts({
           </header>
         )}
 
-
-
         {/* Dynamic Grid of Thumbnails */}
         {loadingPosts ? (
           <div className="gallery-grid-dense">
@@ -796,11 +800,11 @@ export default function Posts({
                   index={idx}
                   onPostClick={(selected) => {
                     setSelectedPost(selected);
-                    setIsTaggerMode(true);
+                    setViewerMode('image');
                   }}
                   onRightClick={(selected) => {
                     setSelectedPost(selected);
-                    setIsTaggerMode(true);
+                    setViewerMode('image');
                   }}
                 />
               ))}
@@ -855,72 +859,129 @@ export default function Posts({
       </main>
       )}
 
-      {/* Instant Right-Click / Click Fullscreen Media Overlay */}
-      {isFullscreenMedia && selectedPost && (
+      {/* Full Image Mode Overlay (Primary State #1) */}
+      {viewerMode === 'image' && selectedPost && (
         <div className="tagger-fullscreen-overlay" onClick={handleCloseModal}>
-          <div className="tagger-fullscreen-content">
-            {(() => {
-              const allTags = Array.isArray(selectedPost.tags) ? selectedPost.tags : [];
-              const isVideo = allTags.includes('meta:format:video') || 
-                              allTags.includes('meta:extension:mp4') || 
-                              allTags.includes('meta:extension:webm') || 
-                              allTags.includes('meta:extension:mov') || 
-                              (selectedPost.filePath && selectedPost.filePath.match(/\.(mp4|webm|mov|mkv|avi)$/i)) || 
-                              (selectedPost.url && selectedPost.url.match(/\.(mp4|webm|mov|mkv|avi)$/i));
+          <div 
+            className="tagger-fullscreen-content" 
+            style={{ maxWidth: '96vw', maxHeight: '96vh', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '1rem' }} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Control Bar */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0 1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <button
+                  className="tagger-settings-trigger"
+                  onClick={() => setViewerMode('tagger')}
+                  title="Switch to Speed Tagger View (Tab / F)"
+                >
+                  <Tag size={14} /> Speed Tagger
+                </button>
+                <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)', fontFamily: 'monospace', fontWeight: 600 }}>
+                  Item {currentPostIndex >= 0 ? currentPostIndex + 1 : 1} of {posts.length}
+                </span>
+              </div>
 
-              const hasRedditPermalink = selectedPost.permalink && selectedPost.permalink.includes('reddit.com');
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                {selectedPost.permalink && (
+                  <a
+                    href={selectedPost.permalink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="tagger-settings-trigger"
+                    style={{ color: 'var(--accent-color)', textDecoration: 'none' }}
+                  >
+                    View on Reddit ↗
+                  </a>
+                )}
+                <button
+                  className="tagger-settings-trigger"
+                  onClick={handleCloseModal}
+                  title="Return to Browse Grid (Esc)"
+                >
+                  <X size={14} /> Exit to Grid
+                </button>
+              </div>
+            </div>
 
-              if (isVideo) {
-                const streamUrl = selectedPost.id ? `http://127.0.0.1:7171/api/stream/${encodeURIComponent(selectedPost.id)}` : formatLocalAssetUrl(selectedPost.filePath || selectedPost.url);
-                const fallbackUrl = formatLocalAssetUrl(selectedPost.filePath || selectedPost.url);
-                const activeSrc = modalImageError ? fallbackUrl : streamUrl;
+            {/* Main Stage: Spacious Unconstrained Media Display */}
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', position: 'relative', overflow: 'hidden', padding: '0.5rem 0' }}>
+              {/* Prev Arrow */}
+              <button
+                className="tagger-settings-trigger"
+                onClick={handlePrevPost}
+                disabled={currentPostIndex <= 0}
+                style={{ position: 'absolute', left: '1rem', zIndex: 10, borderRadius: '50%', width: '42px', height: '42px', padding: 0, justifyContent: 'center', opacity: currentPostIndex <= 0 ? 0.25 : 0.85 }}
+                title="Previous Item (ArrowLeft)"
+              >
+                <ChevronLeft size={22} />
+              </button>
 
-                return (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' }} onClick={(e) => e.stopPropagation()}>
+              {/* Media Element */}
+              {(() => {
+                const allTags = Array.isArray(selectedPost.tags) ? selectedPost.tags : [];
+                const isVideo = allTags.includes('meta:format:video') || 
+                                allTags.includes('meta:extension:mp4') || 
+                                allTags.includes('meta:extension:webm') || 
+                                allTags.includes('meta:extension:mov') || 
+                                (selectedPost.filePath && selectedPost.filePath.match(/\.(mp4|webm|mov|mkv|avi)$/i)) || 
+                                (selectedPost.url && selectedPost.url.match(/\.(mp4|webm|mov|mkv|avi)$/i));
+
+                if (isVideo) {
+                  const streamUrl = selectedPost.id ? `http://127.0.0.1:7171/api/stream/${encodeURIComponent(selectedPost.id)}` : formatLocalAssetUrl(selectedPost.filePath || selectedPost.url);
+                  const fallbackUrl = formatLocalAssetUrl(selectedPost.filePath || selectedPost.url);
+                  const activeSrc = modalImageError ? fallbackUrl : streamUrl;
+
+                  return (
                     <video 
                       src={activeSrc} 
-                      className="tagger-fullscreen-media"
+                      style={{ maxWidth: '92vw', maxHeight: '78vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }}
                       controls
                       autoPlay
                       loop
                       playsInline
                       onError={() => setModalImageError(true)}
                     />
-                    {hasRedditPermalink && (
-                      <div className="tagger-fullscreen-video-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', fontFamily: 'var(--font-sans)' }}>
-                        <a 
-                          href={selectedPost.permalink} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          style={{ color: 'var(--accent-color)', fontWeight: '600', fontSize: '0.88rem', textDecoration: 'none', transition: 'var(--transition-smooth)' }}
-                          className="fullscreen-video-link"
-                        >
-                          View post on Reddit ↗
-                        </a>
-                      </div>
-                    )}
-                  </div>
+                  );
+                }
+
+                const fullImgSrc = modalImageError 
+                  ? formatLocalAssetUrl(selectedPost.filePath || selectedPost.url || selectedPost.thumbnail) 
+                  : (selectedPost.url || formatLocalAssetUrl(selectedPost.filePath || selectedPost.thumbnail));
+
+                return (
+                  <img 
+                    src={fullImgSrc} 
+                    alt={selectedPost.title || ''} 
+                    style={{ maxWidth: '92vw', maxHeight: '78vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }} 
+                    referrerPolicy="no-referrer"
+                    onError={() => setModalImageError(true)}
+                  />
                 );
-              }
+              })()}
 
-              const fullImgSrc = modalImageError 
-                ? formatLocalAssetUrl(selectedPost.filePath || selectedPost.url || selectedPost.thumbnail) 
-                : (selectedPost.url || formatLocalAssetUrl(selectedPost.filePath || selectedPost.thumbnail));
+              {/* Next Arrow */}
+              <button
+                className="tagger-settings-trigger"
+                onClick={handleNextPost}
+                disabled={currentPostIndex >= posts.length - 1}
+                style={{ position: 'absolute', right: '1rem', zIndex: 10, borderRadius: '50%', width: '42px', height: '42px', padding: 0, justifyContent: 'center', opacity: currentPostIndex >= posts.length - 1 ? 0.25 : 0.85 }}
+                title="Next Item (ArrowRight)"
+              >
+                <ChevronRight size={22} />
+              </button>
+            </div>
 
-              return (
-                <img 
-                  src={fullImgSrc} 
-                  alt={selectedPost.title || ''} 
-                  className="tagger-fullscreen-media" 
-                  referrerPolicy="no-referrer"
-                  onError={() => setModalImageError(true)}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              );
-            })()}
-            <span className="tagger-fullscreen-prompt" style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.78rem', letterSpacing: '0.05em', fontFamily: 'var(--font-sans)', pointerEvents: 'none' }}>
-              Press F to close
-            </span>
+            {/* Bottom Info Bar */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', textAlign: 'center', maxWidth: '850px' }}>
+              <span style={{ color: 'var(--accent-color)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                {selectedPost.subreddit ? `r/${selectedPost.subreddit}` : 'Local Media'}
+              </span>
+              <h3 style={{ color: '#ffffff', fontSize: '1.1rem', fontWeight: 600, margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                {selectedPost.title || selectedPost.fileName || ''}
+              </h3>
+            </div>
+
           </div>
         </div>
       )}
