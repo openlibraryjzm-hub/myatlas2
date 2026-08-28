@@ -697,50 +697,39 @@ export default function Posts({
   return (
     <div className="posts-layout">
       {/* Left Sidebar for tags (Classic Booru High Density) */}
-      {(viewerMode !== 'tagger') && (
-        <aside className="sidebar-container-dense">
-          {/* Stats and Reset */}
-          <div className="sidebar-stats-panel">
-            <div className="sidebar-stats-row">
-              <span>
-                {loadingPosts ? '···' : `${totalFilteredCount} posts`}
-              </span>
-              <button
-                className="sidebar-reset-btn"
-                onClick={onClearFilters}
-                disabled={activeFilters.length === 0}
-                title="Clear all filters"
-              >
-                <Trash2 size={12} />
-              </button>
-            </div>
+      <aside className="sidebar-container-dense">
+        {/* Stats and Reset */}
+        <div className="sidebar-stats-panel">
+          <div className="sidebar-stats-row">
+            <span>
+              {loadingPosts ? '···' : `${totalFilteredCount} posts`}
+            </span>
+            <button
+              className="sidebar-reset-btn"
+              onClick={onClearFilters}
+              disabled={activeFilters.length === 0}
+              title="Clear all filters"
+            >
+              <Trash2 size={12} />
+            </button>
           </div>
+        </div>
 
-          {loadingTags ? (
-            <div className="sidebar-tag-count-dense">Loading tags...</div>
-          ) : (
-            <>
-              {hoveredPostTags ? (
-                renderCategorizedSidebarTags(hoveredPostTagsList, true)
-              ) : (
-                renderCategorizedSidebarTags(tags.filter(t => activePageTagsSet.has(t.name)), false)
-              )}
-            </>
-          )}
+        {loadingTags ? (
+          <div className="sidebar-tag-count-dense">Loading tags...</div>
+        ) : (
+          <>
+            {hoveredPostTags ? (
+              renderCategorizedSidebarTags(hoveredPostTagsList, true)
+            ) : (
+              renderCategorizedSidebarTags(tags.filter(t => activePageTagsSet.has(t.name)), false)
+            )}
+          </>
+        )}
 
-        </aside>
-      )}
+      </aside>
 
-      {viewerMode === 'tagger' ? (
-        <Tagger 
-          posts={posts}
-          setPosts={setPosts}
-          selectedPostId={selectedPost?.id}
-          onSwitchToImage={() => setViewerMode('image')}
-          onExit={handleCloseModal}
-        />
-      ) : (
-        <main className="gallery-container">
+      <main className="gallery-container">
         {activeFilters.length > 0 && (
           <header className="gallery-header-minimal" style={{ borderBottom: 'none', paddingBottom: '0.5rem' }}>
             <div className="active-filters-row-minimal">
@@ -859,7 +848,6 @@ export default function Posts({
           </div>
         )}
       </main>
-      )}
 
       {/* Seamless Morphing Overlay Viewer (Grid Stays 100% Mounted in Background) */}
       {selectedPost && viewerMode !== 'none' && (
