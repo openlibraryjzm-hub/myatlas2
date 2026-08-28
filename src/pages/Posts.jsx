@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, X, Image as ImageIcon, Glasses, Trash2, Feather, Star, Tag } from 'lucide-react';
 import PostCard from '../components/PostCard';
+import QueueTimeline from '../components/QueueTimeline';
 import './Posts.css';
 import { getTagCategory, getDisplayTagName, getCategoryObj } from '../data/mockData';
 import Tagger from './Tagger';
@@ -972,14 +973,20 @@ export default function Posts({
               </button>
             </div>
 
-            {/* Bottom Info Bar */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', textAlign: 'center', maxWidth: '850px' }}>
+            {/* Bottom Info Bar & Integrated 40-Item Queue Timeline */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', textAlign: 'center', width: '100%', maxWidth: '980px' }}>
               <span style={{ color: 'var(--accent-color)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 {selectedPost.subreddit ? `r/${selectedPost.subreddit}` : 'Local Media'}
               </span>
-              <h3 style={{ color: '#ffffff', fontSize: '1.1rem', fontWeight: 600, margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+              <h3 style={{ color: '#ffffff', fontSize: '1.05rem', fontWeight: 600, margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
                 {selectedPost.title || selectedPost.fileName || ''}
               </h3>
+
+              <QueueTimeline
+                posts={posts}
+                currentIndex={currentPostIndex >= 0 ? currentPostIndex : 0}
+                onSelectIndex={(idx) => setSelectedPost(posts[idx])}
+              />
             </div>
 
           </div>

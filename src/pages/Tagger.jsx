@@ -3,6 +3,7 @@ import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X,
 import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache, getPaginatedItems } from '../services/localDb';
 import { formatLocalAssetUrl } from '../utils/localFiles';
+import QueueTimeline from '../components/QueueTimeline';
 import './Tagger.css';
 
 export default function Tagger({ 

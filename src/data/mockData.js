@@ -1,3 +1,18 @@
+// Helper: robust tag array normalization
+export const parseTagsArray = (rawTags) => {
+  if (!rawTags) return [];
+  if (Array.isArray(rawTags)) return rawTags;
+  if (typeof rawTags === 'string') {
+    try {
+      const parsed = JSON.parse(rawTags);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (e) {
+      return rawTags.split(/[,;\s]+/).filter(Boolean);
+    }
+  }
+  return [];
+};
+
 // Helper: categorise a tag based on the Booru taxonomy schema
 export const getTagCategory = (tag) => {
   if (!tag) return "general";
