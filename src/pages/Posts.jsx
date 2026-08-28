@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, X, Image as ImageIcon, Glasses, Trash2, Feather, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, X, Image as ImageIcon, Glasses, Trash2, Feather, Star, Tag } from 'lucide-react';
 import PostCard from '../components/PostCard';
 import './Posts.css';
 import { getTagCategory, getDisplayTagName, getCategoryObj } from '../data/mockData';
