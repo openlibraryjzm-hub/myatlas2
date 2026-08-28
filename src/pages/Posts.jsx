@@ -870,31 +870,35 @@ export default function Posts({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Control Bar */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0 1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0 1rem', position: 'relative' }}>
+              {/* Left Item Counter */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '6px', padding: '2px' }}>
-                  <button
-                    className="tagger-settings-trigger"
-                    style={{ backgroundColor: viewerMode === 'image' ? 'var(--bg-card)' : 'transparent', color: viewerMode === 'image' ? 'var(--accent-color)' : 'var(--text-secondary)' }}
-                    onClick={() => setViewerMode('image')}
-                    title="Full Image View (Tab / F)"
-                  >
-                    <ImageIcon size={14} /> Full Image
-                  </button>
-                  <button
-                    className="tagger-settings-trigger"
-                    style={{ backgroundColor: viewerMode === 'tagger' ? 'var(--bg-card)' : 'transparent', color: viewerMode === 'tagger' ? 'var(--accent-color)' : 'var(--text-secondary)' }}
-                    onClick={() => setViewerMode('tagger')}
-                    title="Speed Tagger View (Tab / F)"
-                  >
-                    <Tag size={14} /> Speed Tagger
-                  </button>
-                </div>
-                <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)', fontFamily: 'monospace', fontWeight: 600, marginLeft: '0.5rem' }}>
+                <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)', fontFamily: 'monospace', fontWeight: 600 }}>
                   Item {currentPostIndex >= 0 ? currentPostIndex + 1 : 1} of {posts.length}
                 </span>
               </div>
 
+              {/* Centered Mode Switcher: Media vs Tags */}
+              <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '6px', padding: '2px' }}>
+                <button
+                  className="tagger-settings-trigger"
+                  style={{ backgroundColor: viewerMode === 'image' ? 'var(--bg-card)' : 'transparent', color: viewerMode === 'image' ? 'var(--accent-color)' : 'var(--text-secondary)' }}
+                  onClick={() => setViewerMode('image')}
+                  title="Media View (Tab / F)"
+                >
+                  <ImageIcon size={14} /> Media
+                </button>
+                <button
+                  className="tagger-settings-trigger"
+                  style={{ backgroundColor: viewerMode === 'tagger' ? 'var(--bg-card)' : 'transparent', color: viewerMode === 'tagger' ? 'var(--accent-color)' : 'var(--text-secondary)' }}
+                  onClick={() => setViewerMode('tagger')}
+                  title="Tags View (Tab / F)"
+                >
+                  <Tag size={14} /> Tags
+                </button>
+              </div>
+
+              {/* Right Action Controls */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                 {selectedPost.permalink && (
                   <a
