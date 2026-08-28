@@ -78,10 +78,19 @@ export default function QueueTimeline({
           const isVideo = isVideoFormat(post.url || post.filePath, post.tags);
           const isTaggedInSession = taggedPostIds.has(post.id);
 
-          // Always prefer lightweight static image thumbnails (NEVER spawn live <video> decoders in 40 timeline cards)
-          const thumbUrl = post.thumbnailUrl 
-            ? (post.thumbnailUrl.startsWith('http') ? post.thumbnailUrl : formatLocalAssetUrl(post.thumbnailUrl))
-            : (post.filePath ? formatLocalAssetUrl(post.filePath) : post.url);
+          // Resolve lightweight static image thumbnail (WebP proxy for videos, local asset for images)
+          const primaryThumbUrl = (() => {
+            const directThumb = post.thumbnailUrl || post.thumbnail;
+            if (directThumb) {
+              return directThumb.startsWith('http') ? directThumb : formatLocalAssetUrl(directThumb);
+            }
+            if (isVideo && post.id) {
+              return `http://127.0.0.1:7171/api/thumbnail/${encodeURIComponent(post.id)}`;
+            }
+            return post.filePath ? formatLocalAssetUrl(post.filePath) : (post.url || '');
+          })();
+
+          const fallbackThumbUrl = post.filePath ? formatLocalAssetUrl(post.filePath) : (post.url || '');
 
           return (
             <div
@@ -102,25 +111,35 @@ export default function QueueTimeline({
                 )}
               </div>
 
-              {/* Lightweight Image Thumbnail (No heavy video decoders) */}
-              {isVideo && !post.thumbnailUrl ? (
-                <div className="queue-timeline-video-placeholder">
-                  <Film size={22} style={{ color: '#facc15', opacity: 0.8 }} />
-                </div>
-              ) : thumbUrl ? (
+              {/* 100% Lightweight Static Thumbnail Image */}
+              {primaryThumbUrl ? (
                 <img
-                  src={thumbUrl}
+                  src={primaryThumbUrl}
                   alt=""
                   className="queue-timeline-thumb"
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
-                    e.target.style.display = 'none';
+                    if (e.target.src !== fallbackThumbUrl && fallbackThumbUrl && !isVideo) {
+                      e.target.src = fallbackThumbUrl;
+                    } else {
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) {
+                        e.target.nextSibling.style.display = 'flex';
+                      }
+                    }
                   }}
                 />
-              ) : (
-                <div className="queue-timeline-fallback-thumb" />
-              )}
+              ) : null}
+
+              {/* Icon Fallback (only shown if static image fails to load) */}
+              <div className="queue-timeline-fallback-box" style={{ display: !primaryThumbUrl ? 'flex' : 'none' }}>
+                {isVideo ? (
+                  <Film size={20} style={{ color: '#facc15', opacity: 0.75 }} />
+                ) : (
+                  <div className="queue-timeline-fallback-thumb" />
+                )}
+              </div>
 
               {/* Bottom Label Overlay */}
               <div className="queue-timeline-info">
