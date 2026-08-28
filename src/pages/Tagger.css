@@ -559,16 +559,16 @@
 /* Fullscreen Media overlay styles */
 .tagger-fullscreen-overlay {
   position: fixed;
-  top: 0;
+  top: 52px;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(18, 17, 16, 0.95);
+  background-color: var(--bg-primary);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 0.5rem 1rem 1rem 1rem;
   animation: fadeInOverlay 0.15s ease-out;
 }
 

@@ -15,19 +15,20 @@ export const parseTagsArray = (rawTags) => {
 
 // Helper: categorise a tag based on the Booru taxonomy schema
 export const getTagCategory = (tag) => {
-  if (!tag) return "general";
-  if (tag.startsWith("r/")) return "subreddit";
-  if (tag.startsWith("qid:")) return "artist"; 
-  if (tag.startsWith("artist:")) return "artist";
-  if (tag.startsWith("u/")) return "artist"; 
-  if (tag.startsWith("copyright:")) return "copyright";
-  if (tag.startsWith("character:")) return "character";
-  if (tag.startsWith("flair:")) return "flair";
-  if (tag.startsWith("folder:")) return "folder";
-  if (tag.startsWith("meta:")) return "meta";
+  if (!tag || typeof tag !== 'string') return "general";
+  const trimmed = tag.trim();
+  if (trimmed.startsWith("r/")) return "subreddit";
+  if (trimmed.startsWith("qid:")) return "artist"; 
+  if (trimmed.startsWith("artist:")) return "artist";
+  if (trimmed.startsWith("u/")) return "artist"; 
+  if (trimmed.startsWith("copyright:")) return "copyright";
+  if (trimmed.startsWith("character:")) return "character";
+  if (trimmed.startsWith("flair:")) return "flair";
+  if (trimmed.startsWith("folder:")) return "folder";
+  if (trimmed.startsWith("meta:")) return "meta";
   
-  if (tag.includes(":")) {
-    const prefix = tag.split(":")[0].toLowerCase();
+  if (trimmed.includes(":")) {
+    const prefix = trimmed.split(":")[0].toLowerCase();
     if (prefix && prefix !== "http" && prefix !== "https") {
       return prefix;
     }
@@ -38,18 +39,19 @@ export const getTagCategory = (tag) => {
 
 // Helper: strip namespace prefixes for clean display
 export const getDisplayTagName = (tag) => {
-  if (!tag) return "";
-  if (tag.startsWith("category:")) {
-    const key = tag.replace("category:", "");
+  if (!tag || typeof tag !== 'string') return "";
+  const trimmed = tag.trim();
+  if (trimmed.startsWith("category:")) {
+    const key = trimmed.replace("category:", "");
     const label = key.charAt(0).toUpperCase() + key.slice(1);
     return `${label} (All)`;
   }
-  if (tag.startsWith("r/")) return tag; 
-  if (tag.startsWith("u/")) return tag; 
+  if (trimmed.startsWith("r/")) return trimmed; 
+  if (trimmed.startsWith("u/")) return trimmed; 
   
   // Handle meta sub-prefixes
-  if (tag.startsWith("meta:")) {
-    let clean = tag.substring(5);
+  if (trimmed.startsWith("meta:")) {
+    let clean = trimmed.substring(5);
     if (clean.startsWith("extension:")) clean = clean.substring(10);
     else if (clean.startsWith("format:")) clean = clean.substring(7);
     else if (clean.startsWith("folder:")) clean = clean.substring(7);
@@ -57,12 +59,12 @@ export const getDisplayTagName = (tag) => {
     return clean.replace(/_/g, ' ');
   }
   
-  if (tag.includes(":")) {
-    const parts = tag.split(":");
+  if (trimmed.includes(":")) {
+    const parts = trimmed.split(":");
     return parts.slice(1).join(":").replace(/_/g, ' ');
   }
 
-  return tag.replace(/_/g, ' ');
+  return trimmed.replace(/_/g, ' ');
 };
 
 export const PALETTE_COLORS = [
@@ -92,7 +94,17 @@ export const getTagCategories = () => {
     const saved = localStorage.getItem('myatlas_tag_categories');
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const unique = [];
+        const seen = new Set();
+        parsed.forEach(c => {
+          if (c && c.key && !seen.has(c.key.toLowerCase())) {
+            seen.add(c.key.toLowerCase());
+            unique.push(c);
+          }
+        });
+        if (unique.length > 0) return unique;
+      }
     }
   } catch (e) {}
   return DEFAULT_CATEGORIES;
@@ -127,7 +139,7 @@ export const addTagCategory = (inputStr) => {
     prefix: raw,
     label,
     color: assignedColor,
-    bg: `${assignedColor}18`, // Light opacity tint
+    bg: `${assignedColor}18`,
     isDefault: false
   };
 
@@ -148,54 +160,52 @@ export const resetTagCategories = () => {
   return DEFAULT_CATEGORIES;
 };
 
-// Helper: retrieve category object (key, prefix, label, color, bg) for a tag or category key
+const hashCode = (str) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash;
+};
+
+// Helper: retrieve category object for a tag or category key
 export const getCategoryObj = (tagOrKey) => {
   if (!tagOrKey) return DEFAULT_CATEGORIES.find(c => c.key === 'general');
   const categories = getTagCategories();
-  const lower = String(tagOrKey).toLowerCase().trim();
-  
-  // Check exact key match or prefix match first (e.g. 'ship', 'ship:', 'r/', 'copyright')
+  const raw = String(tagOrKey).trim();
+  const lower = raw.toLowerCase().replace(/:$/, '');
+
+  // 1. Direct match on registered category key or prefix (e.g. 'character', 'character:', 'r/')
   const directMatch = categories.find(c => 
     c.key.toLowerCase() === lower || 
-    c.prefix.toLowerCase() === lower ||
-    c.prefix.toLowerCase() === `${lower}:`
+    c.prefix.toLowerCase().replace(/:$/, '') === lower ||
+    c.prefix.toLowerCase() === lower
   );
   if (directMatch) return directMatch;
 
-  // Next check via getTagCategory(tag) for full tags (e.g. 'ship:otago')
-  const catKey = getTagCategory(tagOrKey);
-  const found = categories.find(c => c.key === catKey || c.prefix === tagOrKey);
-  if (found) return found;
-  
-  // Fallback if custom category was used but not explicitly in list
-  if (catKey !== 'general') {
+  // 2. Resolve category key via getTagCategory (e.g. 'landscape' -> 'general', 'character:goku' -> 'character')
+  const catKey = getTagCategory(raw);
+  const catMatch = categories.find(c => c.key.toLowerCase() === catKey.toLowerCase());
+  if (catMatch) return catMatch;
+
+  // 3. Fallback for custom dynamic namespace prefix (e.g. 'ship:otago' -> catKey 'ship')
+  if (catKey && catKey.toLowerCase() !== 'general') {
     const label = catKey.charAt(0).toUpperCase() + catKey.slice(1);
+    const colorIndex = Math.abs(hashCode(catKey.toLowerCase())) % PALETTE_COLORS.length;
+    const color = PALETTE_COLORS[colorIndex];
     return {
-      key: catKey,
-      prefix: `${catKey}:`,
+      key: catKey.toLowerCase(),
+      prefix: `${catKey.toLowerCase()}:`,
       label,
-      color: '#0d9488',
-      bg: '#0d948818',
+      color,
+      bg: `${color}18`,
       isDefault: false
     };
   }
 
-  return DEFAULT_CATEGORIES.find(c => c.key === 'general');
+  // 4. Default to General Tags
+  return categories.find(c => c.key === 'general') || DEFAULT_CATEGORIES.find(c => c.key === 'general');
 };
 
-// Backward-compatibility wrappers for slotConfig queries
 export const getActiveCategories = getTagCategories;
-export const getSlotConfig = () => {
-  const cats = getTagCategories();
-  return [
-    { id: 0, label: "All Categories", prefixes: cats.map(c => c.prefix) }
-  ];
-};
-export const saveSlotConfig = () => {};
-export const DEFAULT_SLOT_CONFIG = getSlotConfig();
-export const BUILTIN_PRESETS = [];
-export const getCustomPresets = () => [];
-export const saveCustomPresets = () => {};
-export const getDeletedPresetIds = () => [];
-export const saveDeletedPresetIds = () => {};
-export const getTagSlotIndex = () => 0;

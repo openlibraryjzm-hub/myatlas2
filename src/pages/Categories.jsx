@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Tag, Hash, Layers, RefreshCw, Filter, Search, Check, Folder, Plus, Trash2, ChevronDown, ChevronUp, X, AlertTriangle } from 'lucide-react';
+import { Tag, RefreshCw, Plus, Trash2, X, AlertTriangle, ArrowLeft, Globe } from 'lucide-react';
 import { getAllItems } from '../services/localDb';
-import { getTagCategories, getTagCategory, getCategoryObj, getDisplayTagName, addTagCategory, removeTagCategory } from '../data/mockData';
+import { getTagCategories, getTagCategory, getCategoryObj, getDisplayTagName, parseTagsArray, addTagCategory, removeTagCategory } from '../data/mockData';
 import './Categories.css';
-
-const MAX_INITIAL_TAGS = 16;
 
 export default function Categories({ onTagClick }) {
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategoryKey, setSelectedCategoryKey] = useState('all');
-
-  // Interactive Expand/Collapse states for large categories
-  const [expandedCategories, setExpandedCategories] = useState(new Set());
+  const [domainScopeQuery, setDomainScopeQuery] = useState('');
+  const [selectedCategoryKey, setSelectedCategoryKey] = useState(null); // null = on namespaces tab
+  const [activeTab, setActiveTab] = useState('namespaces'); // 'namespaces' | 'values'
 
   // Category creation & removal modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -26,21 +22,32 @@ export default function Categories({ onTagClick }) {
     setLoading(true);
     try {
       const allPosts = await getAllItems({ forceRefresh: true });
-      setPosts(allPosts);
+      
+      // Apply domain scope filter if specified (e.g. atlas:rockets, folder:wallpapers, etc.)
+      const scopeFilter = domainScopeQuery.trim().toLowerCase();
+      const scopedPosts = scopeFilter 
+        ? allPosts.filter(post => {
+            const tags = parseTagsArray(post.tags);
+            return tags.some(t => typeof t === 'string' && t.toLowerCase().includes(scopeFilter));
+          })
+        : allPosts;
+
+      setPosts(scopedPosts);
 
       const registeredCategories = getTagCategories();
       const categoryMap = new Map();
 
-      // Initialize category map entries
+      // Initialize category map entries cleanly
       registeredCategories.forEach(cat => {
-        categoryMap.set(cat.key, {
+        if (!cat || !cat.key) return;
+        categoryMap.set(cat.key.toLowerCase(), {
           ...cat,
           tagsMap: new Map(), // tag -> count
           matchingPostIds: new Set()
         });
       });
 
-      // Also support fallback for any unexpected unmapped prefix
+      // Fallback for general unnamespaced tags
       if (!categoryMap.has('general')) {
         categoryMap.set('general', {
           key: 'general',
@@ -54,15 +61,16 @@ export default function Categories({ onTagClick }) {
         });
       }
 
-      // Process all post tags
-      allPosts.forEach(post => {
-        const postTags = Array.isArray(post.tags) ? post.tags : [];
+      // Process post tags in scoped posts
+      scopedPosts.forEach(post => {
+        const postTags = parseTagsArray(post.tags);
         postTags.forEach(tag => {
-          const catKey = getTagCategory(tag);
+          if (typeof tag !== 'string' || !tag.trim()) return;
+          const catKey = getTagCategory(tag).toLowerCase();
           let entry = categoryMap.get(catKey);
 
           if (!entry) {
-            // Dynamic category entry for unregistered custom prefix
+            // Dynamic category entry for custom prefix
             const catObj = getCategoryObj(catKey);
             entry = {
               ...catObj,
@@ -101,7 +109,7 @@ export default function Categories({ onTagClick }) {
         });
       });
 
-      // Sort categories: active categories with tags first, then defaults
+      // Sort categories: active with tags first, then by usage count
       result.sort((a, b) => {
         if (a.uniqueTagCount > 0 && b.uniqueTagCount === 0) return -1;
         if (a.uniqueTagCount === 0 && b.uniqueTagCount > 0) return 1;
@@ -118,16 +126,7 @@ export default function Categories({ onTagClick }) {
 
   useEffect(() => {
     loadCategoryData();
-  }, []);
-
-  const toggleExpand = (catKey) => {
-    setExpandedCategories(prev => {
-      const next = new Set(prev);
-      if (next.has(catKey)) next.delete(catKey);
-      else next.add(catKey);
-      return next;
-    });
-  };
+  }, [domainScopeQuery]);
 
   const handleCreateCategory = (e) => {
     e.preventDefault();
@@ -159,44 +158,56 @@ export default function Categories({ onTagClick }) {
     }
   };
 
-  // Filtered categories & tags based on search query
-  const filteredCategories = categoriesData.filter(cat => {
-    if (selectedCategoryKey !== 'all' && cat.key !== selectedCategoryKey) return false;
+  // Drill down to Tab 2 filtered specifically by clicked category
+  const handleDrillDownCategory = (catKey) => {
+    setSelectedCategoryKey(catKey);
+    setActiveTab('values');
+  };
 
-    if (!searchQuery.trim()) return true;
-    const query = searchQuery.trim().toLowerCase();
+  // Return from Tab 2 back to Tab 1
+  const handleBackToNamespaces = () => {
+    setSelectedCategoryKey(null);
+    setActiveTab('namespaces');
+  };
 
-    const matchesName = cat.label.toLowerCase().includes(query) || 
-                        cat.key.toLowerCase().includes(query) || 
-                        cat.prefix.toLowerCase().includes(query);
+  // Selected category object when in values tab
+  const activeSelectedCategory = categoriesData.find(c => c.key === selectedCategoryKey);
 
-    const matchesAnyTag = cat.tags.some(t => t.tag.toLowerCase().includes(query) || t.cleanName.toLowerCase().includes(query));
-
-    return matchesName || matchesAnyTag;
-  });
-
-  const totalUniqueTagsCount = categoriesData.reduce((sum, c) => sum + c.uniqueTagCount, 0);
-  const activeCategoriesCount = categoriesData.filter(c => c.uniqueTagCount > 0).length;
+  // Tag values list when in values tab (specifically for selected category)
+  const categoryTagValues = (activeSelectedCategory ? activeSelectedCategory.tags : [])
+    .sort((a, b) => b.count - a.count || a.cleanName.localeCompare(b.cleanName));
 
   return (
     <div className="categories-container">
-      {/* Header Bar */}
+      {/* Header Controls Section */}
       <div className="categories-header">
         <div className="categories-title-row">
           <div>
-            <h2 className="categories-title">Tag Categories Directory</h2>
-            <p className="categories-subtitle">
-              Inspect booru namespace categories, manage tag prefixes, and inspect usage distributions across your media library.
-            </p>
+            {activeTab === 'values' && activeSelectedCategory ? (
+              <div className="breadcrumb-nav-row">
+                <button 
+                  type="button" 
+                  className="btn-back-link" 
+                  onClick={handleBackToNamespaces}
+                >
+                  <ArrowLeft size={15} /> Back to Namespaces
+                </button>
+                <span className="breadcrumb-slash">/</span>
+                <span className="breadcrumb-current" style={{ color: activeSelectedCategory.color }}>
+                  {activeSelectedCategory.label} ({activeSelectedCategory.prefix || 'unnamespaced'})
+                </span>
+              </div>
+            ) : null}
           </div>
+
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <button 
               type="button" 
               className="btn btn-primary"
               onClick={() => { setIsAddModalOpen(true); setAddError(''); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', padding: '0.55rem 1rem' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', padding: '0.45rem 0.85rem' }}
             >
-              <Plus size={15} /> Add Category
+              <Plus size={14} /> Add Prefix
             </button>
 
             <button 
@@ -204,183 +215,136 @@ export default function Categories({ onTagClick }) {
               className="btn btn-secondary"
               onClick={loadCategoryData}
               disabled={loading}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', padding: '0.55rem 1rem' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', padding: '0.45rem 0.85rem' }}
             >
-              <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh Categories
+              <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh
             </button>
           </div>
         </div>
 
-        {/* Summary Stats Row */}
-        <div className="categories-stats-summary">
-          <div className="categories-stat-card">
-            <div className="stat-value">{activeCategoriesCount} / {categoriesData.length}</div>
-            <div className="stat-label">Active Categories</div>
-          </div>
-          <div className="categories-stat-card">
-            <div className="stat-value">{totalUniqueTagsCount}</div>
-            <div className="stat-label">Unique Namespace Tags</div>
-          </div>
-          <div className="categories-stat-card">
-            <div className="stat-value">{posts.length}</div>
-            <div className="stat-label">Total Posts Indexed</div>
-          </div>
-        </div>
-
-        {/* Controls Bar: Filter & Search */}
-        <div className="categories-controls-bar">
-          <div className="categories-filter-chips">
-            <button
-              type="button"
-              className={`filter-chip ${selectedCategoryKey === 'all' ? 'active' : ''}`}
-              onClick={() => setSelectedCategoryKey('all')}
-            >
-              All Categories ({categoriesData.length})
-            </button>
-            {categoriesData.map(cat => (
-              <button
-                key={cat.key}
-                type="button"
-                className={`filter-chip ${selectedCategoryKey === cat.key ? 'active' : ''}`}
-                onClick={() => setSelectedCategoryKey(cat.key)}
-                style={{
-                  borderColor: selectedCategoryKey === cat.key ? cat.color : 'transparent',
-                  backgroundColor: selectedCategoryKey === cat.key ? cat.bg : 'var(--bg-secondary)',
-                  color: selectedCategoryKey === cat.key ? cat.color : 'var(--text-secondary)'
-                }}
-              >
-                <span className="chip-dot" style={{ backgroundColor: cat.color }} />
-                {cat.label} ({cat.uniqueTagCount})
-              </button>
-            ))}
-          </div>
-
-          <div className="categories-search-input-wrapper">
-            <Search size={15} className="categories-search-icon" />
+        {/* Domain Scope Filter Bar */}
+        <div className="domain-scope-bar">
+          <div className="scope-input-wrapper">
+            <Globe size={15} className="scope-icon" />
             <input
               type="text"
-              className="categories-search-input"
-              placeholder="Search category or tag name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              className="scope-input"
+              placeholder="Filter domain scope by tag (e.g. atlas:rockets, folder:wallpapers)..."
+              value={domainScopeQuery}
+              onChange={(e) => setDomainScopeQuery(e.target.value)}
             />
+            {domainScopeQuery && (
+              <button 
+                type="button" 
+                className="scope-clear-btn" 
+                onClick={() => setDomainScopeQuery('')}
+                title="Clear domain scope filter"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
+          {domainScopeQuery.trim() && (
+            <span className="scope-active-pill">
+              Scoped to: <strong>{domainScopeQuery.trim()}</strong> ({posts.length} post{posts.length !== 1 ? 's' : ''})
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Main Categories Grid */}
+      {/* Main View Content */}
       {loading ? (
         <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '0.9rem' }}>
-          Analyzing database namespace taxonomy...
+          Analyzing namespace taxonomy...
         </div>
-      ) : filteredCategories.length === 0 ? (
-        <div style={{ padding: '2rem', textAlign: 'center', background: 'var(--bg-secondary)', border: '1px dashed var(--border-color)', borderRadius: '8px', color: 'var(--text-tertiary)', fontSize: '0.9rem' }}>
-          No namespace categories matched your search criteria.
-        </div>
-      ) : (
-        <div className="categories-grid">
-          {filteredCategories.map(cat => {
-            const displayTags = searchQuery.trim()
-              ? cat.tags.filter(t => t.tag.toLowerCase().includes(searchQuery.toLowerCase()) || t.cleanName.toLowerCase().includes(searchQuery.toLowerCase()))
-              : cat.tags;
-
-            const isExpanded = expandedCategories.has(cat.key);
-            const hasTruncatedTags = !isExpanded && !searchQuery.trim() && displayTags.length > MAX_INITIAL_TAGS;
-            const visibleTags = hasTruncatedTags ? displayTags.slice(0, MAX_INITIAL_TAGS) : displayTags;
-
-            return (
-              <div key={cat.key} className="category-card" style={{ borderTop: `4px solid ${cat.color}` }}>
-                {/* Category Header */}
-                <div className="category-card-header">
-                  <div className="category-title-group">
-                    <span className="category-color-badge" style={{ backgroundColor: cat.color }} />
-                    <h3 className="category-card-label">{cat.label}</h3>
-                    <span className="category-prefix-badge" style={{ backgroundColor: cat.bg, color: cat.color }}>
+      ) : activeTab === 'namespaces' ? (
+        /* TAB 1: ONE CONTINUOUS SHARED LINE OF NAMESPACE CATEGORIES SEPARATED BY COMMAS */
+        <div className="namespaces-continuous-container">
+          {categoriesData.length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center', background: 'var(--bg-secondary)', border: '1px dashed var(--border-color)', borderRadius: '8px', color: 'var(--text-tertiary)', fontSize: '0.88rem' }}>
+              No categories found.
+            </div>
+          ) : (
+            <div className="comma-tag-flow-container">
+              {categoriesData.map((cat, idx) => (
+                <span key={cat.key} className="comma-tag-item-wrapper">
+                  <button
+                    type="button"
+                    className="comma-tag-btn namespace-inline-btn"
+                    style={{ backgroundColor: cat.bg, color: cat.color, borderColor: `${cat.color}44` }}
+                    onClick={() => handleDrillDownCategory(cat.key)}
+                    title={`Click to drill down into ${cat.label} tag values`}
+                  >
+                    <span className="chip-dot" style={{ backgroundColor: cat.color }} />
+                    <span className="comma-tag-name">{cat.label}</span>
+                    <span className="namespace-prefix-inline" style={{ color: cat.color }}>
                       {cat.prefix || 'unnamespaced'}
                     </span>
-                  </div>
-
-                  <div className="category-header-actions">
-                    <div className="category-counts-group">
-                      <span className="category-tag-count">{cat.uniqueTagCount} tag{cat.uniqueTagCount !== 1 ? 's' : ''}</span>
-                      <span className="category-post-count">{cat.postCount} post{cat.postCount !== 1 ? 's' : ''}</span>
-                    </div>
-
-                    {!cat.isDefault && (
-                      <button
-                        type="button"
-                        className="category-delete-icon-btn"
-                        onClick={() => setConfirmDeleteCat(cat)}
-                        title={`Remove custom category: ${cat.label}`}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Tags List / Scalable Pill Cloud */}
-                <div className="category-tags-box">
-                  {displayTags.length === 0 ? (
-                    <div className="category-empty-state">
-                      {cat.uniqueTagCount === 0 ? 'No tags currently indexed under this category.' : 'No matching tags found.'}
-                    </div>
-                  ) : (
-                    <>
-                      <div className="category-tags-cloud">
-                        {visibleTags.map(item => (
-                          <button
-                            key={item.tag}
-                            type="button"
-                            className="category-tag-pill"
-                            style={{ backgroundColor: cat.bg, color: cat.color, borderColor: `${cat.color}33` }}
-                            onClick={() => onTagClick && onTagClick(item.tag)}
-                            title={`Click to filter grid by tag: ${item.tag}`}
-                          >
-                            <span className="tag-pill-name">{item.cleanName}</span>
-                            <span className="tag-pill-count" style={{ backgroundColor: `${cat.color}22` }}>{item.count}</span>
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Expand / Collapse Button for Large Tag Lists */}
-                      {displayTags.length > MAX_INITIAL_TAGS && !searchQuery.trim() && (
-                        <div className="category-expand-bar">
-                          <button
-                            type="button"
-                            className="category-expand-btn"
-                            onClick={() => toggleExpand(cat.key)}
-                          >
-                            {isExpanded ? (
-                              <>
-                                <span>Show top {MAX_INITIAL_TAGS} tags</span>
-                                <ChevronUp size={14} />
-                              </>
-                            ) : (
-                              <>
-                                <span>Show all {displayTags.length} tags (+{displayTags.length - MAX_INITIAL_TAGS} more)</span>
-                                <ChevronDown size={14} />
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      )}
-                    </>
+                    <span className="comma-tag-count" style={{ backgroundColor: `${cat.color}22` }}>
+                      {cat.uniqueTagCount}
+                    </span>
+                  </button>
+                  {!cat.isDefault && (
+                    <button
+                      type="button"
+                      className="inline-cat-delete-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmDeleteCat(cat);
+                      }}
+                      title={`Remove custom prefix: ${cat.label}`}
+                    >
+                      <Trash2 size={11} />
+                    </button>
                   )}
-                </div>
-              </div>
-            );
-          })}
+                  {idx < categoriesData.length - 1 && <span className="comma-separator">,</span>}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        /* TAB 2: DRILL-DOWN TAG VALUES (ACCESSIBLE ONLY FROM A NAMESPACE CLICK) */
+        <div className="values-tab-content">
+          {categoryTagValues.length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center', background: 'var(--bg-secondary)', border: '1px dashed var(--border-color)', borderRadius: '8px', color: 'var(--text-tertiary)', fontSize: '0.88rem' }}>
+              No tag values indexed under <strong>{activeSelectedCategory?.label}</strong>.
+            </div>
+          ) : (
+            <div className="comma-tag-flow-container">
+              {categoryTagValues.map((item, idx) => (
+                <span key={item.tag} className="comma-tag-item-wrapper">
+                  <button
+                    type="button"
+                    className="comma-tag-btn"
+                    style={{ 
+                      backgroundColor: activeSelectedCategory?.bg || '#fdf5e6', 
+                      color: activeSelectedCategory?.color || '#cc5a01', 
+                      borderColor: `${activeSelectedCategory?.color || '#cc5a01'}33` 
+                    }}
+                    onClick={() => onTagClick && onTagClick(item.tag)}
+                    title={`Click to filter posts by tag: ${item.tag}`}
+                  >
+                    <span className="comma-tag-name">{item.cleanName}</span>
+                    <span className="comma-tag-count" style={{ backgroundColor: `${activeSelectedCategory?.color || '#cc5a01'}22` }}>
+                      {item.count}
+                    </span>
+                  </button>
+                  {idx < categoryTagValues.length - 1 && <span className="comma-separator">,</span>}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Modal: Create New Namespace Category */}
+      {/* Modal: Create New Namespace Category Prefix */}
       {isAddModalOpen && (
         <div className="categories-modal-overlay" onClick={() => setIsAddModalOpen(false)}>
           <div className="categories-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="categories-modal-header">
               <h3 className="categories-modal-title">
-                <Tag size={18} /> Add New Tag Category Prefix
+                <Tag size={18} /> Add Tag Category Prefix
               </h3>
               <button type="button" className="close-btn" onClick={() => setIsAddModalOpen(false)}>
                 <X size={16} />
@@ -390,18 +354,18 @@ export default function Categories({ onTagClick }) {
             <form onSubmit={handleCreateCategory}>
               <div className="form-group" style={{ marginBottom: '1.25rem' }}>
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                  Category Name or Prefix (e.g. <code>medium:</code>, <code>genre:</code>, <code>location:</code>):
+                  Category Name or Prefix (e.g. <code>medium:</code>, <code>genre:</code>, <code>atlas:</code>):
                 </label>
                 <input
                   type="text"
                   className="modal-input"
-                  placeholder="e.g. medium, camera, game, location"
+                  placeholder="e.g. medium, camera, game, location, atlas"
                   value={newCategoryInput}
                   onChange={(e) => setNewCategoryInput(e.target.value)}
                   autoFocus
                 />
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)', marginTop: '0.35rem', display: 'block' }}>
-                  Prefixes ending with a colon (like <code>medium:</code>) automatically format tags as <code>medium:digital_art</code>.
+                  Prefixes ending with a colon format tags as <code>prefix:value</code>.
                 </span>
               </div>
 
@@ -435,7 +399,7 @@ export default function Categories({ onTagClick }) {
               Are you sure you want to remove the custom category prefix <strong>{confirmDeleteCat.prefix || confirmDeleteCat.key}</strong>?
             </p>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)' }}>
-              Note: This removes the namespace category definition. Existing post tags will revert to General classification.
+              Note: Existing post tags will revert to General classification.
             </p>
 
             <div className="categories-modal-actions" style={{ marginTop: '1.5rem' }}>

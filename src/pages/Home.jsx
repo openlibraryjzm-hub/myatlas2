@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ScrollText } from 'lucide-react';
 import './Home.css';
 
 export default function Home({ 
@@ -16,7 +15,6 @@ export default function Home({
   onConnectAtlas
 }) {
   const [localQuery, setLocalQuery] = useState(searchQuery);
-  const [hoveredOptionText, setHoveredOptionText] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -36,20 +34,6 @@ export default function Home({
         </h1>
       </div>
 
-      <div className="home-options-bar">
-        <a 
-          href="#manifesto" 
-          className="home-option-link home-icon-option-link" 
-          onClick={(e) => { e.preventDefault(); setView('manifesto'); }}
-          onMouseEnter={() => setHoveredOptionText('Manifesto')}
-          onMouseLeave={() => setHoveredOptionText(null)}
-          aria-label="Manifesto"
-          title="Manifesto"
-        >
-          <ScrollText size={13} strokeWidth={2.5} />
-        </a>
-      </div>
-
       <form className="home-search-container" onSubmit={handleSubmit}>
         <div className="home-search-wrapper-minimal">
           <input
@@ -63,17 +47,13 @@ export default function Home({
       </form>
 
       <div 
-        key={`${hoveredOptionText || 'numeric'}`} 
         className="home-total-count fade-in clickable"
-        onClick={() => {
-          if (hoveredOptionText === 'Manifesto') setView('manifesto');
-          else setView('posts');
-        }}
+        onClick={() => setView('posts')}
       >
         {loadingStats ? '···' : (
           <>
-            <span>{hoveredOptionText || getMetricText()}</span>
-            {!hoveredOptionText && <span className="home-total-count-arrow">&gt;</span>}
+            <span>{getMetricText()}</span>
+            <span className="home-total-count-arrow">&gt;</span>
           </>
         )}
       </div>

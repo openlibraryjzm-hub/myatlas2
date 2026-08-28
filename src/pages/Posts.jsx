@@ -10,29 +10,6 @@ import Tagger from './Tagger';
 import { getLocalScrapes, getLocalMediaFiles, importScrapedJsonArray, addLocalMediaFile } from '../services/localDb';
 import { selectLocalFiles, selectLocalDirectory, isDesktopApp, formatLocalAssetUrl } from '../utils/localFiles';
 
-function PoolsIcon({ size = 17, ...props }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      width={size}
-      height={size}
-      {...props}
-    >
-      <path d="M12 2L2 7l10 5 10-5-10-5z" />
-      <path d="M2 7v6l10 5 10-5V7" />
-      <path d="M12 12l5-2.5" />
-      <path d="M7 9.5L12 12" />
-      <path d="M14 4.5l-0.8 2M16 5.5l-0.8 2" />
-    </svg>
-  );
-}
-
 function AddToPoolIcon({ size = 17, ...props }) {
   return (
     <svg
@@ -854,23 +831,23 @@ export default function Posts({
         <div className="tagger-fullscreen-overlay" onClick={handleCloseModal}>
           <div 
             className="tagger-fullscreen-content" 
-            style={{ maxWidth: '96vw', maxHeight: '96vh', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '1rem' }} 
+            style={{ maxWidth: '98vw', maxHeight: '100%', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '0.25rem 0.5rem' }} 
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Control Bar */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0 1rem', position: 'relative' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0 0.5rem', position: 'relative' }}>
               {/* Left Item Counter */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)', fontFamily: 'monospace', fontWeight: 600 }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontFamily: 'monospace', fontWeight: 600 }}>
                   Item {currentPostIndex >= 0 ? currentPostIndex + 1 : 1} of {posts.length}
                 </span>
               </div>
 
               {/* Centered Mode Switcher: Media vs Tags */}
-              <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '6px', padding: '2px' }}>
+              <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '0.35rem' }}>
                 <button
                   className="tagger-settings-trigger"
-                  style={{ backgroundColor: viewerMode === 'image' ? 'var(--bg-card)' : 'transparent', color: viewerMode === 'image' ? 'var(--accent-color)' : 'var(--text-secondary)' }}
+                  style={{ backgroundColor: viewerMode === 'image' ? 'var(--bg-secondary)' : 'transparent', color: viewerMode === 'image' ? 'var(--accent-color)' : 'var(--text-secondary)', border: '1px solid ' + (viewerMode === 'image' ? 'var(--border-color)' : 'transparent') }}
                   onClick={() => setViewerMode('image')}
                   title="Media View (Tab / F)"
                 >
@@ -878,7 +855,7 @@ export default function Posts({
                 </button>
                 <button
                   className="tagger-settings-trigger"
-                  style={{ backgroundColor: viewerMode === 'tagger' ? 'var(--bg-card)' : 'transparent', color: viewerMode === 'tagger' ? 'var(--accent-color)' : 'var(--text-secondary)' }}
+                  style={{ backgroundColor: viewerMode === 'tagger' ? 'var(--bg-secondary)' : 'transparent', color: viewerMode === 'tagger' ? 'var(--accent-color)' : 'var(--text-secondary)', border: '1px solid ' + (viewerMode === 'tagger' ? 'var(--border-color)' : 'transparent') }}
                   onClick={() => setViewerMode('tagger')}
                   title="Tags View (Tab / F)"
                 >
@@ -910,7 +887,7 @@ export default function Posts({
             </div>
 
             {/* Main Stage: Morphing Media Display & Dynamic Content */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', position: 'relative', overflow: 'hidden', padding: '0.5rem 0' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', position: 'relative', overflow: 'hidden', padding: '0.25rem 0' }}>
               {/* Prev Arrow */}
               <button
                 className="tagger-settings-trigger"
@@ -934,11 +911,11 @@ export default function Posts({
 
                 const isTagger = viewerMode === 'tagger';
                 const mediaStyle = {
-                  maxHeight: isTagger ? '180px' : '68vh',
-                  maxWidth: isTagger ? '240px' : '90vw',
+                  maxHeight: isTagger ? '180px' : '60vh',
+                  maxWidth: isTagger ? '240px' : '88vw',
                   objectFit: isTagger ? 'cover' : 'contain',
                   borderRadius: '8px',
-                  boxShadow: isTagger ? '0 4px 16px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.6)',
+                  boxShadow: isTagger ? '0 4px 16px rgba(0,0,0,0.15)' : '0 10px 30px rgba(0,0,0,0.12)',
                   cursor: 'pointer',
                   transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                 };
@@ -1006,7 +983,7 @@ export default function Posts({
                   <span style={{ color: 'var(--accent-color)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     {selectedPost.subreddit ? `r/${selectedPost.subreddit}` : 'Local Media'}
                   </span>
-                  <h3 style={{ color: '#ffffff', fontSize: '1.05rem', fontWeight: 600, margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                  <h3 style={{ color: 'var(--text-primary)', fontSize: '1.05rem', fontWeight: 600, margin: 0 }}>
                     {selectedPost.title || selectedPost.fileName || ''}
                   </h3>
                 </div>

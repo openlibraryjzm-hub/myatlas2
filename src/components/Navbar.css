@@ -5,7 +5,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative; /* Allows absolute centering of the hover text */
+  position: relative;
+  z-index: 10000;
 }
 
 .nav-left-group {

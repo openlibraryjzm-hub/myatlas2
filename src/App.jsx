@@ -156,20 +156,6 @@ export default function App() {
         <Subreddits onSubredditClick={handleTagToggle} />
       ) : view === 'users' ? (
         <Users searchQuery={searchQuery} />
-      ) : view === 'pools' ? (
-        <div className="posts-layout">
-          <div style={{ padding: '4rem 2rem', textAlign: 'center', flex: 1, border: '1px dashed var(--border-color)', borderRadius: '6px', backgroundColor: 'var(--bg-secondary)', margin: '2rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--accent-color)', fontSize: '2rem', marginBottom: '1rem' }}>Pools Directory</h2>
-            <p style={{ color: 'var(--text-secondary)' }}>This page will contain post collections and custom curation pools.</p>
-          </div>
-        </div>
-      ) : view === 'manifesto' ? (
-        <div className="posts-layout">
-          <div style={{ padding: '4rem 2rem', textAlign: 'center', flex: 1, border: '1px dashed var(--border-color)', borderRadius: '6px', backgroundColor: 'var(--bg-secondary)', margin: '2rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--accent-color)', fontSize: '2rem', marginBottom: '1rem' }}>Project Manifesto</h2>
-            <p style={{ color: 'var(--text-secondary)' }}>Read in-depth about the goals, architectural principles, philosophy, and future roadmap of this project.</p>
-          </div>
-        </div>
       ) : view === 'tagger' ? (
         <Tagger 
           currentAtlas={currentAtlas} 
