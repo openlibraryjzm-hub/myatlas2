@@ -6,7 +6,7 @@ This document defines the speed tagger keyboard workflow, namespace prefix forma
 
 ## ⚡ Speed Tagger Workflow & Queue Dynamics
 
-The Speed Tagger interface ([`Tagger.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/pages/Tagger.jsx)) is engineered for rapid keyboard-driven item tagging and metadata classification.
+The Speed Tagger interface ([`Tagger.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/pages/Tagger.jsx) & [`MorphingTaggerPanel.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/components/MorphingTaggerPanel.jsx)) is engineered for rapid keyboard-driven item tagging and metadata classification. It operates both as a dedicated view and as an embedded panel within the **Seamless Morphing Overlay Viewer** ([`viewer_overlay.md`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/views/viewer_overlay.md)).
 
 - **Centered Viewport Layout**: Displays item preview media surrounded by active tag pills, interactive inline caret input, and bottom queue timeline.
 - **Current Page Queue Boundary & Highlight Positioning**: When launched from the Browse Grid (via the `<Tag size={14} />` control button), Speed Tagger receives the active page's item array (up to **40 items per page**). If a post card is highlighted (selected in orange/cream on the grid), Speed Tagger automatically starts the queue at that exact post (`selectedPostId`); if no post is highlighted, it defaults to the first item (`index 0`).
