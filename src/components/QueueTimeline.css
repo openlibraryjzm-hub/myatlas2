@@ -33,7 +33,6 @@
   overflow-x: auto;
   padding: 0.25rem 0.75rem 0.5rem 0.75rem;
   scrollbar-width: thin;
-  scroll-behavior: smooth;
   will-change: scroll-position;
   transform: translateZ(0);
 }

@@ -33,46 +33,21 @@ export default function QueueTimeline({
     return () => cancelAnimationFrame(rafId);
   }, [currentIndex]);
 
-  // Smooth 60 FPS momentum wheel scrolling
+  // Map vertical wheel scrolling to horizontal timeline scroll instantly
   useEffect(() => {
     const el = timelineRef.current;
     if (!el) return;
 
-    let animFrame = null;
-    let targetScroll = el.scrollLeft;
-
     const handleWheel = (e) => {
       if (e.deltaY !== 0) {
         e.preventDefault();
-        targetScroll += e.deltaY * 0.85;
-        targetScroll = Math.max(0, Math.min(targetScroll, el.scrollWidth - el.clientWidth));
-
-        if (!animFrame) {
-          animFrame = requestAnimationFrame(() => {
-            el.scrollLeft += (targetScroll - el.scrollLeft) * 0.35;
-            if (Math.abs(targetScroll - el.scrollLeft) > 0.5) {
-              animFrame = requestAnimationFrame(function step() {
-                el.scrollLeft += (targetScroll - el.scrollLeft) * 0.35;
-                if (Math.abs(targetScroll - el.scrollLeft) > 0.5) {
-                  animFrame = requestAnimationFrame(step);
-                } else {
-                  animFrame = null;
-                }
-              });
-            } else {
-              animFrame = null;
-            }
-          });
-        }
+        el.scrollLeft += e.deltaY;
       }
     };
 
     el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => {
-      el.removeEventListener('wheel', handleWheel);
-      if (animFrame) cancelAnimationFrame(animFrame);
-    };
-  }, [posts]);
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
 
   // Helper to test if post is a video format
   const isVideoFormat = (url, tagsInput = []) => {
