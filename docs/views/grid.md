@@ -38,7 +38,7 @@ This document defines the layout architecture, visual design system, left sideba
 - **Zero Artificial Delay**: Grid navigation, filtering, and tagger exits load instantly with 0ms artificial skeleton delay.
 - **Instant Cache Detection**: `PostCard.jsx` checks `imgRef.current.complete` on mount. If an image is already in memory or disk cache, it renders immediately with `opacity: 1`, bypassing 0.25s fade delays.
 - **Video Card Mechanics**: Grid video cards render lightweight 300px static WebP thumbnail images with a `VIDEO` play badge overlay when idle for 0ms load overhead and 60 FPS buttery-smooth grid scrolling. Hovering over any video card triggers a muted video preview loop (`<video src={assetUrl} muted autoPlay loop />`).
-- **Fullscreen Video Viewing**: Right-clicking or clicking any card opens the Fullscreen Viewer modal, streaming local hard drive video files (`.mp4`, `.webm`, `.mov`) natively via the C# HTTP 206 range streamer (`/api/stream/{id}`) for instant scrub-seeking.
+- **Seamless Morphing Overlay Viewer**: Right-clicking or clicking any card opens the Seamless Morphing Overlay Viewer ([`viewer_overlay.md`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/views/viewer_overlay.md)), rendering full media in State #1 and morphing smoothly to Speed Tagger in State #2 while keeping the Browse Grid 100% mounted in the background.
 - **Priority Image Waterfall**:
   - **Rows 1 & 2 (Cards 0–15)**: Assigned `fetchPriority="high"` and `loading="eager"` for immediate top-of-fold rendering.
   - **Rows 3+ (Cards 16+)**: Assigned `fetchPriority="low"` and `loading="lazy"` to defer off-screen network requests.
