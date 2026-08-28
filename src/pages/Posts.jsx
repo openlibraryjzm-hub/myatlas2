@@ -725,7 +725,11 @@ export default function Posts({
         <Tagger 
           posts={posts}
           setPosts={setPosts}
-          onExit={() => setIsTaggerMode(false)}
+          selectedPostId={selectedPost?.id}
+          onExit={() => {
+            setIsTaggerMode(false);
+            setSelectedPost(null);
+          }}
         />
       ) : (
         <main className="gallery-container">
@@ -792,11 +796,11 @@ export default function Posts({
                   index={idx}
                   onPostClick={(selected) => {
                     setSelectedPost(selected);
-                    setIsFullscreenMedia(true);
+                    setIsTaggerMode(true);
                   }}
                   onRightClick={(selected) => {
                     setSelectedPost(selected);
-                    setIsFullscreenMedia(true);
+                    setIsTaggerMode(true);
                   }}
                 />
               ))}
