@@ -954,9 +954,11 @@ export default function Posts({
                   <img 
                     src={fullImgSrc} 
                     alt={selectedPost.title || ''} 
-                    style={{ maxWidth: '92vw', maxHeight: '78vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }} 
+                    style={{ maxWidth: '92vw', maxHeight: '78vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 40px rgba(0,0,0,0.6)', cursor: 'pointer', transition: 'transform 0.25s ease' }} 
                     referrerPolicy="no-referrer"
                     onError={() => setModalImageError(true)}
+                    onClick={() => setViewerMode('tagger')}
+                    title="Click to shrink to Speed Tagger (or press Tab / F)"
                   />
                 );
               })()}

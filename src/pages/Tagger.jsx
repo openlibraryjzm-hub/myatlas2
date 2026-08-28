@@ -963,8 +963,8 @@ export default function Tagger({
               <div 
                 className="tagger-media-thumb-box clickable" 
                 style={{ backgroundColor: currentPost.color_theme?.bg || '#f5f2eb' }}
-                onClick={() => setIsFullscreenMedia(true)}
-                title="Click to view full screen (or press Tab / F)"
+                onClick={() => onSwitchToImage ? onSwitchToImage() : setIsFullscreenMedia(true)}
+                title="Click to view full screen image (or press Tab / F)"
               >
                 {isVideoFormat(currentPost.url, currentPost.tags) ? (
                   <video 
