@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, X, Image as ImageIcon, Glasses, Trash2, Feather, Star, Tag } from 'lucide-react';
 import PostCard from '../components/PostCard';
 import QueueTimeline from '../components/QueueTimeline';
+import MorphingTaggerPanel from '../components/MorphingTaggerPanel';
 import './Posts.css';
 import { getTagCategory, getDisplayTagName, getCategoryObj } from '../data/mockData';
 import Tagger from './Tagger';
@@ -860,8 +861,8 @@ export default function Posts({
       </main>
       )}
 
-      {/* Full Image Mode Overlay (Primary State #1) */}
-      {viewerMode === 'image' && selectedPost && (
+      {/* Seamless Morphing Overlay Viewer (Grid Stays 100% Mounted in Background) */}
+      {selectedPost && viewerMode !== 'none' && (
         <div className="tagger-fullscreen-overlay" onClick={handleCloseModal}>
           <div 
             className="tagger-fullscreen-content" 
@@ -870,15 +871,26 @@ export default function Posts({
           >
             {/* Top Control Bar */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0 1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                <button
-                  className="tagger-settings-trigger"
-                  onClick={() => setViewerMode('tagger')}
-                  title="Switch to Speed Tagger View (Tab / F)"
-                >
-                  <Tag size={14} /> Speed Tagger
-                </button>
-                <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)', fontFamily: 'monospace', fontWeight: 600 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '6px', padding: '2px' }}>
+                  <button
+                    className="tagger-settings-trigger"
+                    style={{ backgroundColor: viewerMode === 'image' ? 'var(--bg-card)' : 'transparent', color: viewerMode === 'image' ? 'var(--accent-color)' : 'var(--text-secondary)' }}
+                    onClick={() => setViewerMode('image')}
+                    title="Full Image View (Tab / F)"
+                  >
+                    <ImageIcon size={14} /> Full Image
+                  </button>
+                  <button
+                    className="tagger-settings-trigger"
+                    style={{ backgroundColor: viewerMode === 'tagger' ? 'var(--bg-card)' : 'transparent', color: viewerMode === 'tagger' ? 'var(--accent-color)' : 'var(--text-secondary)' }}
+                    onClick={() => setViewerMode('tagger')}
+                    title="Speed Tagger View (Tab / F)"
+                  >
+                    <Tag size={14} /> Speed Tagger
+                  </button>
+                </div>
+                <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)', fontFamily: 'monospace', fontWeight: 600, marginLeft: '0.5rem' }}>
                   Item {currentPostIndex >= 0 ? currentPostIndex + 1 : 1} of {posts.length}
                 </span>
               </div>
@@ -905,20 +917,20 @@ export default function Posts({
               </div>
             </div>
 
-            {/* Main Stage: Spacious Unconstrained Media Display */}
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', position: 'relative', overflow: 'hidden', padding: '0.5rem 0' }}>
+            {/* Main Stage: Morphing Media Display & Dynamic Content */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', position: 'relative', overflow: 'hidden', padding: '0.5rem 0' }}>
               {/* Prev Arrow */}
               <button
                 className="tagger-settings-trigger"
                 onClick={handlePrevPost}
                 disabled={currentPostIndex <= 0}
-                style={{ position: 'absolute', left: '1rem', zIndex: 10, borderRadius: '50%', width: '42px', height: '42px', padding: 0, justifyContent: 'center', opacity: currentPostIndex <= 0 ? 0.25 : 0.85 }}
-                title="Previous Item (ArrowLeft)"
+                style={{ position: 'absolute', left: '1rem', top: '45%', transform: 'translateY(-50%)', zIndex: 10, borderRadius: '50%', width: '42px', height: '42px', padding: 0, justifyContent: 'center', opacity: currentPostIndex <= 0 ? 0.25 : 0.85 }}
+                title="Previous Item (ArrowLeft / `)"
               >
                 <ChevronLeft size={22} />
               </button>
 
-              {/* Media Element */}
+              {/* Morphing Media Element */}
               {(() => {
                 const allTags = Array.isArray(selectedPost.tags) ? selectedPost.tags : [];
                 const isVideo = allTags.includes('meta:format:video') || 
@@ -928,6 +940,17 @@ export default function Posts({
                                 (selectedPost.filePath && selectedPost.filePath.match(/\.(mp4|webm|mov|mkv|avi)$/i)) || 
                                 (selectedPost.url && selectedPost.url.match(/\.(mp4|webm|mov|mkv|avi)$/i));
 
+                const isTagger = viewerMode === 'tagger';
+                const mediaStyle = {
+                  maxHeight: isTagger ? '180px' : '68vh',
+                  maxWidth: isTagger ? '240px' : '90vw',
+                  objectFit: isTagger ? 'cover' : 'contain',
+                  borderRadius: '8px',
+                  boxShadow: isTagger ? '0 4px 16px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.6)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                };
+
                 if (isVideo) {
                   const streamUrl = selectedPost.id ? `http://127.0.0.1:7171/api/stream/${encodeURIComponent(selectedPost.id)}` : formatLocalAssetUrl(selectedPost.filePath || selectedPost.url);
                   const fallbackUrl = formatLocalAssetUrl(selectedPost.filePath || selectedPost.url);
@@ -936,12 +959,15 @@ export default function Posts({
                   return (
                     <video 
                       src={activeSrc} 
-                      style={{ maxWidth: '92vw', maxHeight: '78vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 40px rgba(0,0,0,0.6)' }}
-                      controls
+                      style={mediaStyle}
+                      controls={!isTagger}
                       autoPlay
                       loop
+                      muted={isTagger}
                       playsInline
                       onError={() => setModalImageError(true)}
+                      onClick={() => setViewerMode(prev => prev === 'image' ? 'tagger' : 'image')}
+                      title={isTagger ? "Click to expand to Full Image" : "Click to shrink to Speed Tagger"}
                     />
                   );
                 }
@@ -954,11 +980,11 @@ export default function Posts({
                   <img 
                     src={fullImgSrc} 
                     alt={selectedPost.title || ''} 
-                    style={{ maxWidth: '92vw', maxHeight: '78vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 40px rgba(0,0,0,0.6)', cursor: 'pointer', transition: 'transform 0.25s ease' }} 
+                    style={mediaStyle} 
                     referrerPolicy="no-referrer"
                     onError={() => setModalImageError(true)}
-                    onClick={() => setViewerMode('tagger')}
-                    title="Click to shrink to Speed Tagger (or press Tab / F)"
+                    onClick={() => setViewerMode(prev => prev === 'image' ? 'tagger' : 'image')}
+                    title={isTagger ? "Click to expand to Full Image" : "Click to shrink to Speed Tagger"}
                   />
                 );
               })()}
@@ -968,22 +994,35 @@ export default function Posts({
                 className="tagger-settings-trigger"
                 onClick={handleNextPost}
                 disabled={currentPostIndex >= posts.length - 1}
-                style={{ position: 'absolute', right: '1rem', zIndex: 10, borderRadius: '50%', width: '42px', height: '42px', padding: 0, justifyContent: 'center', opacity: currentPostIndex >= posts.length - 1 ? 0.25 : 0.85 }}
-                title="Next Item (ArrowRight)"
+                style={{ position: 'absolute', right: '1rem', top: '45%', transform: 'translateY(-50%)', zIndex: 10, borderRadius: '50%', width: '42px', height: '42px', padding: 0, justifyContent: 'center', opacity: currentPostIndex >= posts.length - 1 ? 0.25 : 0.85 }}
+                title="Next Item (ArrowRight / Enter)"
               >
                 <ChevronRight size={22} />
               </button>
+
+              {/* Dynamic Content Below Media */}
+              {viewerMode === 'tagger' ? (
+                <MorphingTaggerPanel
+                  currentPost={selectedPost}
+                  onTagsSaved={() => fetchPosts()}
+                  onAdvanceNext={handleNextPost}
+                  onRegressPrev={handlePrevPost}
+                  onSkip={handleNextPost}
+                />
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', textAlign: 'center', maxWidth: '850px', marginTop: '0.5rem' }}>
+                  <span style={{ color: 'var(--accent-color)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    {selectedPost.subreddit ? `r/${selectedPost.subreddit}` : 'Local Media'}
+                  </span>
+                  <h3 style={{ color: '#ffffff', fontSize: '1.05rem', fontWeight: 600, margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                    {selectedPost.title || selectedPost.fileName || ''}
+                  </h3>
+                </div>
+              )}
             </div>
 
-            {/* Bottom Info Bar & Integrated 40-Item Queue Timeline */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', textAlign: 'center', width: '100%', maxWidth: '980px' }}>
-              <span style={{ color: 'var(--accent-color)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                {selectedPost.subreddit ? `r/${selectedPost.subreddit}` : 'Local Media'}
-              </span>
-              <h3 style={{ color: '#ffffff', fontSize: '1.05rem', fontWeight: 600, margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
-                {selectedPost.title || selectedPost.fileName || ''}
-              </h3>
-
+            {/* Bottom Integrated 40-Item Queue Timeline */}
+            <div style={{ width: '100%', maxWidth: '1000px' }}>
               <QueueTimeline
                 posts={posts}
                 currentIndex={currentPostIndex >= 0 ? currentPostIndex : 0}
