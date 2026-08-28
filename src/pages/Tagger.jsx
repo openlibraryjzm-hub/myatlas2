@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2 } from 'lucide-react';
+import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X } from 'lucide-react';
 import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache, getPaginatedItems } from '../services/localDb';
 import { formatLocalAssetUrl } from '../utils/localFiles';
@@ -932,7 +932,17 @@ export default function Tagger({
           </button>
         </div>
       ) : (
-        <div className="tagger-workspace">
+        <div className="tagger-workspace" style={{ position: 'relative' }}>
+          {onExit && (
+            <button 
+              className="tagger-settings-trigger" 
+              onClick={handleExitTagger}
+              style={{ position: 'absolute', top: '-10px', right: '0px', zIndex: 10 }}
+              title="Return to Browse Grid"
+            >
+              <X size={14} /> Exit to Grid
+            </button>
+          )}
           {/* Main Visual Panel - Centered */}
           <div className="tagger-main-panel">
             
