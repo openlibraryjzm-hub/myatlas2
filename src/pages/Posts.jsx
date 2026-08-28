@@ -695,7 +695,7 @@ export default function Posts({
   return (
     <div className="posts-layout">
       {/* Left Sidebar for tags (Classic Booru High Density) */}
-      {!isTaggerMode && (
+      {(viewerMode !== 'tagger') && (
         <aside className="sidebar-container-dense">
           {/* Stats and Reset */}
           <div className="sidebar-stats-panel">
