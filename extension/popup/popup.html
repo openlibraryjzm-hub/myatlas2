@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Post Exporter</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="logo-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="#FF4500"/>
+                        <path d="M16.5 12C16.5 11.17 15.83 10.5 15 10.5C14.56 10.5 14.17 10.69 13.9 10.99C12.89 10.27 11.51 9.8 10 9.75L10.7 6.45L13 7C13 7.55 13.45 8 14 8C14.55 8 15 7.55 15 7C15 6.45 14.55 6 14 6C13.62 6 13.29 6.21 13.12 6.52L10.5 5.95C10.39 5.93 10.27 5.97 10.19 6.05C10.11 6.13 10.07 6.24 10.09 6.35L9.3 10.07C7.79 10.12 6.41 10.59 5.4 11.31C5.13 11.01 4.74 10.82 4.3 10.82C3.47 10.82 2.8 11.49 2.8 12.32C2.8 12.92 3.16 13.44 3.67 13.68C3.62 13.93 3.6 14.19 3.6 14.45C3.6 17.51 7.36 20 12 20C16.64 20 20.4 17.51 20.4 14.45C20.4 14.19 20.38 13.93 20.33 13.68C20.84 13.44 21.2 12.92 21.2 12.32C21.2 11.49 20.53 10.82 19.7 10.82C19.26 10.82 18.87 11.01 18.6 11.31C17.59 10.59 16.21 10.12 14.7 10.07L15.35 7.02L16.5 7.27C16.5 7.27 16.5 12 16.5 12ZM8 14C8.55 14 9 14.45 9 15C9 15.55 8.55 16 8 16C7.45 16 7 15.55 7 15C7 14.45 7.45 14 8 14ZM16 14C16.55 14 17 14.45 17 15C17 15.55 16.55 16 16 16C15.45 16 15 15.55 15 15C15 14.45 15.45 14 16 14ZM9.39 17.43C9.18 17.22 9.18 16.88 9.39 16.67C9.6 16.46 9.94 16.46 10.15 16.67C10.97 17.49 13.03 17.49 13.85 16.67C14.06 16.46 14.4 16.46 14.61 16.67C14.82 16.88 14.82 17.22 14.61 17.43C13.47 18.57 10.53 18.57 9.39 17.43Z" fill="white"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="title">Reddit Exporter</h1>
+                    <span class="subtitle">Manual Scroll & Track Extractor</span>
+                </div>
+            </div>
+            <div id="statusBadge" class="status-badge badge-idle">Disabled</div>
+        </header>
+
+        <!-- Main Configuration Card -->
+        <section class="card config-card">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="maxPostsInput">Max Posts Cap</label>
+                    <input type="number" id="maxPostsInput" value="500" min="1" max="5000" step="50">
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="controls-row">
+                <button id="btnToggleTracking" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    Enable Tracking
+                </button>
+                <button id="btnClear" class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Clear Data
+                </button>
+            </div>
+        </section>
+
+        <!-- Progress Tracker -->
+        <section class="card progress-card">
+            <div class="counter-display">
+                <div class="stat-box">
+                    <span class="stat-value" id="postCount">0</span>
+                    <span class="stat-label">Posts Extracted</span>
+                </div>
+                <div class="stat-divider">/</div>
+                <div class="stat-box">
+                    <span class="stat-value" id="postCapDisplay">500</span>
+                    <span class="stat-label">Target Limit</span>
+                </div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+            <div id="statusMessage" class="status-message">Enable tracking and scroll/browse old.reddit manually.</div>
+        </section>
+
+        <!-- Export Actions -->
+        <section class="export-section">
+            <button id="btnExportJson" class="btn btn-export btn-json" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Export JSON
+            </button>
+            <button id="btnExportCsv" class="btn btn-export btn-csv" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                Export CSV
+            </button>
+            <button id="btnCopyJson" class="btn btn-export btn-copy" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+            </button>
+        </section>
+
+        <!-- Preview Area -->
+        <section class="card preview-card">
+            <div class="preview-header">
+                <h3>Extracted Data Preview</h3>
+                <input type="text" id="searchInput" placeholder="Filter posts..." class="search-input">
+            </div>
+            <div id="previewList" class="preview-list">
+                <div class="empty-state">No posts extracted yet.</div>
+            </div>
+        </section>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

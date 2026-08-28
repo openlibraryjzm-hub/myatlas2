@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+*.local
+
+# .NET Build artifacts
+bin/
+obj/
+*.user
+*.suo
+.vs/
+backend/**/bin/
+backend/**/obj/
+
+# Databases & local caches
+*.db
+*.sqlite
+*.sqlite3
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

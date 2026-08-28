@@ -1,0 +1,904 @@
+/* --- Speed Tagger styles --- */
+
+.tagger-container {
+  max-width: 1024px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+/* Top bar styles removed, settings button relocated to timeline header */
+
+.tagger-settings-trigger {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--transition-smooth);
+}
+
+.tagger-settings-trigger:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-color);
+  background-color: var(--bg-card);
+}
+
+.tagger-empty-state {
+  text-align: center;
+  padding: 6rem 2rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  border: 1px dashed var(--border-color);
+  border-radius: 6px;
+  background-color: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.tagger-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Center-Focused Main Workspace Panel */
+.tagger-main-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  background-color: transparent;
+  border: none;
+  padding: 1.5rem 2rem;
+  box-shadow: none;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Centered Post Header (Small thumbnail + title) */
+.tagger-post-header-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 600px;
+  text-align: left;
+}
+
+.tagger-media-thumb-box {
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(30, 29, 27, 0.04);
+}
+
+.tagger-media-thumb-box.clickable {
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.tagger-media-thumb-box.clickable:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 14px rgba(204, 90, 1, 0.2);
+}
+
+.tagger-media-expand-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  padding: 3px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+  transition: var(--transition-smooth);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.tagger-media-thumb-box.clickable:hover .tagger-media-expand-badge {
+  opacity: 1;
+  background: var(--accent-color);
+  transform: scale(1.1);
+}
+
+.tagger-media-thumb-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tagger-post-info-centered {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.tagger-post-subreddit-centered {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.tagger-post-title-centered {
+  font-size: 1.15rem;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  word-break: break-word;
+}
+
+/* Inline Comma Separated Tags Flow Container */
+.tagger-inline-flow-container {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  text-align: center;
+  max-width: 650px;
+  width: 100%;
+  margin: 0.5rem auto 1.5rem auto;
+  cursor: text;
+  word-break: break-word;
+}
+
+.tagger-line-tag {
+  display: inline;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition-smooth);
+}
+
+.tagger-line-tag:hover {
+  text-decoration: underline dotted;
+  opacity: 0.8;
+}
+
+.tagger-line-comma {
+  color: var(--text-tertiary);
+  margin-right: 0.15rem;
+  user-select: none;
+}
+
+/* Category colors */
+.tagger-line-tag.subreddit { color: var(--color-subreddit); }
+.tagger-line-tag.artist { color: var(--color-artist); }
+.tagger-line-tag.copyright { color: var(--color-copyright); }
+.tagger-line-tag.character { color: var(--color-character); }
+.tagger-line-tag.flair { color: var(--color-flair); }
+.tagger-line-tag.meta { color: var(--color-meta); }
+.tagger-line-tag.general { color: var(--color-general); }
+
+/* Staged and draft tags indicators */
+.tagger-line-tag.staged {
+  opacity: 0.85;
+  border-bottom: 1px dotted currentColor;
+}
+
+/* Inline typing input */
+.tagger-inline-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1.25rem;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  caret-color: var(--accent-color);
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  vertical-align: baseline;
+  transition: color 0.15s ease, width 0.05s ease;
+}
+
+.tagger-inline-input::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.25;
+}
+
+/* Centered Controls Row */
+.tagger-controls-row-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+}
+
+.tagger-key-hints-centered {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.tagger-hint {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tagger-hint kbd {
+  font-family: monospace;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-size: 0.6rem;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.tagger-save-status-container {
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+/* Status Notifications */
+.tagger-status-success {
+  color: #16a34a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  animation: fadeIn 0.15s ease forwards;
+}
+
+.tagger-status-loading {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+}
+
+.tagger-save-error {
+  color: #dc2626;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  padding: 0.4rem 0.65rem;
+}
+
+/* Timeline Scroll component at bottom */
+.tagger-timeline-wrapper {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tagger-timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.tagger-timeline-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.tagger-timeline-scroll {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.tagger-timeline-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tagger-timeline-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--border-hover);
+  border-radius: 4px;
+}
+
+.tagger-timeline-item {
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  background-color: var(--post-bg);
+  transition: var(--transition-smooth);
+}
+
+.tagger-timeline-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-color);
+}
+
+.tagger-timeline-item.active {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-focus);
+}
+
+.tagger-timeline-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+  transition: var(--transition-smooth);
+}
+
+.tagger-timeline-item:hover .tagger-timeline-thumb,
+.tagger-timeline-item.active .tagger-timeline-thumb {
+  opacity: 1;
+}
+
+.tagger-timeline-fallback-thumb {
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+  background-size: 6px 6px;
+  background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+}
+
+/* Timeline indicators */
+.tagger-timeline-badge-container {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: flex;
+  gap: 2px;
+  z-index: 5;
+}
+
+.tagger-badge-check {
+  width: 14px;
+  height: 14px;
+  background-color: #22c55e;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tagger-badge-tagged {
+  width: 6px;
+  height: 6px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 4px;
+  margin-right: 2px;
+}
+
+.tagger-timeline-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(30, 29, 27, 0.75);
+  color: white;
+  padding: 2px 4px;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.55rem;
+  line-height: 1.1;
+  pointer-events: none;
+}
+
+.tagger-timeline-id {
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.tagger-timeline-sub {
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Animation utilities */
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.animate-fade-out {
+  animation: fadeOut 1.2s forwards;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive adjustment for Tagger Workspace */
+@media (max-width: 768px) {
+  .tagger-main-panel {
+    padding: 1.5rem 1rem;
+  }
+  .tagger-post-header-centered {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .tagger-key-hints-centered {
+    gap: 0.75rem;
+  }
+  .tagger-container {
+    padding: 1rem;
+  }
+}
+
+/* Command Mode Badge */
+.command-mode-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background-color: var(--accent-color);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  margin-left: 0.75rem;
+  display: inline-block;
+  vertical-align: middle;
+  animation: badgePulse 1.5s infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+/* Selected states for Command Mode */
+.tagger-line-tag.selected {
+  box-shadow: 0 0 0 2px currentColor;
+  border-radius: 4px;
+  padding: 0 4px;
+  margin: 0 -4px;
+  background-color: var(--bg-secondary);
+}
+
+.tagger-line-tag.cat-selected {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-bottom: 2px solid currentColor;
+  padding: 0 2px;
+}
+
+/* Dim non-selected tags when in command mode selection */
+.tagger-inline-flow-container.command-mode .tagger-line-tag:not(.selected):not(.cat-selected) {
+  opacity: 0.35;
+}
+
+/* Hidden tags visual state */
+.tagger-line-tag.hidden-tag {
+  text-decoration: line-through;
+  opacity: 0.15 !important;
+}
+
+/* Inline Edit Input styling */
+.tagger-inline-edit-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  border-bottom: 2px solid currentColor;
+  font-size: 1.25rem;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  padding: 0 2px;
+  margin: 0;
+  display: inline-block;
+  vertical-align: baseline;
+  caret-color: var(--accent-color);
+  text-transform: lowercase;
+}
+
+.tagger-inline-edit-input.subreddit { color: var(--color-subreddit); }
+.tagger-inline-edit-input.artist { color: var(--color-artist); }
+.tagger-inline-edit-input.copyright { color: var(--color-copyright); }
+.tagger-inline-edit-input.character { color: var(--color-character); }
+.tagger-inline-edit-input.flair { color: var(--color-flair); }
+.tagger-inline-edit-input.meta { color: var(--color-meta); }
+.tagger-inline-edit-input.general { color: var(--color-general); }
+
+/* Fullscreen Media overlay styles */
+.tagger-fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(18, 17, 16, 0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeInOverlay 0.15s ease-out;
+}
+
+.tagger-fullscreen-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.tagger-fullscreen-media {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 75vw;
+  max-height: 75vh;
+  min-width: min(60vw, 500px);
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.tagger-fullscreen-media.video-fullscreen-thumbnail {
+  width: 200px;
+  height: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fullscreen-video-link:hover {
+  text-decoration: underline !important;
+  color: var(--accent-hover) !important;
+}
+
+.tagger-fullscreen-close {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  transition: var(--transition-smooth);
+}
+
+.tagger-fullscreen-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Settings Modal Styles */
+.tagger-settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(30, 29, 27, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeInOverlay 0.15s ease-out;
+}
+
+.tagger-settings-modal {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(30, 29, 27, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: modalScaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.tagger-settings-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tagger-settings-modal-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.tagger-settings-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  transition: var(--transition-smooth);
+}
+
+.tagger-settings-modal-close:hover {
+  color: var(--text-primary);
+}
+
+.tagger-settings-modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  text-align: left;
+}
+
+.tagger-settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tagger-settings-section h4 {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin: 0 0 0.25rem 0;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 0.35rem;
+}
+
+.tagger-settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.88rem;
+  padding: 0.25rem 0;
+}
+
+.tagger-settings-label {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.tagger-settings-options {
+  display: flex;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.tagger-settings-option-btn {
+  background: none;
+  border: none;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: var(--transition-smooth);
+}
+
+.tagger-settings-option-btn:hover {
+  color: var(--text-primary);
+}
+
+.tagger-settings-option-btn.active {
+  background-color: var(--bg-card);
+  color: var(--accent-color);
+  box-shadow: 0 1px 3px rgba(30, 29, 27, 0.05);
+}
+
+.tagger-settings-action-btn {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: var(--transition-smooth);
+}
+
+.tagger-settings-action-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+}
+
+/* Shortcuts Layout */
+.tagger-shortcuts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.tagger-shortcuts-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tagger-shortcuts-column h5 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.tagger-shortcuts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.tagger-shortcuts-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(230, 226, 216, 0.5);
+  padding-bottom: 0.25rem;
+}
+
+.tagger-shortcuts-list kbd {
+  font-family: monospace;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+}
+
+/* Save Status Minimal styling */
+.tagger-save-status-container-minimal {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+  .tagger-shortcuts-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Autocomplete Suggestions Dropdown */
+.tagger-suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(30, 29, 27, 0.14);
+  z-index: 999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.tagger-suggestion-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.65rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.tagger-suggestion-item:hover,
+.tagger-suggestion-item.active {
+  background-color: var(--accent-light);
+}
+
+.tagger-suggestion-count {
+  font-size: 0.76rem;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono, monospace);
+  flex-shrink: 0;
+  margin-left: 8px;
+}

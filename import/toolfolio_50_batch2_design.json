@@ -1,0 +1,1516 @@
+[
+  {
+    "title": "Figma",
+    "subreddit": "toolatlas",
+    "author": "Figma Inc",
+    "score": 9970,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-16T01:17:19.411Z",
+    "url": "https://cdn.simpleicons.org/figma/f24e1e",
+    "thumbnail": "https://cdn.simpleicons.org/figma/f24e1e",
+    "permalink": "https://www.figma.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:figma_inc",
+      "design",
+      "ui_ux",
+      "prototyping",
+      "collaborative"
+    ],
+    "colorTheme": {
+      "bg": "#1e1e1e",
+      "text": "#f24e1e",
+      "accent": "#f24e1e",
+      "description": "The collaborative interface design tool powered by real-time cloud editing."
+    }
+  },
+  {
+    "title": "Penpot",
+    "subreddit": "toolatlas",
+    "author": "Penpot Team",
+    "score": 9520,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-16T00:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/penpot/000000",
+    "thumbnail": "https://cdn.simpleicons.org/penpot/000000",
+    "permalink": "https://penpot.app",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:penpot_team",
+      "design",
+      "ui_ux",
+      "open_source",
+      "svg"
+    ],
+    "colorTheme": {
+      "bg": "#18181b",
+      "text": "#38bdf8",
+      "accent": "#38bdf8",
+      "description": "The open source design and prototyping tool for cross-domain teams based on SVG."
+    }
+  },
+  {
+    "title": "Framer",
+    "subreddit": "toolatlas",
+    "author": "Framer B.V.",
+    "score": 9780,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T23:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/framer/0055ff",
+    "thumbnail": "https://cdn.simpleicons.org/framer/0055ff",
+    "permalink": "https://www.framer.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:framer_bv",
+      "website_builder",
+      "design",
+      "prototyping",
+      "interactive"
+    ],
+    "colorTheme": {
+      "bg": "#0d0d0d",
+      "text": "#0055ff",
+      "accent": "#0055ff",
+      "description": "Design and publish stunning interactive websites with zero code required."
+    }
+  },
+  {
+    "title": "Rive",
+    "subreddit": "toolatlas",
+    "author": "Rive Inc",
+    "score": 9460,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T22:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/rive/000000",
+    "thumbnail": "https://cdn.simpleicons.org/rive/000000",
+    "permalink": "https://rive.app",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:animation",
+      "artist:rive_inc",
+      "animation",
+      "vector",
+      "interactive",
+      "games"
+    ],
+    "colorTheme": {
+      "bg": "#121216",
+      "text": "#a855f7",
+      "accent": "#a855f7",
+      "description": "Build real-time interactive vector graphics and animations for apps and games."
+    }
+  },
+  {
+    "title": "Spline 3D",
+    "subreddit": "toolatlas",
+    "author": "Spline Inc",
+    "score": 9610,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T21:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/spline/000000",
+    "thumbnail": "https://cdn.simpleicons.org/spline/000000",
+    "permalink": "https://spline.design",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:3d",
+      "artist:spline_inc",
+      "3d",
+      "webgl",
+      "browser_3d",
+      "interactive"
+    ],
+    "colorTheme": {
+      "bg": "#0c0d12",
+      "text": "#ff3366",
+      "accent": "#ff3366",
+      "description": "3D design tool in the browser with real-time collaboration and interactive 3D WebGL."
+    }
+  },
+  {
+    "title": "Canva",
+    "subreddit": "toolatlas",
+    "author": "Canva",
+    "score": 9940,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T20:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/canva/00c4cc",
+    "thumbnail": "https://cdn.simpleicons.org/canva/00c4cc",
+    "permalink": "https://www.canva.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:canva",
+      "graphic_design",
+      "templates",
+      "social_media"
+    ],
+    "colorTheme": {
+      "bg": "#0a192f",
+      "text": "#00c4cc",
+      "accent": "#00c4cc",
+      "description": "Online graphic design platform for creating social media graphics and presentations."
+    }
+  },
+  {
+    "title": "Sketch",
+    "subreddit": "toolatlas",
+    "author": "Sketch B.V.",
+    "score": 9380,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T19:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/sketch/fda100",
+    "thumbnail": "https://cdn.simpleicons.org/sketch/fda100",
+    "permalink": "https://www.sketch.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:sketch_bv",
+      "ui_ux",
+      "mac_app",
+      "vector"
+    ],
+    "colorTheme": {
+      "bg": "#1f1f1f",
+      "text": "#fda100",
+      "accent": "#fda100",
+      "description": "The all-in-one designer toolkit for digital product UI and macOS design systems."
+    }
+  },
+  {
+    "title": "Adobe Creative Cloud",
+    "subreddit": "toolatlas",
+    "author": "Adobe Inc",
+    "score": 9980,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T18:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/adobe/ff0000",
+    "thumbnail": "https://cdn.simpleicons.org/adobe/ff0000",
+    "permalink": "https://www.adobe.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:adobe_inc",
+      "creative_suite",
+      "graphics",
+      "video"
+    ],
+    "colorTheme": {
+      "bg": "#141414",
+      "text": "#ff0000",
+      "accent": "#ff0000",
+      "description": "Industry-standard creative software suite for photography, video, and design."
+    }
+  },
+  {
+    "title": "Adobe Photoshop",
+    "subreddit": "toolatlas",
+    "author": "Adobe Inc",
+    "score": 9960,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T17:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/adobephotoshop/31a8ff",
+    "thumbnail": "https://cdn.simpleicons.org/adobephotoshop/31a8ff",
+    "permalink": "https://www.adobe.com/products/photoshop.html",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:adobe_inc",
+      "photo_editing",
+      "raster",
+      "digital_art"
+    ],
+    "colorTheme": {
+      "bg": "#001e36",
+      "text": "#31a8ff",
+      "accent": "#31a8ff",
+      "description": "The world's premier raster graphics editor for photo manipulation and digital art."
+    }
+  },
+  {
+    "title": "Adobe Illustrator",
+    "subreddit": "toolatlas",
+    "author": "Adobe Inc",
+    "score": 9940,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T16:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/adobeillustrator/ff9a00",
+    "thumbnail": "https://cdn.simpleicons.org/adobeillustrator/ff9a00",
+    "permalink": "https://www.adobe.com/products/illustrator.html",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:adobe_inc",
+      "vector",
+      "illustration",
+      "logos"
+    ],
+    "colorTheme": {
+      "bg": "#330000",
+      "text": "#ff9a00",
+      "accent": "#ff9a00",
+      "description": "Industry-standard vector graphics software for logos, icons, and illustrations."
+    }
+  },
+  {
+    "title": "Adobe XD",
+    "subreddit": "toolatlas",
+    "author": "Adobe Inc",
+    "score": 9120,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T15:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/adobexd/ff61f6",
+    "thumbnail": "https://cdn.simpleicons.org/adobexd/ff61f6",
+    "permalink": "https://www.adobe.com/products/xd.html",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:adobe_inc",
+      "ui_ux",
+      "prototyping",
+      "wireframes"
+    ],
+    "colorTheme": {
+      "bg": "#2e001f",
+      "text": "#ff61f6",
+      "accent": "#ff61f6",
+      "description": "Vector-based user experience design tool for web apps and mobile interfaces."
+    }
+  },
+  {
+    "title": "Adobe After Effects",
+    "subreddit": "toolatlas",
+    "author": "Adobe Inc",
+    "score": 9850,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T14:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/adobeaftereffects/9999ff",
+    "thumbnail": "https://cdn.simpleicons.org/adobeaftereffects/9999ff",
+    "permalink": "https://www.adobe.com/products/aftereffects.html",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:animation",
+      "artist:adobe_inc",
+      "motion_graphics",
+      "vfx",
+      "video"
+    ],
+    "colorTheme": {
+      "bg": "#00005c",
+      "text": "#9999ff",
+      "accent": "#9999ff",
+      "description": "Digital visual effects, motion graphics, and compositing software."
+    }
+  },
+  {
+    "title": "Adobe Premiere Pro",
+    "subreddit": "toolatlas",
+    "author": "Adobe Inc",
+    "score": 9890,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T13:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/adobepremierepro/9999ff",
+    "thumbnail": "https://cdn.simpleicons.org/adobepremierepro/9999ff",
+    "permalink": "https://www.adobe.com/products/premiere.html",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:animation",
+      "artist:adobe_inc",
+      "video_editing",
+      "timeline",
+      "film"
+    ],
+    "colorTheme": {
+      "bg": "#00005c",
+      "text": "#ea77ff",
+      "accent": "#ea77ff",
+      "description": "Timeline-based professional video editing software application."
+    }
+  },
+  {
+    "title": "Blender",
+    "subreddit": "toolatlas",
+    "author": "Blender Foundation",
+    "score": 9950,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T12:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/blender/e87d0d",
+    "thumbnail": "https://cdn.simpleicons.org/blender/e87d0d",
+    "permalink": "https://www.blender.org",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:3d",
+      "artist:blender_foundation",
+      "3d",
+      "modeling",
+      "vfx",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#0d1b2a",
+      "text": "#e87d0d",
+      "accent": "#e87d0d",
+      "description": "Free and open source 3D creation suite for modeling, rigging, rendering, and VFX."
+    }
+  },
+  {
+    "title": "Cinema 4D",
+    "subreddit": "toolatlas",
+    "author": "Maxon",
+    "score": 9430,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T11:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/cinema4d/22579b",
+    "thumbnail": "https://cdn.simpleicons.org/cinema4d/22579b",
+    "permalink": "https://www.maxon.net/cinema-4d",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:3d",
+      "artist:maxon",
+      "3d",
+      "motion_graphics",
+      "rendering"
+    ],
+    "colorTheme": {
+      "bg": "#0c1829",
+      "text": "#22579b",
+      "accent": "#22579b",
+      "description": "Professional 3D modeling, animation, simulation and rendering software solution."
+    }
+  },
+  {
+    "title": "Unreal Engine",
+    "subreddit": "toolatlas",
+    "author": "Epic Games",
+    "score": 9910,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T10:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/unrealengine/0e1128",
+    "thumbnail": "https://cdn.simpleicons.org/unrealengine/0e1128",
+    "permalink": "https://www.unrealengine.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:3d",
+      "artist:epic_games",
+      "game_engine",
+      "3d",
+      "realtime"
+    ],
+    "colorTheme": {
+      "bg": "#0e1128",
+      "text": "#ffffff",
+      "accent": "#38bdf8",
+      "description": "The world's most open and advanced real-time 3D creation tool for games and film."
+    }
+  },
+  {
+    "title": "Unity",
+    "subreddit": "toolatlas",
+    "author": "Unity Technologies",
+    "score": 9880,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T09:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/unity/000000",
+    "thumbnail": "https://cdn.simpleicons.org/unity/000000",
+    "permalink": "https://unity.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:3d",
+      "artist:unity_technologies",
+      "game_engine",
+      "3d",
+      "2d"
+    ],
+    "colorTheme": {
+      "bg": "#121212",
+      "text": "#ffffff",
+      "accent": "#000000",
+      "description": "Leading platform for creating real-time 2D, 3D, VR, and AR interactive experiences."
+    }
+  },
+  {
+    "title": "Three.js",
+    "subreddit": "toolatlas",
+    "author": "Ricardo Cabello",
+    "score": 9750,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T08:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/threedotjs/000000",
+    "thumbnail": "https://cdn.simpleicons.org/threedotjs/000000",
+    "permalink": "https://threejs.org",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:3d",
+      "artist:ricardo_cabello",
+      "3d",
+      "webgl",
+      "javascript",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#000000",
+      "text": "#ffffff",
+      "accent": "#00e5ff",
+      "description": "JavaScript 3D library that creates WebGL scenes directly in web browsers."
+    }
+  },
+  {
+    "title": "Shadcn UI",
+    "subreddit": "toolatlas",
+    "author": "shadcn",
+    "score": 9920,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T07:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/shadcnui/000000",
+    "thumbnail": "https://cdn.simpleicons.org/shadcnui/000000",
+    "permalink": "https://ui.shadcn.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:shadcn",
+      "components",
+      "react",
+      "tailwind",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#09090b",
+      "text": "#ffffff",
+      "accent": "#ffffff",
+      "description": "Beautifully designed accessible components that you copy and paste into your React apps."
+    }
+  },
+  {
+    "title": "Radix UI",
+    "subreddit": "toolatlas",
+    "author": "WorkOS",
+    "score": 9680,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T06:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/radixui/161618",
+    "thumbnail": "https://cdn.simpleicons.org/radixui/161618",
+    "permalink": "https://www.radix-ui.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:workos",
+      "primitives",
+      "accessibility",
+      "react"
+    ],
+    "colorTheme": {
+      "bg": "#161618",
+      "text": "#ffffff",
+      "accent": "#705df2",
+      "description": "Unstyled, accessible UI component primitives for building high-quality design systems."
+    }
+  },
+  {
+    "title": "Chakra UI",
+    "subreddit": "toolatlas",
+    "author": "Chakra UI Team",
+    "score": 9540,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T05:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/chakraui/319795",
+    "thumbnail": "https://cdn.simpleicons.org/chakraui/319795",
+    "permalink": "https://chakra-ui.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:chakra_team",
+      "components",
+      "react",
+      "ui"
+    ],
+    "colorTheme": {
+      "bg": "#0d1b2a",
+      "text": "#319795",
+      "accent": "#319795",
+      "description": "Simple, modular and accessible component library that gives you building blocks for React."
+    }
+  },
+  {
+    "title": "MUI (Material UI)",
+    "subreddit": "toolatlas",
+    "author": "Material UI Inc",
+    "score": 9790,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T04:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/mui/007fff",
+    "thumbnail": "https://cdn.simpleicons.org/mui/007fff",
+    "permalink": "https://mui.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:material_ui",
+      "material_design",
+      "react",
+      "components"
+    ],
+    "colorTheme": {
+      "bg": "#0a192f",
+      "text": "#007fff",
+      "accent": "#007fff",
+      "description": "React UI library that implements Google's Material Design system."
+    }
+  },
+  {
+    "title": "Storybook",
+    "subreddit": "toolatlas",
+    "author": "Chromatic",
+    "score": 9710,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T03:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/storybook/ff4785",
+    "thumbnail": "https://cdn.simpleicons.org/storybook/ff4785",
+    "permalink": "https://storybook.js.org",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:chromatic",
+      "ui_workshop",
+      "testing",
+      "design_systems"
+    ],
+    "colorTheme": {
+      "bg": "#1c1422",
+      "text": "#ff4785",
+      "accent": "#ff4785",
+      "description": "Frontend workshop for building UI components and pages in isolation."
+    }
+  },
+  {
+    "title": "Unsplash",
+    "subreddit": "toolatlas",
+    "author": "Getty Images",
+    "score": 9930,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T02:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/unsplash/000000",
+    "thumbnail": "https://cdn.simpleicons.org/unsplash/000000",
+    "permalink": "https://unsplash.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:getty_images",
+      "stock_photos",
+      "photography",
+      "media"
+    ],
+    "colorTheme": {
+      "bg": "#111111",
+      "text": "#ffffff",
+      "accent": "#ffffff",
+      "description": "Beautiful, free high-resolution photos donated by a community of photographers."
+    }
+  },
+  {
+    "title": "Pexels",
+    "subreddit": "toolatlas",
+    "author": "Canva",
+    "score": 9820,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T01:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/pexels/05a081",
+    "thumbnail": "https://cdn.simpleicons.org/pexels/05a081",
+    "permalink": "https://www.pexels.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:canva",
+      "stock_photos",
+      "stock_videos",
+      "media"
+    ],
+    "colorTheme": {
+      "bg": "#091a15",
+      "text": "#05a081",
+      "accent": "#05a081",
+      "description": "Free stock photos and royalty free videos shared by talented creators."
+    }
+  },
+  {
+    "title": "LottieFiles",
+    "subreddit": "toolatlas",
+    "author": "Design Barn",
+    "score": 9640,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-15T00:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/lottiefiles/00ddb3",
+    "thumbnail": "https://cdn.simpleicons.org/lottiefiles/00ddb3",
+    "permalink": "https://lottiefiles.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:animation",
+      "artist:design_barn",
+      "lottie",
+      "micro_interactions",
+      "animation"
+    ],
+    "colorTheme": {
+      "bg": "#061a15",
+      "text": "#00ddb3",
+      "accent": "#00ddb3",
+      "description": "Lightweight vector micro-animations for web and mobile interfaces."
+    }
+  },
+  {
+    "title": "Lucide Icons",
+    "subreddit": "toolatlas",
+    "author": "Lucide Contributors",
+    "score": 9870,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T23:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/lucide/f56565",
+    "thumbnail": "https://cdn.simpleicons.org/lucide/f56565",
+    "permalink": "https://lucide.dev",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:lucide_contributors",
+      "icons",
+      "svg",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#1f1111",
+      "text": "#f56565",
+      "accent": "#f56565",
+      "description": "Beautiful & consistent open-source icon suite designed for modern web applications."
+    }
+  },
+  {
+    "title": "Font Awesome",
+    "subreddit": "toolatlas",
+    "author": "Fonticons Inc",
+    "score": 9910,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T22:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/fontawesome/528dd7",
+    "thumbnail": "https://cdn.simpleicons.org/fontawesome/528dd7",
+    "permalink": "https://fontawesome.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:fonticons_inc",
+      "icons",
+      "fonts",
+      "svg"
+    ],
+    "colorTheme": {
+      "bg": "#0d1b2a",
+      "text": "#528dd7",
+      "accent": "#528dd7",
+      "description": "The internet's icon library and toolkit, used by millions of web developers."
+    }
+  },
+  {
+    "title": "Simple Icons",
+    "subreddit": "toolatlas",
+    "author": "Simple Icons Team",
+    "score": 9960,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T21:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/simpleicons/111111",
+    "thumbnail": "https://cdn.simpleicons.org/simpleicons/111111",
+    "permalink": "https://simpleicons.org",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:simple_icons_team",
+      "icons",
+      "brands",
+      "svg",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#111111",
+      "text": "#ffffff",
+      "accent": "#38bdf8",
+      "description": "Over 3,000 Free SVG brand icons for popular software, developer tools and services."
+    }
+  },
+  {
+    "title": "Google Fonts",
+    "subreddit": "toolatlas",
+    "author": "Google",
+    "score": 9980,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T20:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/googlefonts/4285f4",
+    "thumbnail": "https://cdn.simpleicons.org/googlefonts/4285f4",
+    "permalink": "https://fonts.google.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:typography",
+      "artist:google",
+      "fonts",
+      "typography",
+      "web_fonts"
+    ],
+    "colorTheme": {
+      "bg": "#0d1b2a",
+      "text": "#4285f4",
+      "accent": "#4285f4",
+      "description": "Library of 1,500+ open source font families and API for web typography."
+    }
+  },
+  {
+    "title": "Fontshare",
+    "subreddit": "toolatlas",
+    "author": "Indian Type Foundry",
+    "score": 9610,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T19:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/fontshare/ff4500",
+    "thumbnail": "https://cdn.simpleicons.org/fontshare/ff4500",
+    "permalink": "https://www.fontshare.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:typography",
+      "artist:itf",
+      "fonts",
+      "typography",
+      "design"
+    ],
+    "colorTheme": {
+      "bg": "#1a0b05",
+      "text": "#ff4500",
+      "accent": "#ff4500",
+      "description": "Free font service offering high-quality professional font families for modern design."
+    }
+  },
+  {
+    "title": "Coolors",
+    "subreddit": "toolatlas",
+    "author": "Coolors",
+    "score": 9750,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T18:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/coolors/0066ff",
+    "thumbnail": "https://cdn.simpleicons.org/coolors/0066ff",
+    "permalink": "https://coolors.co",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:color",
+      "artist:coolors",
+      "color",
+      "palettes",
+      "generator"
+    ],
+    "colorTheme": {
+      "bg": "#001a40",
+      "text": "#0066ff",
+      "accent": "#0066ff",
+      "description": "Super fast color schemes generator for designers and artists."
+    }
+  },
+  {
+    "title": "Balsamiq",
+    "subreddit": "toolatlas",
+    "author": "Balsamiq Studios",
+    "score": 9320,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T17:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/balsamiq/cc0000",
+    "thumbnail": "https://cdn.simpleicons.org/balsamiq/cc0000",
+    "permalink": "https://balsamiq.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:balsamiq_studios",
+      "wireframing",
+      "sketching",
+      "ui_ux"
+    ],
+    "colorTheme": {
+      "bg": "#260000",
+      "text": "#cc0000",
+      "accent": "#cc0000",
+      "description": "Rapid low-fidelity wireframing tool that reproduces the experience of sketching on a whiteboard."
+    }
+  },
+  {
+    "title": "InVision",
+    "subreddit": "toolatlas",
+    "author": "InVisionApp Inc",
+    "score": 9280,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T16:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/invision/ff3366",
+    "thumbnail": "https://cdn.simpleicons.org/invision/ff3366",
+    "permalink": "https://www.invisionapp.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:invisionapp",
+      "prototyping",
+      "wireframes",
+      "collaboration"
+    ],
+    "colorTheme": {
+      "bg": "#260810",
+      "text": "#ff3366",
+      "accent": "#ff3366",
+      "description": "Digital product design platform powering collaborative wireframes and prototypes."
+    }
+  },
+  {
+    "title": "Zeplin",
+    "subreddit": "toolatlas",
+    "author": "Zeplin Inc",
+    "score": 9350,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T15:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/zeplin/fba92c",
+    "thumbnail": "https://cdn.simpleicons.org/zeplin/fba92c",
+    "permalink": "https://zeplin.io",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:zeplin_inc",
+      "handoff",
+      "specs",
+      "design_system"
+    ],
+    "colorTheme": {
+      "bg": "#1f1708",
+      "text": "#fba92c",
+      "accent": "#fba92c",
+      "description": "Connected workspace for product teams to hand off designs and export assets to developers."
+    }
+  },
+  {
+    "title": "Lucidchart",
+    "subreddit": "toolatlas",
+    "author": "Lucid Software",
+    "score": 9550,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T14:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/lucidchart/f96b27",
+    "thumbnail": "https://cdn.simpleicons.org/lucidchart/f96b27",
+    "permalink": "https://www.lucidchart.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:lucid_software",
+      "diagrams",
+      "flowcharts",
+      "architecture"
+    ],
+    "colorTheme": {
+      "bg": "#1f0f05",
+      "text": "#f96b27",
+      "accent": "#f96b27",
+      "description": "Diagramming application that allows teams to collaborate on flowcharts and architecture."
+    }
+  },
+  {
+    "title": "Miro",
+    "subreddit": "toolatlas",
+    "author": "RealtimeBoard Inc",
+    "score": 9810,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T13:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/miro/050038",
+    "thumbnail": "https://cdn.simpleicons.org/miro/050038",
+    "permalink": "https://miro.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:realtimeboard",
+      "whiteboard",
+      "diagrams",
+      "collaboration"
+    ],
+    "colorTheme": {
+      "bg": "#0d0a26",
+      "text": "#ffd02f",
+      "accent": "#ffd02f",
+      "description": "The visual workspace for innovation that enables distributed teams to collaborate."
+    }
+  },
+  {
+    "title": "Affinity Suite",
+    "subreddit": "toolatlas",
+    "author": "Serif",
+    "score": 9680,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T12:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/affinity/222222",
+    "thumbnail": "https://cdn.simpleicons.org/affinity/222222",
+    "permalink": "https://affinity.serif.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:serif",
+      "vector",
+      "photo_editing",
+      "publishing"
+    ],
+    "colorTheme": {
+      "bg": "#141414",
+      "text": "#1b82e6",
+      "accent": "#1b82e6",
+      "description": "Award-winning creative suite of vector, photo editing, and publishing software without subscriptions."
+    }
+  },
+  {
+    "title": "Affinity Designer",
+    "subreddit": "toolatlas",
+    "author": "Serif",
+    "score": 9620,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T11:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/affinitydesigner/1b82e6",
+    "thumbnail": "https://cdn.simpleicons.org/affinitydesigner/1b82e6",
+    "permalink": "https://affinity.serif.com/designer",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:serif",
+      "vector",
+      "illustration",
+      "desktop"
+    ],
+    "colorTheme": {
+      "bg": "#051526",
+      "text": "#1b82e6",
+      "accent": "#1b82e6",
+      "description": "Vector graphics software for desktop and iPad for concept art, logos, and UI."
+    }
+  },
+  {
+    "title": "Affinity Photo",
+    "subreddit": "toolatlas",
+    "author": "Serif",
+    "score": 9540,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T10:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/affinityphoto/8e2cb9",
+    "thumbnail": "https://cdn.simpleicons.org/affinityphoto/8e2cb9",
+    "permalink": "https://affinity.serif.com/photo",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:serif",
+      "photo_editing",
+      "raw",
+      "retouching"
+    ],
+    "colorTheme": {
+      "bg": "#180721",
+      "text": "#8e2cb9",
+      "accent": "#8e2cb9",
+      "description": "Professional photo editing software with full raw editing and retouching tools."
+    }
+  },
+  {
+    "title": "Affinity Publisher",
+    "subreddit": "toolatlas",
+    "author": "Serif",
+    "score": 9450,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T09:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/affinitypublisher/d9326f",
+    "thumbnail": "https://cdn.simpleicons.org/affinitypublisher/d9326f",
+    "permalink": "https://affinity.serif.com/publisher",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:serif",
+      "layout",
+      "publishing",
+      "print"
+    ],
+    "colorTheme": {
+      "bg": "#210710",
+      "text": "#d9326f",
+      "accent": "#d9326f",
+      "description": "Next-generation page layout software for magazines, books, and digital media."
+    }
+  },
+  {
+    "title": "GIMP",
+    "subreddit": "toolatlas",
+    "author": "GIMP Team",
+    "score": 9590,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T08:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/gimp/5c5543",
+    "thumbnail": "https://cdn.simpleicons.org/gimp/5c5543",
+    "permalink": "https://www.gimp.org",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:gimp_team",
+      "photo_editing",
+      "raster",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#12110e",
+      "text": "#a89b80",
+      "accent": "#a89b80",
+      "description": "Cross-platform open source image editor used for image retouching and photo editing."
+    }
+  },
+  {
+    "title": "Inkscape",
+    "subreddit": "toolatlas",
+    "author": "Inkscape Project",
+    "score": 9510,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T07:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/inkscape/000000",
+    "thumbnail": "https://cdn.simpleicons.org/inkscape/000000",
+    "permalink": "https://inkscape.org",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:inkscape_project",
+      "vector",
+      "svg",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#121212",
+      "text": "#ffffff",
+      "accent": "#38bdf8",
+      "description": "Free and open source vector graphics editor offering SVG format compliance."
+    }
+  },
+  {
+    "title": "Krita",
+    "subreddit": "toolatlas",
+    "author": "Krita Foundation",
+    "score": 9630,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T06:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/krita/33bbff",
+    "thumbnail": "https://cdn.simpleicons.org/krita/33bbff",
+    "permalink": "https://krita.org",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:krita_foundation",
+      "digital_art",
+      "painting",
+      "illustration",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#061521",
+      "text": "#33bbff",
+      "accent": "#33bbff",
+      "description": "Professional free and open source painting program created for digital artists."
+    }
+  },
+  {
+    "title": "Webflow",
+    "subreddit": "toolatlas",
+    "author": "Webflow Inc",
+    "score": 9870,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T05:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/webflow/4353ff",
+    "thumbnail": "https://cdn.simpleicons.org/webflow/4353ff",
+    "permalink": "https://webflow.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:webflow_inc",
+      "website_builder",
+      "no_code",
+      "visual_editor"
+    ],
+    "colorTheme": {
+      "bg": "#0b0f2e",
+      "text": "#4353ff",
+      "accent": "#4353ff",
+      "description": "Build custom, production-grade responsive websites visually without writing code."
+    }
+  },
+  {
+    "title": "SVGO",
+    "subreddit": "toolatlas",
+    "author": "SVGO Team",
+    "score": 9420,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T04:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/svgo/000000",
+    "thumbnail": "https://cdn.simpleicons.org/svgo/000000",
+    "permalink": "https://github.com/svg/svgo",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:svgo_team",
+      "svg",
+      "optimizer",
+      "open_source",
+      "cli"
+    ],
+    "colorTheme": {
+      "bg": "#18181b",
+      "text": "#38bdf8",
+      "accent": "#38bdf8",
+      "description": "Node.js-based tool for optimizing SVG vector graphics files automatically."
+    }
+  },
+  {
+    "title": "Iconify",
+    "subreddit": "toolatlas",
+    "author": "Iconify Team",
+    "score": 9680,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T03:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/iconify/1769aa",
+    "thumbnail": "https://cdn.simpleicons.org/iconify/1769aa",
+    "permalink": "https://iconify.design",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:iconify_team",
+      "icons",
+      "svg",
+      "framework",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#0d1b2a",
+      "text": "#1769aa",
+      "accent": "#1769aa",
+      "description": "Unified open-source icon framework with over 150,000+ vector icons."
+    }
+  },
+  {
+    "title": "IconJar",
+    "subreddit": "toolatlas",
+    "author": "IconJar B.V.",
+    "score": 9280,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T02:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/iconjar/171717",
+    "thumbnail": "https://cdn.simpleicons.org/iconjar/171717",
+    "permalink": "https://geticonjar.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:paid",
+      "flair:design",
+      "artist:iconjar_bv",
+      "icons",
+      "organizer",
+      "mac_app"
+    ],
+    "colorTheme": {
+      "bg": "#171717",
+      "text": "#38bdf8",
+      "accent": "#38bdf8",
+      "description": "Organize, search, and export vector icon sets cleanly on macOS."
+    }
+  },
+  {
+    "title": "Whimsical",
+    "subreddit": "toolatlas",
+    "author": "Whimsical Inc",
+    "score": 9620,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T01:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/whimsical/ae50bb",
+    "thumbnail": "https://cdn.simpleicons.org/whimsical/ae50bb",
+    "permalink": "https://whimsical.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:freemium",
+      "flair:design",
+      "artist:whimsical_inc",
+      "wireframing",
+      "flowcharts",
+      "whiteboard",
+      "docs"
+    ],
+    "colorTheme": {
+      "bg": "#1a0f24",
+      "text": "#ae50bb",
+      "accent": "#ae50bb",
+      "description": "The visual workspace for docs, flowcharts, wireframes, mind maps, and whiteboards."
+    }
+  },
+  {
+    "title": "Excalidraw",
+    "subreddit": "toolatlas",
+    "author": "Excalidraw Team",
+    "score": 9860,
+    "width": 500,
+    "height": 500,
+    "created_iso": "2026-08-14T00:17:19.412Z",
+    "url": "https://cdn.simpleicons.org/excalidraw/6965db",
+    "thumbnail": "https://cdn.simpleicons.org/excalidraw/6965db",
+    "permalink": "https://excalidraw.com",
+    "derivedTags": [
+      "meta:atlas:toolatlas",
+      "meta:upload:2026-08-16_13-15-00",
+      "meta:format:image",
+      "meta:extension:svg",
+      "meta:pricing:free",
+      "flair:design",
+      "artist:excalidraw_team",
+      "whiteboard",
+      "sketching",
+      "diagrams",
+      "open_source"
+    ],
+    "colorTheme": {
+      "bg": "#121212",
+      "text": "#6965db",
+      "accent": "#6965db",
+      "description": "Virtual hand-drawn style whiteboard for sketching diagrams and wireframes."
+    }
+  }
+]

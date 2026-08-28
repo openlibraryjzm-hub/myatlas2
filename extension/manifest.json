@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Reddit Post Exporter for old.reddit",
+  "version": "1.0.1",
+  "description": "Extract posts, thread permalinks, media links, and metadata from old.reddit.com into JSON or CSV up to 500+ posts.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "downloads"
+  ],
+  "host_permissions": [
+    "*://old.reddit.com/*",
+    "*://*.reddit.com/*"
+  ],
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://old.reddit.com/*",
+        "*://*.reddit.com/*"
+      ],
+      "js": [
+        "content/parser.js",
+        "content/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  }
+}

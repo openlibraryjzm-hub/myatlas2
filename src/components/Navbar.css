@@ -1,0 +1,188 @@
+.nav-header {
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  padding: 0.6rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative; /* Allows absolute centering of the hover text */
+}
+
+.nav-left-group {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Logo styling matching Home page logo styling */
+.nav-logo {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition-smooth);
+}
+
+.nav-logo:hover {
+  opacity: 0.8;
+}
+
+.nav-logo .title-prefix {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.nav-logo .title-reddit {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.nav-logo .title-reddit.highlighted {
+  color: var(--accent-color);
+}
+
+.nav-logo .title-booru {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.nav-logo .title-booru.highlighted {
+  color: var(--accent-color);
+}
+
+/* Icon list next to logo */
+.nav-icon-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-icon-btn {
+  background: transparent;
+  border: none;
+  padding: 0.45rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.nav-icon-btn:hover {
+  color: var(--accent-color);
+  background-color: var(--accent-light);
+}
+
+.nav-icon-btn.active {
+  color: var(--accent-color);
+  background-color: var(--accent-light);
+}
+
+/* Custom text icon styling e.g. "r/" */
+.nav-icon-text {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+  width: 17px;
+  height: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Inline Search Box */
+.nav-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-search-inline-input {
+  border: none;
+  outline: none;
+  border-bottom: 1px solid var(--border-color);
+  background: transparent;
+  font-size: 0.85rem;
+  padding: 0.15rem 0;
+  width: 160px;
+  color: var(--text-primary);
+  transition: var(--transition-smooth);
+  font-family: var(--font-sans);
+}
+
+.nav-search-inline-input:focus {
+  border-bottom-color: var(--accent-color);
+}
+
+/* Centered Hover Label text */
+.nav-center-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--accent-color);
+  letter-spacing: 0.08em;
+  font-style: italic;
+  pointer-events: none; /* Make sure it doesn't block mouse movements */
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  user-select: none;
+  text-transform: uppercase; /* Force uppercase text format */
+}
+
+.nav-center-text.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.02);
+}
+
+/* Right-aligned user profile group */
+.nav-right-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: var(--bg-secondary, #efece6);
+  border: 1px solid var(--border-color, #e2ddd5);
+  border-radius: 16px;
+  padding: 0.25rem 0.75rem 0.25rem 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.nav-user-pill:hover {
+  background-color: var(--accent-light);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.nav-help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.08);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}

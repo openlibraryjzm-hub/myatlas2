@@ -1,0 +1,213 @@
+/* Home Page Specifics (Minimalist Style) */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  flex-grow: 1;
+  padding: 18vh 2rem 4rem;
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.home-title {
+  font-size: 4.5rem;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  user-select: none;
+  transition: var(--transition-smooth);
+}
+
+.home-title.clickable {
+  cursor: pointer;
+}
+
+.home-title.clickable:hover {
+  opacity: 0.8;
+}
+
+.home-title.static-title {
+  cursor: default;
+}
+
+.home-options-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 3.5rem;
+}
+
+.home-option-link {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+
+.home-option-link:hover {
+  color: var(--accent-color);
+}
+
+.home-profile-icon-link,
+.home-icon-option-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: var(--transition-smooth);
+}
+
+.home-profile-icon-link:hover,
+.home-icon-option-link:hover {
+  color: var(--accent-color);
+}
+
+.home-mode-dots {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.home-mode-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--transition-smooth);
+}
+
+.home-mode-dot:hover {
+  border-color: var(--accent-color);
+}
+
+.home-mode-dot.active {
+  border-color: var(--accent-color);
+  background-color: var(--accent-color);
+}
+
+.title-prefix {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.title-reddit {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.title-reddit.highlighted {
+  color: var(--accent-color);
+}
+
+.title-booru {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.title-booru.highlighted {
+  color: var(--accent-color);
+}
+
+.home-total-count.fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.home-search-container {
+  width: 100%;
+}
+
+.home-search-wrapper-minimal {
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem 0;
+  transition: var(--transition-smooth);
+  width: 100%;
+}
+
+.home-search-wrapper-minimal:focus-within {
+  border-bottom-color: var(--accent-color);
+}
+
+.home-search-input-minimal {
+  border: none;
+  outline: none;
+  width: 100%;
+  text-align: center;
+  font-size: 1.75rem;
+  color: var(--text-primary);
+  background: transparent;
+  font-weight: 300;
+}
+
+.home-total-count {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.15em;
+  margin-top: 3.5rem;
+  user-select: none;
+  opacity: 0.9;
+  transition: var(--transition-smooth);
+  text-indent: 0.15em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.home-total-count-arrow {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  opacity: 0.5;
+  transition: var(--transition-smooth);
+  display: inline-block;
+}
+
+.home-total-count.clickable {
+  cursor: pointer;
+}
+
+.home-total-count.clickable:hover {
+  opacity: 1;
+  color: var(--accent-color);
+}
+
+.home-total-count.clickable:hover .home-total-count-arrow {
+  transform: translateX(3px);
+  opacity: 1;
+  color: var(--accent-color);
+}
+
+/* Pulsing accent-color glow for highlighted homepage links (faint/subtle) */
+@keyframes accentPulseGlow {
+  0% {
+    text-shadow: 0 0 1px color-mix(in srgb, var(--accent-color) 15%, transparent);
+    opacity: 0.95;
+  }
+  50% {
+    text-shadow: 0 0 4px color-mix(in srgb, var(--accent-color) 45%, transparent);
+    opacity: 1;
+  }
+  100% {
+    text-shadow: 0 0 1px color-mix(in srgb, var(--accent-color) 15%, transparent);
+    opacity: 0.95;
+  }
+}
+
+.home-option-link.pulse-glow-btn {
+  color: var(--accent-color) !important;
+  font-weight: 600;
+  animation: accentPulseGlow 2.5s infinite ease-in-out;
+}
+
+.home-option-link.pulse-glow-btn:hover {
+  text-shadow: 0 0 6px color-mix(in srgb, var(--accent-color) 60%, transparent) !important;
+  opacity: 1;
+}
