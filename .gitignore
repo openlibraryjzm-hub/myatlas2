@@ -27,3 +27,7 @@ backend/**/obj/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local media downloads
+tf2_downloads/
+tf2_wiki_downloads/

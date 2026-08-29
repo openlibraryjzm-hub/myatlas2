@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Upload as UploadIcon, Database, CheckCircle, AlertTriangle, FileJson, Folder, HardDrive, X, RefreshCw, Trash2, Tag } from 'lucide-react';
 import { isDesktopApp, selectLocalFiles, selectLocalDirectory, formatLocalAssetUrl, getLocalFileAsBlobUrl, getOptimizedThumbnailUrl, generateWebpThumbnail, generateVideoWebpThumbnail } from '../utils/localFiles';
 import { importScrapedJsonArray, addLocalMediaFile, clearAllLocalStores } from '../services/localDb';
+import { ensureTagCategoriesExist } from '../data/mockData';
 import './Upload.css';
 
 // Deterministic pastel themes based on string hashes
@@ -470,6 +471,8 @@ export default function Upload() {
       }
     });
 
+    parsed.forEach(item => ensureTagCategoriesExist(item.derivedTags));
+
     setPosts(parsed);
     setStatus('loaded');
     setMessage(`Successfully loaded ${parsed.length} items for import.`);
@@ -490,12 +493,40 @@ export default function Upload() {
           setStatus('idle');
           return;
         }
-        const filePaths = Array.isArray(selected) ? selected : [selected];
+        let filePaths = Array.isArray(selected) ? selected : [selected];
         setFileName(`${filePaths.length} local file(s) selected`);
+
+        // Check if manifest.json exists in the parent directory of selected files
+        const manifestMap = new Map();
+        try {
+          const firstPath = filePaths[0];
+          const parentDirPath = firstPath.substring(0, Math.max(firstPath.lastIndexOf('/'), firstPath.lastIndexOf('\\')));
+          const manifestUrl = formatLocalAssetUrl(`${parentDirPath}/manifest.json`);
+          const manifestRes = await fetch(manifestUrl);
+          if (manifestRes.ok) {
+            const manifestJson = await manifestRes.json();
+            if (Array.isArray(manifestJson)) {
+              manifestJson.forEach(item => {
+                if (item && item.file && Array.isArray(item.tags)) {
+                  manifestMap.set(item.file.toLowerCase(), item.tags);
+                  const baseName = item.file.substring(0, item.file.lastIndexOf('.')).toLowerCase();
+                  if (baseName) manifestMap.set(baseName, item.tags);
+                  ensureTagCategoriesExist(item.tags);
+                }
+              });
+            }
+          }
+        } catch (manifestErr) {
+          // Ignore manifest load errors if not present
+        }
+
+        // Filter out manifest.json itself from image selection if user selected all files
+        filePaths = filePaths.filter(fp => !fp.toLowerCase().endsWith('manifest.json'));
 
         const parsed = await Promise.all(filePaths.map(async (fp, idx) => {
           const name = fp.split(/[\\/]/).pop();
           const ext = name.split('.').pop().toLowerCase();
+          const baseName = name.substring(0, name.lastIndexOf('.'));
           const palette = getPalette(name);
           const assetUrl = formatLocalAssetUrl(fp);
           const isVid = ['mp4', 'webm', 'mov', 'mkv', 'avi'].includes(ext);
@@ -531,6 +562,17 @@ export default function Upload() {
             fileDerivedTags.push(`folder:${folderTag}`);
           }
 
+          // Check if manifest tags exist for this file
+          const manifestTags = manifestMap.get(name.toLowerCase()) || manifestMap.get(baseName.toLowerCase());
+          if (manifestTags && Array.isArray(manifestTags)) {
+            manifestTags.forEach(t => {
+              if (t && !fileDerivedTags.includes(t)) {
+                fileDerivedTags.push(t);
+              }
+            });
+            ensureTagCategoriesExist(manifestTags);
+          }
+
           return {
             _tempId: `local_${Date.now()}_${idx}`,
             title: name,
@@ -545,7 +587,7 @@ export default function Upload() {
 
         setPosts(parsed);
         setStatus('loaded');
-        setMessage(`Loaded ${parsed.length} local files for indexing.`);
+        setMessage(`Loaded ${parsed.length} local files for indexing (with enriched manifest metadata).`);
 
       } else {
         const input = document.createElement('input');

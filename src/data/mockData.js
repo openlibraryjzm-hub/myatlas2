@@ -147,6 +147,27 @@ export const addTagCategory = (inputStr) => {
   return updated;
 };
 
+export const ensureTagCategoriesExist = (tagsArray) => {
+  if (!Array.isArray(tagsArray)) return;
+  const current = getTagCategories();
+  const existingPrefixes = new Set(current.map(c => c.prefix.toLowerCase()));
+  const existingKeys = new Set(current.map(c => c.key.toLowerCase()));
+
+  tagsArray.forEach(tag => {
+    if (typeof tag !== 'string' || !tag.includes(':')) return;
+    const parts = tag.trim().split(':');
+    const prefix = parts[0].toLowerCase();
+    if (prefix && prefix !== 'http' && prefix !== 'https' && prefix !== 'meta' && prefix !== 'r' && prefix !== 'u') {
+      const fullPrefix = `${prefix}:`;
+      if (!existingPrefixes.has(fullPrefix) && !existingKeys.has(prefix)) {
+        addTagCategory(fullPrefix);
+        existingPrefixes.add(fullPrefix);
+        existingKeys.add(prefix);
+      }
+    }
+  });
+};
+
 export const removeTagCategory = (prefixToRemove) => {
   const current = getTagCategories();
   const updated = current.filter(c => c.prefix !== prefixToRemove && c.key !== prefixToRemove);
