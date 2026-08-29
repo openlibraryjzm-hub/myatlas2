@@ -630,7 +630,7 @@ export default function Tagger({
     const finalTags = Array.from(new Set([...existingTags, ...combinedStaged]));
     
     try {
-      await updateItemTags(currentPost.id, Boolean(currentPost.filePath), finalTags);
+      await updateItemTags(currentPost.id, finalTags);
 
       // Update local state copy (avoiding mutating state object reference)
       const updatedPosts = [...posts];
@@ -693,7 +693,7 @@ export default function Tagger({
           }
         }
         const finalTags = Array.from(new Set([...existing, ...staged, ...draft]));
-        updateItemTags(post.id, Boolean(post.filePath), finalTags).then(() => {
+        updateItemTags(post.id, finalTags).then(() => {
           invalidateItemsCache();
         }).catch(() => {});
       }
@@ -713,7 +713,7 @@ export default function Tagger({
       if (combinedStaged.length > 0) {
         const finalTags = Array.from(new Set([...existingTags, ...combinedStaged]));
         try {
-          await updateItemTags(currentPost.id, Boolean(currentPost.filePath), finalTags);
+          await updateItemTags(currentPost.id, finalTags);
           invalidateItemsCache();
         } catch (e) {
           console.error('Error auto-saving on exit:', e);

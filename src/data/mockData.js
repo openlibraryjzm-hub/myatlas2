@@ -17,15 +17,14 @@ export const parseTagsArray = (rawTags) => {
 export const getTagCategory = (tag) => {
   if (!tag || typeof tag !== 'string') return "general";
   const trimmed = tag.trim();
-  if (trimmed.startsWith("r/")) return "subreddit";
-  if (trimmed.startsWith("qid:")) return "artist"; 
-  if (trimmed.startsWith("artist:")) return "artist";
-  if (trimmed.startsWith("u/")) return "artist"; 
-  if (trimmed.startsWith("copyright:")) return "copyright";
-  if (trimmed.startsWith("character:")) return "character";
-  if (trimmed.startsWith("flair:")) return "flair";
-  if (trimmed.startsWith("folder:")) return "folder";
-  if (trimmed.startsWith("meta:")) return "meta";
+  const lower = trimmed.toLowerCase();
+  if (lower.startsWith("r/")) return "subreddit";
+  if (lower.startsWith("qid:") || lower.startsWith("artist:") || lower.startsWith("meta:artist:") || lower.startsWith("u/")) return "artist"; 
+  if (lower.startsWith("copyright:") || lower.startsWith("meta:copyright:")) return "copyright";
+  if (lower.startsWith("character:") || lower.startsWith("meta:character:")) return "character";
+  if (lower.startsWith("flair:") || lower.startsWith("meta:flair:")) return "flair";
+  if (lower.startsWith("folder:") || lower.startsWith("meta:folder:")) return "folder";
+  if (lower.startsWith("meta:")) return "meta";
   
   if (trimmed.includes(":")) {
     const prefix = trimmed.split(":")[0].toLowerCase();

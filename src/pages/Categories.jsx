@@ -87,7 +87,9 @@ export default function Categories({ onTagClick }) {
       });
 
       // Format category statistics array
+      const isScoped = !!domainScopeQuery.trim();
       const result = [];
+
       categoryMap.forEach((data, key) => {
         const tagsArray = Array.from(data.tagsMap.entries()).map(([tag, count]) => ({
           tag,
@@ -95,21 +97,27 @@ export default function Categories({ onTagClick }) {
           count
         })).sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
 
-        result.push({
-          key: data.key,
-          label: data.label || key,
-          prefix: data.prefix !== undefined ? data.prefix : `${key}:`,
-          color: data.color || '#cc5a01',
-          bg: data.bg || '#fdf5e6',
-          isDefault: data.isDefault || false,
-          uniqueTagCount: tagsArray.length,
-          totalUsageCount: tagsArray.reduce((sum, item) => sum + item.count, 0),
-          postCount: data.matchingPostIds.size,
-          tags: tagsArray
-        });
+        // When NOT scoped (Default View): Always include all 8 core default categories (Subreddits, Folders, Copyright, Characters, Artists, Flairs, Metadata, General Tags)
+        // When scoped (Filter Active): Include any category (default or custom prefix) that has active tags in that scope pool
+        const shouldInclude = isScoped ? (tagsArray.length > 0) : data.isDefault;
+
+        if (shouldInclude) {
+          result.push({
+            key: data.key,
+            label: data.label || key,
+            prefix: data.prefix !== undefined ? data.prefix : `${key}:`,
+            color: data.color || '#cc5a01',
+            bg: data.bg || '#fdf5e6',
+            isDefault: data.isDefault || false,
+            uniqueTagCount: tagsArray.length,
+            totalUsageCount: tagsArray.reduce((sum, item) => sum + item.count, 0),
+            postCount: data.matchingPostIds.size,
+            tags: tagsArray
+          });
+        }
       });
 
-      // Sort categories: active with tags first, then by usage count
+      // Sort categories: active/used categories first (by usage DESC), then 0-count defaults alphabetically
       result.sort((a, b) => {
         if (a.uniqueTagCount > 0 && b.uniqueTagCount === 0) return -1;
         if (a.uniqueTagCount === 0 && b.uniqueTagCount > 0) return 1;
@@ -172,6 +180,13 @@ export default function Categories({ onTagClick }) {
 
   // Selected category object when in values tab
   const activeSelectedCategory = categoriesData.find(c => c.key === selectedCategoryKey);
+
+  // Return to namespaces tab if selected category is no longer available (e.g. scope cleared)
+  useEffect(() => {
+    if (activeTab === 'values' && selectedCategoryKey && !activeSelectedCategory && !loading) {
+      handleBackToNamespaces();
+    }
+  }, [activeTab, selectedCategoryKey, activeSelectedCategory, loading]);
 
   // Tag values list when in values tab (specifically for selected category)
   const categoryTagValues = (activeSelectedCategory ? activeSelectedCategory.tags : [])
@@ -246,7 +261,7 @@ export default function Categories({ onTagClick }) {
           </div>
           {domainScopeQuery.trim() && (
             <span className="scope-active-pill">
-              Scoped to: <strong>{domainScopeQuery.trim()}</strong> ({posts.length} post{posts.length !== 1 ? 's' : ''})
+              Scoped to: <strong>{domainScopeQuery.trim()}</strong> ({posts.length} post{posts.length !== 1 ? 's' : ''} across {categoriesData.length} active namespace{categoriesData.length !== 1 ? 's' : ''})
             </span>
           )}
         </div>

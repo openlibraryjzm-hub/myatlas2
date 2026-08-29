@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, AlertTriangle, Search, CheckCircle, Clock, Tag, RefreshCw, X, ShieldAlert } from 'lucide-react';
-import { getAllItems, getAllMetaUploadTags, deletePostsByTag, clearAllLocalStores } from '../services/localDb';
+import { getAllItems, getAllMetaUploadTags, deletePostsByTag, clearAllLocalStores, parseTagsList } from '../services/localDb';
 import { getOptimizedThumbnailUrl } from '../utils/localFiles';
 import './Deletor.css';
 
@@ -22,13 +22,13 @@ export default function Deletor() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const posts = await getAllItems({ forceRefresh: true });
+      const posts = await getAllItems(true);
       setAllPosts(posts);
 
       // Extract unique tags for autocomplete suggestions
       const tagsSet = new Set();
       posts.forEach(p => {
-        (p.tags || []).forEach(t => tagsSet.add(t));
+        parseTagsList(p.tags).forEach(t => tagsSet.add(t));
       });
       setAllAvailableTags(Array.from(tagsSet).sort());
 
@@ -55,7 +55,7 @@ export default function Deletor() {
     }
 
     const matches = allPosts.filter(p => {
-      const tags = Array.isArray(p.tags) ? p.tags : [];
+      const tags = parseTagsList(p.tags);
       return tags.some(t => String(t).toLowerCase() === query || String(t).toLowerCase().includes(query));
     });
     setMatchingPosts(matches);

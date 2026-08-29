@@ -23,12 +23,13 @@ The default taxonomy includes the following core categories:
 
 ---
 
-## ⚙️ First-Colon Namespace Parsing Rule
+## ⚙️ First-Colon & Sub-Prefix Namespace Parsing Rule
 
-Namespace extraction evaluates **only the first colon (`:`)** in a tag string as the category namespace separator:
+Namespace extraction evaluates category classification using the following precedence rules:
 
-- **Namespace Extraction**: The substring preceding the first colon is evaluated as the category key (e.g. in `meta:folder:scifi`, `meta` is the category namespace; in `folder:scifi`, `folder` is the namespace).
-- **Value Tag Preservation**: Any subsequent colons or semicolons following the first colon are preserved 100% intact as part of the value string.
+1. **Meta Sub-Prefix Routing**: Sub-prefixes under `meta:` like `meta:folder:`, `meta:artist:`, `meta:copyright:`, `meta:character:`, and `meta:flair:` route directly to their target core category (e.g. `meta:folder:scifi` routes to **Folders** (`folder:`)).
+2. **First-Colon Extraction**: The substring preceding the first colon is evaluated as the category key (e.g. in `ship:hms_victory`, `ship` is the namespace).
+3. **Value Tag Preservation**: Any subsequent colons or semicolons following the first colon are preserved 100% intact as part of the value string.
 
 ---
 

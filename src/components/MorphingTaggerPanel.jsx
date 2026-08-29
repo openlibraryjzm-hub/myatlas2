@@ -172,7 +172,7 @@ export default function MorphingTaggerPanel({
     const finalTags = Array.from(new Set([...existingTags, ...combinedStaged]));
     
     try {
-      await updateItemTags(currentPost.id, Boolean(currentPost.filePath), finalTags);
+      await updateItemTags(currentPost.id, finalTags);
       invalidateItemsCache();
 
       setSaveStatus('success');

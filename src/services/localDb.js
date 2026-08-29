@@ -386,11 +386,40 @@ export async function getAllItems(forceRefresh = false) {
     getLocalScrapes(),
     getLocalMediaFiles()
   ]);
-  cachedItems = [...scrapes, ...media];
+  let items = [...scrapes, ...media];
+
+  const isServerOnline = await checkServerHealth();
+  if (isServerOnline) {
+    try {
+      const { fetchServerPosts } = await import('./api');
+      const serverResult = await fetchServerPosts({ page: 1, limit: 10000 });
+      if (serverResult && Array.isArray(serverResult.posts) && serverResult.posts.length > 0) {
+        const map = new Map();
+        items.forEach(item => map.set(item.id, item));
+        serverResult.posts.forEach(item => {
+          if (!map.has(item.id)) {
+            map.set(item.id, item);
+          } else {
+            const existing = map.get(item.id);
+            const combinedTags = Array.from(new Set([
+              ...parseTagsList(existing.tags),
+              ...parseTagsList(item.tags)
+            ]));
+            map.set(item.id, { ...existing, ...item, tags: combinedTags });
+          }
+        });
+        items = Array.from(map.values());
+      }
+    } catch (err) {
+      console.warn('Error fetching server posts in getAllItems:', err);
+    }
+  }
+
+  cachedItems = items;
   return cachedItems;
 }
 
-const parseTagsList = (rawTags) => {
+export const parseTagsList = (rawTags) => {
   if (!rawTags) return [];
   if (Array.isArray(rawTags)) return rawTags;
   if (typeof rawTags === 'string') {
@@ -451,12 +480,12 @@ export async function getPaginatedItems({ page = 1, limit = 40, tags = [], searc
 }
 
 export async function getAllMetaUploadTags() {
-  const uniqueItems = await getAllItems();
+  const uniqueItems = await getAllItems(true);
   const batchCounts = new Map();
   const batchPreviews = new Map();
 
   uniqueItems.forEach(item => {
-    const tags = Array.isArray(item.tags) ? item.tags : [];
+    const tags = parseTagsList(item.tags);
     tags.forEach(tag => {
       if (typeof tag === 'string' && tag.startsWith('meta:upload:')) {
         batchCounts.set(tag, (batchCounts.get(tag) || 0) + 1);
@@ -475,38 +504,60 @@ export async function getAllMetaUploadTags() {
 }
 
 export async function deletePostsByTag(tagToDelete) {
+  let count = 0;
   const db = await getLocalDb();
   if (isDesktopApp() && db) {
     try {
       const scrapes = await getLocalScrapes();
-      const scrapesToDelete = scrapes.filter(s => (s.tags || []).includes(tagToDelete));
+      const scrapesToDelete = scrapes.filter(s => parseTagsList(s.tags).includes(tagToDelete));
       for (const s of scrapesToDelete) {
         await db.execute('DELETE FROM local_scrapes WHERE id = $1', [s.id]);
+        count++;
       }
       const media = await getLocalMediaFiles();
-      const mediaToDelete = media.filter(m => (m.tags || []).includes(tagToDelete));
+      const mediaToDelete = media.filter(m => parseTagsList(m.tags).includes(tagToDelete));
       for (const m of mediaToDelete) {
         await db.execute('DELETE FROM local_media WHERE id = $1', [m.id]);
+        count++;
       }
     } catch (e) {
       console.error('Error deleting posts by tag in SQLite:', e);
     }
   }
 
-  webScrapesStore = webScrapesStore.filter(s => !(s.tags || []).includes(tagToDelete));
-  webLocalMediaStore = webLocalMediaStore.filter(m => !(m.tags || []).includes(tagToDelete));
+  const initialWebScrapesCount = webScrapesStore.length;
+  const initialWebMediaCount = webLocalMediaStore.length;
+  webScrapesStore = webScrapesStore.filter(s => !parseTagsList(s.tags).includes(tagToDelete));
+  webLocalMediaStore = webLocalMediaStore.filter(m => !parseTagsList(m.tags).includes(tagToDelete));
+  count += (initialWebScrapesCount - webScrapesStore.length) + (initialWebMediaCount - webLocalMediaStore.length);
 
-  await checkServerHealth().then(async (online) => {
-    if (online) {
+  const isServerOnline = await checkServerHealth();
+  if (isServerOnline) {
+    try {
       const { deleteServerPostsByTag } = await import('./api');
-      await deleteServerPostsByTag(tagToDelete);
+      const res = await deleteServerPostsByTag(tagToDelete);
+      if (res && typeof res.deletedCount === 'number') {
+        count = Math.max(count, res.deletedCount);
+      }
+    } catch (e) {
+      console.warn('Error deleting posts by tag on server:', e);
     }
-  });
+  }
+
+  invalidateItemsCache();
+  return count;
 }
 
 
 
-export async function updateItemTags(id, tagsArray) {
+export async function updateItemTags(id, isLocalMediaOrTags, tagsArrayParam) {
+  let tagsArray = [];
+  if (Array.isArray(tagsArrayParam)) {
+    tagsArray = tagsArrayParam;
+  } else if (Array.isArray(isLocalMediaOrTags)) {
+    tagsArray = isLocalMediaOrTags;
+  }
+
   const db = await getLocalDb();
 
   const isServerOnline = await checkServerHealth();

@@ -973,7 +973,13 @@ export default function Posts({
               {viewerMode === 'tagger' ? (
                 <MorphingTaggerPanel
                   currentPost={selectedPost}
-                  onTagsSaved={() => fetchPosts()}
+                  onTagsSaved={(postId, newTags) => {
+                    if (postId && newTags) {
+                      setPosts(prev => prev.map(p => p.id === postId ? { ...p, tags: newTags } : p));
+                      setSelectedPost(prev => prev && prev.id === postId ? { ...prev, tags: newTags } : prev);
+                    }
+                    fetchPosts();
+                  }}
                   onAdvanceNext={handleNextPost}
                   onRegressPrev={handlePrevPost}
                   onSkip={handleNextPost}
