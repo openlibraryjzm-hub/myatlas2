@@ -25,6 +25,8 @@ Documentation is maintained in the [`docs/`](file:///c:/Users/jodyn/Desktop/my%2
 my atlas 2/
 ├── README.md               # Quickstart & project overview
 ├── docs/
+│   ├── big_picture_dream.md # Grand vision strategy: offline desktop app to public "Reddit for Boorus" platform
+│   ├── sub_atlases.md      # Sub-Atlas domain architecture: hyperminimalist router, creator & backend scoping
 │   ├── architecture.md     # Desktop app runtime, C# sidecar engine, WebP proxy & STA video frame extractor
 │   ├── taxonomy.md         # Tag categories, boolean namespaces & expandable slot config
 │   ├── storage/

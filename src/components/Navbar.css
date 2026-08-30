@@ -55,6 +55,45 @@
   color: var(--accent-color);
 }
 
+/* Hyperminimalist Sub-Atlas Navbar Pill */
+.nav-atlas-pill {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-secondary, #F5F2EB);
+  border: 1px solid var(--border-color, #E6E1D7);
+  padding: 0.35rem 0.75rem;
+  border-radius: 14px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.825rem;
+  color: var(--text-secondary, #786F62);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.nav-atlas-pill:hover {
+  background: #FDF5E6;
+  border-color: var(--accent-color, #CC5A01);
+  color: var(--accent-color, #CC5A01);
+  transform: translateY(-1px);
+}
+
+.nav-atlas-pill.active {
+  background: #FDF5E6;
+  border-color: var(--accent-color, #CC5A01);
+  color: var(--accent-color, #CC5A01);
+  font-weight: 600;
+}
+
+.nav-atlas-prefix {
+  opacity: 0.65;
+}
+
+.nav-atlas-slug {
+  font-weight: 600;
+  color: var(--accent-color, #CC5A01);
+}
+
 /* Icon list next to logo */
 .nav-icon-buttons {
   display: flex;

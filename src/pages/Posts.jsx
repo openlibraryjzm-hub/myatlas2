@@ -365,35 +365,40 @@ export default function Posts({
 
   // Instant 0ms cached post fetching & background server sync
   const fetchPosts = async () => {
-    if (!posts || posts.length === 0) {
-      setLoadingPosts(true);
-    }
+    setLoadingPosts(true);
     try {
       const { getPaginatedItems, getAllItems } = await import('../services/localDb');
 
-      // 1. INSTANT 0ms In-Memory / Local SQLite Render
+      // 1. INSTANT 0ms In-Memory / Local SQLite Render scoped to active atlas
       const localResult = await getPaginatedItems({
         page: currentPage,
         limit: ITEMS_PER_PAGE,
-        tags: activeFilters
+        tags: activeFilters,
+        atlas: currentAtlas || 'myatlas'
       });
 
       if (localResult && localResult.posts) {
         setPosts(localResult.posts);
         setTotalFilteredCount(localResult.total);
-        setLoadingPosts(false);
+      } else {
+        setPosts([]);
+        setTotalFilteredCount(0);
       }
+      setLoadingPosts(false);
 
       // 2. Silent Background Server Sync (0ms UI blocking, no state overwrite)
       const { checkServerHealth, fetchServerPosts, importServerPostsBatch } = await import('../services/api');
       checkServerHealth().then(async (isServerOnline) => {
         if (!isServerOnline) return;
-        const allLocal = await getAllItems();
-        if (allLocal && allLocal.length > 0) {
-          const serverCheck = await fetchServerPosts({ page: 1, limit: 1 });
-          if (!serverCheck || serverCheck.total < allLocal.length) {
-            importServerPostsBatch(allLocal).catch(() => {});
-          }
+        const serverResult = await fetchServerPosts({
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+          tags: activeFilters,
+          atlas: currentAtlas || 'myatlas'
+        });
+        if (serverResult && Array.isArray(serverResult.posts)) {
+          setPosts(serverResult.posts);
+          setTotalFilteredCount(serverResult.total);
         }
       }).catch(() => {});
     } catch (err) {

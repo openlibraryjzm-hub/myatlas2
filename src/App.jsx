@@ -8,12 +8,17 @@ import Categories from './pages/Categories';
 import Subreddits from './pages/Subreddits';
 import Users from './pages/Users';
 import Tagger from './pages/Tagger';
+import AtlasSwitcher from './pages/AtlasSwitcher';
+import CreateAtlas from './pages/CreateAtlas';
 import { getLocalScrapes, getLocalMediaFiles } from './services/localDb';
 
 export default function App() {
-  const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'subreddits' | 'users' | 'saves'
+  const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'subreddits' | 'users' | 'saves' | 'switcher' | 'create-atlas'
 
-  const [currentAtlas, setCurrentAtlas] = useState('myatlas');
+  const [currentAtlas, setCurrentAtlas] = useState(() => localStorage.getItem('active_atlas') || 'myatlas');
+  const [initialCreateSlug, setInitialCreateSlug] = useState('');
+  const [showSwitcherModal, setShowSwitcherModal] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,10 +28,36 @@ export default function App() {
   const [savedPostIds, setSavedPostIds] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
 
-  const handleConnectAtlas = (atlasName) => {
-    setCurrentAtlas(atlasName || 'myatlas');
-    setView('home');
+  const handleSelectAtlas = (atlasId) => {
+    const slug = (atlasId || 'myatlas').toLowerCase();
+    setCurrentAtlas(slug);
+    localStorage.setItem('active_atlas', slug);
+    setShowSwitcherModal(false);
+    setView('posts');
+    setCurrentPage(1);
   };
+
+  const handleStartCreateAtlas = (slug) => {
+    setInitialCreateSlug(slug || '');
+    setShowSwitcherModal(false);
+    setView('create-atlas');
+  };
+
+  const handleConnectAtlas = (atlasName) => {
+    handleSelectAtlas(atlasName || 'myatlas');
+  };
+
+  // Keyboard shortcut Ctrl+K to open atlas switcher modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setShowSwitcherModal((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('saves') || '[]');
@@ -128,6 +159,18 @@ export default function App() {
           setSearchQuery={setSearchQuery}
           onSearchSubmit={handleSearchSubmit}
           currentAtlas={currentAtlas}
+          onOpenSwitcher={() => setShowSwitcherModal(true)}
+        />
+      )}
+
+      {/* Quick Switcher Modal Overlay */}
+      {showSwitcherModal && (
+        <AtlasSwitcher
+          currentAtlas={currentAtlas}
+          onSelectAtlas={handleSelectAtlas}
+          onCreateAtlas={handleStartCreateAtlas}
+          isModal={true}
+          onClose={() => setShowSwitcherModal(false)}
         />
       )}
 
@@ -146,8 +189,20 @@ export default function App() {
           currentAtlas={currentAtlas}
           onConnectAtlas={handleConnectAtlas}
         />
+      ) : view === 'switcher' ? (
+        <AtlasSwitcher
+          currentAtlas={currentAtlas}
+          onSelectAtlas={handleSelectAtlas}
+          onCreateAtlas={handleStartCreateAtlas}
+        />
+      ) : view === 'create-atlas' ? (
+        <CreateAtlas
+          initialSlug={initialCreateSlug}
+          onAtlasCreated={handleSelectAtlas}
+          onCancel={() => setView('posts')}
+        />
       ) : view === 'upload' ? (
-        <Upload />
+        <Upload currentAtlas={currentAtlas} />
       ) : view === 'deletor' ? (
         <Deletor />
       ) : view === 'categories' ? (

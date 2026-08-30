@@ -105,6 +105,7 @@ export async function getLocalDb() {
           score INTEGER DEFAULT 0,
           comments_count INTEGER DEFAULT 0,
           tags TEXT,
+          atlas_id TEXT DEFAULT 'myatlas',
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           extracted_at TEXT
         );
@@ -120,9 +121,18 @@ export async function getLocalDb() {
           size_bytes INTEGER,
           thumbnail_url TEXT,
           tags TEXT,
+          atlas_id TEXT DEFAULT 'myatlas',
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
       `);
+
+      try {
+        await dbInstance.execute("ALTER TABLE local_scrapes ADD COLUMN atlas_id TEXT DEFAULT 'myatlas';");
+      } catch (e) {}
+
+      try {
+        await dbInstance.execute("ALTER TABLE local_media ADD COLUMN atlas_id TEXT DEFAULT 'myatlas';");
+      } catch (e) {}
 
       console.log('Local SQLite database ready:', DB_NAME);
       return dbInstance;
@@ -137,8 +147,9 @@ export async function getLocalDb() {
 /**
  * Import a Reddit/Scraped JSON array into local_scrapes (myatlas)
  */
-export async function importScrapedJsonArray(items) {
+export async function importScrapedJsonArray(items, targetAtlasId = '') {
   const db = await getLocalDb();
+  const activeAtlas = targetAtlasId || localStorage.getItem('active_atlas') || 'myatlas';
 
   const formattedItems = (items || []).map((item, idx) => {
     const id = item.id || item.reddit_id || `scrape_${Date.now()}_${idx}`;
@@ -168,6 +179,7 @@ export async function importScrapedJsonArray(items) {
       score: Number(item.score || 0),
       comments_count: Number(item.comments_count || 0),
       tags: item.tags || item.derivedTags || derivedTags,
+      atlas_id: item.atlas_id || item.atlasId || activeAtlas,
       created_at: item.created_at || new Date().toISOString(),
       extracted_at: item.extracted_at || new Date().toISOString()
     };
@@ -189,8 +201,8 @@ export async function importScrapedJsonArray(items) {
       for (const item of formattedItems) {
         await db.execute(`
           INSERT OR REPLACE INTO local_scrapes 
-          (id, reddit_id, title, author, subreddit, url, thumbnail, permalink, score, comments_count, tags, extracted_at)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
+          (id, reddit_id, title, author, subreddit, url, thumbnail, permalink, score, comments_count, tags, atlas_id, extracted_at)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);
         `, [
           item.id,
           item.reddit_id,
@@ -203,6 +215,7 @@ export async function importScrapedJsonArray(items) {
           item.score,
           item.comments_count,
           JSON.stringify(item.tags),
+          item.atlas_id,
           item.extracted_at
         ]);
       }
@@ -239,6 +252,7 @@ export async function getLocalScrapes() {
         score: r.score,
         comments_count: r.comments_count,
         tags: r.tags ? JSON.parse(r.tags) : [],
+        atlas_id: r.atlas_id || 'myatlas',
         created_at: r.created_at,
         extracted_at: r.extracted_at
       }));
@@ -250,7 +264,10 @@ export async function getLocalScrapes() {
   if (webScrapesStore.length === 0) {
     webScrapesStore = await loadFromIDB('scrapes');
   }
-  return webScrapesStore;
+  return webScrapesStore.map(r => ({
+    ...r,
+    atlas_id: r.atlas_id || 'myatlas'
+  }));
 }
 
 /**
@@ -259,6 +276,7 @@ export async function getLocalScrapes() {
 export async function addLocalMediaFile(fileInfo) {
   const db = await getLocalDb();
   const id = `local_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+  const activeAtlas = fileInfo.atlas_id || fileInfo.atlasId || localStorage.getItem('active_atlas') || 'myatlas';
   
   const newItem = {
     id,
@@ -268,6 +286,7 @@ export async function addLocalMediaFile(fileInfo) {
     size_bytes: fileInfo.sizeBytes || 0,
     thumbnail_url: fileInfo.thumbnailUrl || fileInfo.filePath,
     tags: fileInfo.tags || [`meta:extension:${fileInfo.format || 'file'}`],
+    atlas_id: activeAtlas,
     created_at: new Date().toISOString()
   };
 
@@ -285,7 +304,8 @@ export async function addLocalMediaFile(fileInfo) {
         sizeBytes: newItem.size_bytes,
         url: formatLocalAssetUrl(newItem.file_path),
         thumbnail: newItem.thumbnail_url,
-        tags: newItem.tags
+        tags: newItem.tags,
+        atlas_id: newItem.atlas_id
       }]);
     } catch (err) {
       console.warn('Backend sync warning for addLocalMediaFile:', err);
@@ -296,8 +316,8 @@ export async function addLocalMediaFile(fileInfo) {
     try {
       await db.execute(`
         INSERT OR REPLACE INTO local_media 
-        (id, file_path, file_name, format, size_bytes, thumbnail_url, tags)
-        VALUES ($1, $2, $3, $4, $5, $6, $7);
+        (id, file_path, file_name, format, size_bytes, thumbnail_url, tags, atlas_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
       `, [
         newItem.id,
         newItem.file_path,
@@ -305,7 +325,8 @@ export async function addLocalMediaFile(fileInfo) {
         newItem.format,
         newItem.size_bytes,
         newItem.thumbnail_url,
-        JSON.stringify(newItem.tags)
+        JSON.stringify(newItem.tags),
+        newItem.atlas_id
       ]);
     } catch (err) {
       console.error('Error inserting into local_media SQLite:', err);
@@ -340,6 +361,7 @@ export async function getLocalMediaFiles() {
           format: r.format,
           sizeBytes: r.size_bytes,
           tags: r.tags ? (typeof r.tags === 'string' ? JSON.parse(r.tags) : r.tags) : [],
+          atlas_id: r.atlas_id || 'myatlas',
           createdAt: r.created_at
         };
       });
@@ -363,6 +385,7 @@ export async function getLocalMediaFiles() {
       thumbnail: r.thumbnail || thumbUrl,
       format: r.format,
       tags: typeof r.tags === 'string' ? JSON.parse(r.tags) : r.tags,
+      atlas_id: r.atlas_id || 'myatlas',
       createdAt: r.created_at
     };
   });
@@ -433,8 +456,16 @@ export const parseTagsList = (rawTags) => {
   return [];
 };
 
-export async function getPaginatedItems({ page = 1, limit = 40, tags = [], search = '' } = {}) {
+export async function getPaginatedItems({ page = 1, limit = 40, tags = [], search = '', atlas = '' } = {}) {
   let allItems = await getAllItems();
+
+  if (atlas) {
+    const cleanAtlas = String(atlas).toLowerCase().trim();
+    allItems = allItems.filter(item => {
+      const itemAtlas = String(item.atlas_id || item.atlasId || 'myatlas').toLowerCase().trim();
+      return itemAtlas === cleanAtlas;
+    });
+  }
 
   if (tags && tags.length > 0) {
     allItems = allItems.filter(item => {

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Search, Compass, Upload, Trash2, Tag, Wrench } from 'lucide-react';
 import './Navbar.css';
 
-export default function Navbar({ view, setView, searchQuery, setSearchQuery, onSearchSubmit, currentAtlas = 'myatlas' }) {
+export default function Navbar({ view, setView, searchQuery, setSearchQuery, onSearchSubmit, currentAtlas = 'myatlas', onOpenSwitcher }) {
   const [searchOpen, setSearchOpen] = useState(!!searchQuery);
   const [hoveredLabel, setHoveredLabel] = useState('');
 
   const handleLogoClick = () => {
-    setView('home');
+    setView('posts');
   };
 
   const handleInputChange = (e) => {
@@ -35,6 +35,18 @@ export default function Navbar({ view, setView, searchQuery, setSearchQuery, onS
         <div className="nav-logo" onClick={handleLogoClick}>
           {renderLogo()}
         </div>
+
+        {/* Hyperminimalist Sub-Atlas Pill Switcher */}
+        <button
+          className={`nav-atlas-pill ${view === 'switcher' ? 'active' : ''}`}
+          onClick={() => onOpenSwitcher ? onOpenSwitcher() : setView('switcher')}
+          onMouseEnter={() => setHoveredLabel(`switch atlas (${currentAtlas})`)}
+          onMouseLeave={() => setHoveredLabel('')}
+          title="Switch Sub-Atlas (Ctrl+K)"
+        >
+          <span className="nav-atlas-prefix">atlasnetwork.org/</span>
+          <span className="nav-atlas-slug">{currentAtlas}</span>
+        </button>
         
         <div className="nav-icon-buttons">
           <button 

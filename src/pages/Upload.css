@@ -176,3 +176,87 @@
   outline: 2px solid #ef4444;
   outline-offset: -2px;
 }
+
+/* Sub-Atlas Target Selector in Ingestion Manager */
+.upload-target-atlas-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+  background: var(--bg-secondary, #F5F2EB);
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--accent-color, #CC5A01);
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 12px rgba(204, 90, 1, 0.05);
+}
+
+.upload-target-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upload-target-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.upload-target-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0.2rem 0;
+}
+
+.upload-target-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color, #E6E1D7);
+  padding: 0.45rem 0.85rem;
+  border-radius: 14px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.825rem;
+  color: var(--text-secondary, #786F62);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.upload-target-pill:hover {
+  border-color: var(--pill-accent, #CC5A01);
+  color: var(--text-primary);
+  background: #FDFBF7;
+  transform: translateY(-1px);
+}
+
+.upload-target-pill.active {
+  background: #FDF5E6;
+  border-color: var(--pill-accent, #CC5A01);
+  color: var(--accent-color, #CC5A01);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(204, 90, 1, 0.12);
+}
+
+.upload-target-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.upload-target-info-footer {
+  font-size: 0.775rem;
+  color: var(--text-secondary);
+}
+
+.upload-target-info-footer b {
+  color: var(--accent-color, #CC5A01);
+  font-family: var(--font-mono, monospace);
+}

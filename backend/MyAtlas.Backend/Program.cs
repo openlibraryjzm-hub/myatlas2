@@ -53,6 +53,16 @@ using (var connection = new SqliteConnection(connectionString))
     }
     var command = connection.CreateCommand();
     command.CommandText = @"
+        CREATE TABLE IF NOT EXISTS atlases (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            description TEXT,
+            accent_color TEXT DEFAULT '#CC5A01',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT OR IGNORE INTO atlases (id, title, description, accent_color) 
+        VALUES ('myatlas', 'My Atlas', 'Default main atlas archive', '#CC5A01');
+
         CREATE TABLE IF NOT EXISTS local_items (
             id TEXT PRIMARY KEY,
             file_path TEXT UNIQUE,
@@ -67,12 +77,29 @@ using (var connection = new SqliteConnection(connectionString))
             score INTEGER DEFAULT 0,
             comments_count INTEGER DEFAULT 0,
             tags TEXT,
+            atlas_id TEXT DEFAULT 'myatlas',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             extracted_at TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_local_items_created ON local_items(created_at DESC);
     ";
     command.ExecuteNonQuery();
+
+    try
+    {
+        using (var alterCmd = connection.CreateCommand())
+        {
+            alterCmd.CommandText = "ALTER TABLE local_items ADD COLUMN atlas_id TEXT DEFAULT 'myatlas';";
+            alterCmd.ExecuteNonQuery();
+        }
+    }
+    catch { /* Column already exists */ }
+
+    using (var idxCmd = connection.CreateCommand())
+    {
+        idxCmd.CommandText = "CREATE INDEX IF NOT EXISTS idx_local_items_atlas ON local_items(atlas_id);";
+        idxCmd.ExecuteNonQuery();
+    }
 
     // Auto-sync existing local_media items from myatlas_local.db into myatlas_server.db
     try
@@ -274,11 +301,151 @@ app.MapGet("/api/stats", () =>
     });
 });
 
+// List All Sub-Atlases with Post Counts
+app.MapGet("/api/atlases", () =>
+{
+    using var conn = new SqliteConnection(connectionString);
+    conn.Open();
+
+    var result = new List<object>();
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = @"
+        SELECT a.id, a.title, a.description, a.accent_color, a.created_at, COUNT(l.id) as item_count
+        FROM atlases a
+        LEFT JOIN local_items l ON a.id = l.atlas_id
+        GROUP BY a.id, a.title, a.description, a.accent_color, a.created_at
+        ORDER BY a.created_at ASC;
+    ";
+
+    using var reader = cmd.ExecuteReader();
+    while (reader.Read())
+    {
+        result.Add(new
+        {
+            id = reader.GetString(0),
+            title = reader.GetString(1),
+            description = reader.IsDBNull(2) ? "" : reader.GetString(2),
+            accentColor = reader.IsDBNull(3) ? "#CC5A01" : reader.GetString(3),
+            createdAt = reader.IsDBNull(4) ? "" : reader.GetString(4),
+            itemCount = reader.GetInt64(5)
+        });
+    }
+
+    return Results.Ok(result);
+});
+
+// Get Single Sub-Atlas Details
+app.MapGet("/api/atlases/{id}", (string id) =>
+{
+    using var conn = new SqliteConnection(connectionString);
+    conn.Open();
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = @"
+        SELECT a.id, a.title, a.description, a.accent_color, a.created_at, COUNT(l.id) as item_count
+        FROM atlases a
+        LEFT JOIN local_items l ON a.id = l.atlas_id
+        WHERE LOWER(a.id) = LOWER($id)
+        GROUP BY a.id, a.title, a.description, a.accent_color, a.created_at;
+    ";
+    cmd.Parameters.AddWithValue("$id", id.Trim());
+
+    using var reader = cmd.ExecuteReader();
+    if (reader.Read())
+    {
+        return Results.Ok(new
+        {
+            id = reader.GetString(0),
+            title = reader.GetString(1),
+            description = reader.IsDBNull(2) ? "" : reader.GetString(2),
+            accentColor = reader.IsDBNull(3) ? "#CC5A01" : reader.GetString(3),
+            createdAt = reader.IsDBNull(4) ? "" : reader.GetString(4),
+            itemCount = reader.GetInt64(5)
+        });
+    }
+    return Results.NotFound(new { error = $"Atlas '{id}' not found" });
+});
+
+// Create or Update Sub-Atlas
+app.MapPost("/api/atlases", async (HttpRequest request) =>
+{
+    try
+    {
+        using var reader = new StreamReader(request.Body);
+        var bodyText = await reader.ReadToEndAsync();
+        using var doc = JsonDocument.Parse(bodyText);
+        var root = doc.RootElement;
+
+        string id = root.TryGetProperty("id", out var idProp) ? idProp.GetString() ?? "" : (root.TryGetProperty("slug", out var slugProp) ? slugProp.GetString() ?? "" : "");
+        id = id.Trim().ToLower().Replace(" ", "_");
+        if (string.IsNullOrEmpty(id)) return Results.BadRequest(new { error = "Atlas ID/slug is required" });
+
+        string title = root.TryGetProperty("title", out var titleProp) ? titleProp.GetString() ?? id : id;
+        string description = root.TryGetProperty("description", out var descProp) ? descProp.GetString() ?? "" : "";
+        string accentColor = root.TryGetProperty("accentColor", out var colorProp) ? colorProp.GetString() ?? "#CC5A01" : "#CC5A01";
+
+        using var conn = new SqliteConnection(connectionString);
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO atlases (id, title, description, accent_color)
+            VALUES ($id, $title, $description, $color)
+            ON CONFLICT(id) DO UPDATE SET
+                title = excluded.title,
+                description = excluded.description,
+                accent_color = excluded.accent_color;
+        ";
+        cmd.Parameters.AddWithValue("$id", id);
+        cmd.Parameters.AddWithValue("$title", title);
+        cmd.Parameters.AddWithValue("$description", description);
+        cmd.Parameters.AddWithValue("$color", accentColor);
+        cmd.ExecuteNonQuery();
+
+        return Results.Ok(new { success = true, id, title, description, accentColor });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
+});
+
+// Delete Sub-Atlas (reassigns posts to 'myatlas')
+app.MapDelete("/api/atlases/{id}", (string id) =>
+{
+    if (id.Equals("myatlas", StringComparison.OrdinalIgnoreCase))
+    {
+        return Results.BadRequest(new { error = "Cannot delete default 'myatlas' atlas" });
+    }
+
+    using var conn = new SqliteConnection(connectionString);
+    conn.Open();
+    using var tx = conn.BeginTransaction();
+
+    using (var reassignCmd = conn.CreateCommand())
+    {
+        reassignCmd.Transaction = tx;
+        reassignCmd.CommandText = "UPDATE local_items SET atlas_id = 'myatlas' WHERE LOWER(atlas_id) = LOWER($id);";
+        reassignCmd.Parameters.AddWithValue("$id", id);
+        reassignCmd.ExecuteNonQuery();
+    }
+
+    using (var deleteCmd = conn.CreateCommand())
+    {
+        deleteCmd.Transaction = tx;
+        deleteCmd.CommandText = "DELETE FROM atlases WHERE LOWER(id) = LOWER($id);";
+        deleteCmd.Parameters.AddWithValue("$id", id);
+        deleteCmd.ExecuteNonQuery();
+    }
+
+    tx.Commit();
+    return Results.Ok(new { success = true, id });
+});
+
 // Paginated & Filtered Posts
-app.MapGet("/api/posts", (int page = 1, int limit = 40, string? search = null, string? tags = null) =>
+app.MapGet("/api/posts", (int page = 1, int limit = 40, string? search = null, string? tags = null, string? atlas = null, string? atlas_id = null) =>
 {
     page = Math.Max(1, page);
     limit = Math.Clamp(limit, 1, 10000);
+    string? activeAtlas = !string.IsNullOrEmpty(atlas_id) ? atlas_id : atlas;
 
     var activeFilters = (tags ?? "").Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries)
                                     .Select(t => t.Trim().ToLower())
@@ -289,6 +456,10 @@ app.MapGet("/api/posts", (int page = 1, int limit = 40, string? search = null, s
 
     // 1. Build dynamic WHERE clause
     var conditions = new List<string>();
+    if (!string.IsNullOrWhiteSpace(activeAtlas))
+    {
+        conditions.Add("LOWER(atlas_id) = $atlas_id");
+    }
     if (!string.IsNullOrWhiteSpace(search))
     {
         conditions.Add("(LOWER(title) LIKE $search OR LOWER(author) LIKE $search OR LOWER(subreddit) LIKE $search OR EXISTS (SELECT 1 FROM json_each(local_items.tags) WHERE LOWER(value) LIKE $search))");
@@ -302,6 +473,10 @@ app.MapGet("/api/posts", (int page = 1, int limit = 40, string? search = null, s
 
     void BindParameters(SqliteCommand cmd)
     {
+        if (!string.IsNullOrWhiteSpace(activeAtlas))
+        {
+            cmd.Parameters.AddWithValue("$atlas_id", activeAtlas.Trim().ToLower());
+        }
         if (!string.IsNullOrWhiteSpace(search))
         {
             cmd.Parameters.AddWithValue("$search", $"%{search.Trim().ToLower()}%");
@@ -349,6 +524,7 @@ app.MapGet("/api/posts", (int page = 1, int limit = 40, string? search = null, s
             var score = reader.IsDBNull(10) ? 0 : reader.GetInt32(10);
             var commentsCount = reader.IsDBNull(11) ? 0 : reader.GetInt32(11);
             var rawTags = reader.IsDBNull(12) ? "[]" : reader.GetString(12);
+            var atlasId = reader.FieldCount > 13 && !reader.IsDBNull(13) ? reader.GetString(13) : "myatlas";
 
             List<string> itemTags = new();
             try { itemTags = JsonSerializer.Deserialize<List<string>>(rawTags) ?? new(); } catch { }
@@ -367,7 +543,8 @@ app.MapGet("/api/posts", (int page = 1, int limit = 40, string? search = null, s
                 permalink,
                 score,
                 commentsCount,
-                tags = itemTags
+                tags = itemTags,
+                atlas_id = atlasId
             });
         }
     }
@@ -656,8 +833,8 @@ app.MapPost("/api/import", async (HttpRequest request) =>
     cmd.Transaction = tx;
     cmd.CommandText = @"
         INSERT OR REPLACE INTO local_items 
-        (id, file_path, title, author, subreddit, format, size_bytes, url, thumbnail_url, permalink, score, comments_count, tags, extracted_at)
-        VALUES ($id, $file_path, $title, $author, $subreddit, $format, $size_bytes, $url, $thumbnail_url, $permalink, $score, $comments_count, $tags, $extracted_at);
+        (id, file_path, title, author, subreddit, format, size_bytes, url, thumbnail_url, permalink, score, comments_count, tags, atlas_id, extracted_at)
+        VALUES ($id, $file_path, $title, $author, $subreddit, $format, $size_bytes, $url, $thumbnail_url, $permalink, $score, $comments_count, $tags, $atlas_id, $extracted_at);
     ";
 
     var pId = cmd.Parameters.Add("$id", SqliteType.Text);
@@ -673,6 +850,7 @@ app.MapPost("/api/import", async (HttpRequest request) =>
     var pScore = cmd.Parameters.Add("$score", SqliteType.Integer);
     var pComments = cmd.Parameters.Add("$comments_count", SqliteType.Integer);
     var pTags = cmd.Parameters.Add("$tags", SqliteType.Text);
+    var pAtlasId = cmd.Parameters.Add("$atlas_id", SqliteType.Text);
     var pExtracted = cmd.Parameters.Add("$extracted_at", SqliteType.Text);
 
     var itemsToPreThumbnail = new List<(string id, string targetUrl)>();
@@ -698,6 +876,9 @@ app.MapPost("/api/import", async (HttpRequest request) =>
         string permalink = el.TryGetProperty("permalink", out var permProp) ? permProp.GetString() ?? "" : "";
         int score = el.TryGetProperty("score", out var scoreProp) && scoreProp.ValueKind == JsonValueKind.Number ? scoreProp.GetInt32() : 0;
         int commentsCount = el.TryGetProperty("commentsCount", out var commProp) && commProp.ValueKind == JsonValueKind.Number ? commProp.GetInt32() : (el.TryGetProperty("comments_count", out var cProp) && cProp.ValueKind == JsonValueKind.Number ? cProp.GetInt32() : 0);
+
+        string atlasId = el.TryGetProperty("atlas_id", out var aProp) ? aProp.GetString() ?? "" : (el.TryGetProperty("atlasId", out var aIdProp) ? aIdProp.GetString() ?? "" : "");
+        if (string.IsNullOrEmpty(atlasId)) atlasId = "myatlas";
 
         List<string> tagsList = new();
         if (el.TryGetProperty("derivedTags", out var dtProp) && dtProp.ValueKind == JsonValueKind.Array)
@@ -739,6 +920,7 @@ app.MapPost("/api/import", async (HttpRequest request) =>
         pScore.Value = score;
         pComments.Value = commentsCount;
         pTags.Value = JsonSerializer.Serialize(tagsList);
+        pAtlasId.Value = atlasId;
         pExtracted.Value = extractedAt;
 
         cmd.ExecuteNonQuery();

@@ -28,6 +28,15 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Local media downloads
+# Local media downloads & dataset directories
+*_downloads/
 tf2_downloads/
 tf2_wiki_downloads/
+pokemon_downloads/
+tes_morrowind_downloads/
+starwars_downloads/
+minecraft_downloads/
+
+# Wiki API scraper & manifest enrichment scripts
+download_*.js
+enrich_*.js

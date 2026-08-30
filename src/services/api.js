@@ -35,19 +35,82 @@ export async function fetchServerStats() {
 /**
  * Fetch paginated & filtered posts from C# Backend
  */
-export async function fetchServerPosts({ page = 1, limit = 40, search = '', tags = [] } = {}) {
+export async function fetchServerPosts({ page = 1, limit = 40, search = '', tags = [], atlas = '' } = {}) {
   try {
     const params = new URLSearchParams();
     params.set('page', page);
     params.set('limit', limit);
     if (search) params.set('search', search);
     if (tags.length > 0) params.set('tags', tags.join(','));
+    if (atlas) params.set('atlas_id', atlas);
 
     const res = await fetch(`${SERVER_BASE_URL}/api/posts?${params.toString()}`);
     if (!res.ok) throw new Error(`Server returned ${res.status}`);
     return await res.json();
   } catch (err) {
     console.warn('C# backend posts offline:', err.message);
+    return null;
+  }
+}
+
+/**
+ * Fetch all Sub-Atlases from C# Backend
+ */
+export async function fetchServerAtlases() {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/atlases`);
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.warn('C# backend atlases offline:', err.message);
+    return null;
+  }
+}
+
+/**
+ * Fetch details for a single Sub-Atlas by slug/id
+ */
+export async function fetchServerAtlas(id) {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/atlases/${encodeURIComponent(id)}`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.warn(`Failed to fetch atlas '${id}' from server:`, err.message);
+    return null;
+  }
+}
+
+/**
+ * Create or update a Sub-Atlas on C# Backend
+ */
+export async function createServerAtlas({ id, title, description = '', accentColor = '#CC5A01' }) {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/atlases`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, title, description, accentColor })
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.warn('Failed to create atlas on C# backend:', err.message);
+    return null;
+  }
+}
+
+/**
+ * Delete a Sub-Atlas on C# Backend
+ */
+export async function deleteServerAtlas(id) {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/atlases/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.warn(`Failed to delete atlas '${id}' on C# backend:`, err.message);
     return null;
   }
 }

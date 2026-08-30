@@ -1,0 +1,338 @@
+/* AtlasSwitcher.css - Claude Warm Cream Minimalist Aesthetic */
+
+.atlas-switcher-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-family: var(--font-sans, 'Plus Jakarta Sans', system-ui, sans-serif);
+}
+
+.atlas-switcher-container.as-page {
+  min-height: calc(100vh - 120px);
+  padding: 2.5rem 1rem;
+}
+
+.atlas-switcher-container.as-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(26, 24, 20, 0.45);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.as-card {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  background: #FBFAF7;
+  border: 1px solid rgba(204, 90, 1, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px -15px rgba(45, 35, 20, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+  padding: 2.5rem 2.25rem;
+  color: #2D2820;
+}
+
+.as-modal-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #8C8275;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.as-modal-close:hover {
+  background: #F0EDE6;
+  color: #1A1814;
+}
+
+.as-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.as-brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  background: #F5EFE6;
+  border-radius: 16px;
+  color: #CC5A01;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(204, 90, 1, 0.12);
+}
+
+.as-compass {
+  animation: pulseRotate 6s ease-in-out infinite;
+}
+
+@keyframes pulseRotate {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(15deg); }
+}
+
+.as-title {
+  font-family: var(--font-serif, 'Lora', Georgia, serif);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #1A1814;
+  margin: 0 0 0.4rem 0;
+}
+
+.as-subtitle {
+  font-size: 0.925rem;
+  color: #786F62;
+  margin: 0;
+}
+
+/* Hyperminimalist Switcher Input Box */
+.as-prompt-box {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1.5px solid #E6E1D7;
+  border-radius: 14px;
+  padding: 0.6rem 0.85rem 0.6rem 1.1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-bottom: 0.85rem;
+}
+
+.as-prompt-box:focus-within {
+  border-color: #CC5A01;
+  box-shadow: 0 0 0 4px rgba(204, 90, 1, 0.12), 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.as-prompt-box.has-match {
+  border-color: #16A34A;
+  background: #FBFDFB;
+}
+
+.as-prompt-box.no-match {
+  border-color: #CC5A01;
+}
+
+.as-domain-prefix {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #8C8275;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.as-prompt-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #1A1814;
+  padding: 0 0.5rem;
+  width: 100%;
+}
+
+.as-prompt-input::placeholder {
+  color: #B3AAA0;
+  font-weight: 400;
+}
+
+.as-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.as-action-btn.enter-btn {
+  background: #16A34A;
+  color: #FFFFFF;
+}
+
+.as-action-btn.enter-btn:hover {
+  background: #15803D;
+  transform: translateY(-1px);
+}
+
+.as-action-btn.create-btn {
+  background: #CC5A01;
+  color: #FFFFFF;
+}
+
+.as-action-btn.create-btn:hover {
+  background: #B24D00;
+  transform: translateY(-1px);
+}
+
+/* Status Indicator */
+.as-status-bar {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  font-size: 0.875rem;
+  padding: 0 0.25rem;
+}
+
+.as-hint-text {
+  color: #8C8275;
+  font-size: 0.85rem;
+}
+
+.as-match-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #166534;
+  background: #F0FDF4;
+  border: 1px solid #DCFCE7;
+  padding: 0.4rem 0.85rem;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.as-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.as-match-title {
+  font-weight: 600;
+  color: #14532D;
+}
+
+.as-match-count {
+  color: #15803D;
+  font-size: 0.8rem;
+  font-family: var(--font-mono, monospace);
+}
+
+.as-no-match-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #9A3412;
+  background: #FFF7ED;
+  border: 1px solid #FFEDD5;
+  padding: 0.4rem 0.85rem;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.as-key-hint {
+  margin-left: auto;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+/* Quick Access Grid */
+.as-quick-access {
+  border-top: 1px solid #EFECE6;
+  padding-top: 1.5rem;
+}
+
+.as-quick-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8C8275;
+  margin-bottom: 1rem;
+}
+
+.as-badges-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.as-badge-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #FFFFFF;
+  border: 1px solid #E6E1D7;
+  padding: 0.45rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #4A443C;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.as-badge-pill:hover {
+  border-color: var(--pill-accent, #CC5A01);
+  color: #1A1814;
+  background: #FDFBF7;
+  transform: translateY(-1px);
+}
+
+.as-badge-pill.active-pill {
+  background: #FDF5E6;
+  border-color: var(--pill-accent, #CC5A01);
+  color: #B24D00;
+  font-weight: 600;
+}
+
+.as-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--pill-accent, #CC5A01);
+}
+
+.as-pill-name {
+  font-family: var(--font-mono, monospace);
+  font-weight: 500;
+}
+
+.as-pill-subtitle {
+  font-size: 0.775rem;
+  color: #8C8275;
+  font-weight: 400;
+}
+
+.as-badge-pill.create-new-pill {
+  border-style: dashed;
+  color: #CC5A01;
+  border-color: rgba(204, 90, 1, 0.4);
+}
+
+.as-badge-pill.create-new-pill:hover {
+  background: #FDF5E6;
+  border-style: solid;
+}

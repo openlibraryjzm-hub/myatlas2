@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Upload as UploadIcon, Database, CheckCircle, AlertTriangle, FileJson, Folder, HardDrive, X, RefreshCw, Trash2, Tag } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Upload as UploadIcon, Database, CheckCircle, AlertTriangle, FileJson, Folder, HardDrive, X, RefreshCw, Trash2, Tag, Compass, Check } from 'lucide-react';
 import { isDesktopApp, selectLocalFiles, selectLocalDirectory, formatLocalAssetUrl, getLocalFileAsBlobUrl, getOptimizedThumbnailUrl, generateWebpThumbnail, generateVideoWebpThumbnail } from '../utils/localFiles';
 import { importScrapedJsonArray, addLocalMediaFile, clearAllLocalStores } from '../services/localDb';
+import { fetchServerAtlases } from '../services/api';
 import { ensureTagCategoriesExist } from '../data/mockData';
 import './Upload.css';
 
@@ -132,7 +133,12 @@ function PreviewCard({ post, onRemove }) {
   );
 }
 
-export default function Upload() {
+export default function Upload({ currentAtlas = 'myatlas' }) {
+  const [selectedAtlasSlug, setSelectedAtlasSlug] = useState(() => currentAtlas || 'myatlas');
+  const [availableAtlases, setAvailableAtlases] = useState([
+    { id: 'myatlas', title: 'My Atlas', accentColor: '#CC5A01' }
+  ]);
+
   const [uploadType, setUploadType] = useState('local_files'); // 'local_files' | 'disk_scan'
   const [targetAtlas, setTargetAtlas] = useState('localatlas');
   const [dragging, setDragging] = useState(false);
@@ -144,6 +150,31 @@ export default function Upload() {
   const [isClearing, setIsClearing] = useState(false);
   const [atlasTagInput, setAtlasTagInput] = useState('atlas:');
   const [customBatchTagsInput, setCustomBatchTagsInput] = useState('');
+
+  useEffect(() => {
+    if (currentAtlas) {
+      setSelectedAtlasSlug(currentAtlas);
+    }
+  }, [currentAtlas]);
+
+  useEffect(() => {
+    async function loadAtlases() {
+      try {
+        const serverAtlases = await fetchServerAtlases();
+        if (Array.isArray(serverAtlases) && serverAtlases.length > 0) {
+          setAvailableAtlases(serverAtlases);
+        } else {
+          const saved = JSON.parse(localStorage.getItem('myatlas_sub_atlases') || '[]');
+          const merged = [{ id: 'myatlas', title: 'My Atlas', accentColor: '#CC5A01' }];
+          saved.forEach(a => {
+            if (!merged.some(m => m.id === a.id)) merged.push(a);
+          });
+          setAvailableAtlases(merged);
+        }
+      } catch (e) {}
+    }
+    loadAtlases();
+  }, []);
 
   const getParsedBatchUserTags = (atlasInput, customInput) => {
     const tags = [];
@@ -642,13 +673,14 @@ export default function Upload() {
   const handleCommitToDatabase = async () => {
     setStatus('uploading');
     try {
-      if (targetAtlas === 'myatlas') {
+      const activeAtlasId = selectedAtlasSlug || currentAtlas || 'myatlas';
+      if (targetAtlas === 'myatlas' || uploadType === 'scraped_json') {
         const { importScrapedJsonArray } = await import('../services/localDb');
-        const res = await importScrapedJsonArray(posts);
+        const res = await importScrapedJsonArray(posts, activeAtlasId);
         const count = Array.isArray(res) ? res.length : res;
         setStatus('success');
-        setMessage(`Successfully imported ${count} items into your local myatlas database!`);
-      } else if (targetAtlas === 'localatlas') {
+        setMessage(`Successfully imported ${count} items into atlas: "${activeAtlasId}"!`);
+      } else {
         const { addLocalMediaFile } = await import('../services/localDb');
         for (const post of posts) {
           await addLocalMediaFile({
@@ -657,17 +689,12 @@ export default function Upload() {
             format: (post.title || '').split('.').pop() || 'jpg',
             sizeBytes: 0,
             thumbnailUrl: post.thumbnail || post.mediaUrl,
-            tags: post.derivedTags || []
+            tags: post.derivedTags || [],
+            atlas_id: activeAtlasId
           });
         }
         setStatus('success');
-        setMessage(`Successfully indexed ${posts.length} local media files!`);
-      } else {
-        const { importScrapedJsonArray } = await import('../services/localDb');
-        const res = await importScrapedJsonArray(posts);
-        const count = Array.isArray(res) ? res.length : res;
-        setStatus('success');
-        setMessage(`Successfully imported ${count} items into your local database!`);
+        setMessage(`Successfully indexed ${posts.length} local media files into atlas: "${activeAtlasId}"!`);
       }
 
     } catch (err) {
@@ -754,6 +781,42 @@ export default function Upload() {
                 Clear Selection
               </button>
             )}
+          </div>
+        </div>
+
+        {/* Target Sub-Atlas Archive Destination Selector */}
+        <div className="upload-target-atlas-panel">
+          <div className="upload-target-header">
+            <label className="upload-target-label">
+              <Compass size={15} style={{ color: 'var(--accent-color)' }} />
+              Target Sub-Atlas Archive Destination
+            </label>
+            <span style={{ fontSize: '11px', opacity: 0.7 }}>
+              Ingested items will be saved directly into this sub-atlas database
+            </span>
+          </div>
+
+          <div className="upload-target-pills-row">
+            {availableAtlases.map((atlas) => {
+              const isActive = selectedAtlasSlug === atlas.id;
+              return (
+                <button
+                  key={atlas.id}
+                  type="button"
+                  className={`upload-target-pill ${isActive ? 'active' : ''}`}
+                  onClick={() => setSelectedAtlasSlug(atlas.id)}
+                  style={{ '--pill-accent': atlas.accentColor || '#CC5A01' }}
+                >
+                  <span className="upload-target-dot" style={{ backgroundColor: atlas.accentColor || '#CC5A01' }}></span>
+                  <span>atlasnetwork.org/<b>{atlas.id}</b></span>
+                  {isActive && <Check size={13} />}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="upload-target-info-footer">
+            Ingestion Target: <b>atlasnetwork.org/{selectedAtlasSlug}</b> &bull; All media & metadata in this batch will be assigned to <code>{selectedAtlasSlug}</code>.
           </div>
         </div>
 
