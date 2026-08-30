@@ -19,7 +19,18 @@ MyAtlas uses a dual-layer SQLite model for offline privacy and high-speed execut
 
 ## 📊 Database Schemas
 
-### C# Server Table: `local_items` (`myatlas_server.db`)
+### C# Server Table 1: `atlases` (`myatlas_server.db`)
+```sql
+CREATE TABLE IF NOT EXISTS atlases (
+  id TEXT PRIMARY KEY,               -- e.g. "myatlas", "space", "military"
+  title TEXT NOT NULL,
+  description TEXT,
+  accent_color TEXT DEFAULT '#CC5A01',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### C# Server Table 2: `local_items` (`myatlas_server.db`)
 ```sql
 CREATE TABLE IF NOT EXISTS local_items (
   id TEXT PRIMARY KEY,
@@ -34,10 +45,12 @@ CREATE TABLE IF NOT EXISTS local_items (
   permalink TEXT,
   score INTEGER DEFAULT 0,
   comments_count INTEGER DEFAULT 0,
-  tags TEXT, -- JSON array of tags (e.g. ["format:mp4", "meta:upload:2026-08-23"])
+  tags TEXT,                         -- JSON array of tags
+  atlas_id TEXT DEFAULT 'myatlas',   -- Sub-Atlas tenant identifier
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   extracted_at TEXT
 );
+CREATE INDEX IF NOT EXISTS idx_local_items_atlas ON local_items(atlas_id);
 ```
 
 ### Tauri Client Table 1: `local_scrapes` (`myatlas_local.db`)
@@ -54,6 +67,7 @@ CREATE TABLE IF NOT EXISTS local_scrapes (
   score INTEGER DEFAULT 0,
   comments_count INTEGER DEFAULT 0,
   tags TEXT,
+  atlas_id TEXT DEFAULT 'myatlas',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   extracted_at TEXT
 );
@@ -69,6 +83,7 @@ CREATE TABLE IF NOT EXISTS local_media (
   size_bytes INTEGER,
   thumbnail_url TEXT,
   tags TEXT,
+  atlas_id TEXT DEFAULT 'myatlas',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ```

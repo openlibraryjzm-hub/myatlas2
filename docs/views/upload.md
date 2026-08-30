@@ -27,5 +27,6 @@ The Ingestion Manager supports three primary local hard drive data sources:
   - Active batch tags render live tag pills in the preview panel and on preview cards prior to database commit.
 - **Client-Side WebP Thumbnail Generator**: Executes `generateWebpThumbnail` (for photos) and `generateVideoWebpThumbnail` (for `.mp4`, `.webm`, `.mov`, `.mkv` videos via an offscreen HTML5 `<video>` and `<canvas>`) to generate 300px 75% quality **Base64 WebP thumbnails (~15 KB)** prior to database insertion.
 - **Derived Tags Generation**: Automatically extracts format tags (`meta:format:image`/`video`), extension tags (`meta:extension:png`), folder tags (`folder:name`), manifest tags, and user batch tags.
+- **Target Sub-Atlas Archive Destination Selector**: Explicit header panel allowing users to select or switch the destination sub-atlas (e.g. `myatlas`, `space`, `military`, `nasa`) for the upload batch. Ingested items are tagged with `atlas_id: selectedAtlasSlug`.
 - **Interactive Exclusion**: Renders preview cards with an `×` remove button to discard unwanted items prior to database commit.
-- **Local SQLite & Server Commit**: Ingests items directly into `local_media` in `myatlas_local.db` and syncs with C# backend when online.
+- **Local SQLite & Server Commit**: Ingests items directly into `local_media` or `local_scrapes` with `atlas_id` scoping in `myatlas_local.db` and syncs with C# backend when online.
