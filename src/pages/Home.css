@@ -98,23 +98,15 @@
   color: var(--text-primary);
 }
 
-.title-reddit {
+.title-highlighted {
   font-weight: 700;
-  color: var(--text-primary);
-}
-
-.title-reddit.highlighted {
   color: var(--accent-color);
 }
 
-.title-booru {
-  font-style: italic;
+.title-rest {
   font-weight: 400;
   color: var(--text-primary);
-}
-
-.title-booru.highlighted {
-  color: var(--accent-color);
+  margin-left: 0.35rem;
 }
 
 .home-total-count.fade-in {

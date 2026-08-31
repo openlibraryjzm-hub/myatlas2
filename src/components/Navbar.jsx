@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
-import { Search, Compass, Upload, Trash2, Tag, Wrench } from 'lucide-react';
+import { Search, Compass, Upload, Trash2, Tag, Wrench, Globe } from 'lucide-react';
+import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './Navbar.css';
 
-export default function Navbar({ view, setView, searchQuery, setSearchQuery, onSearchSubmit, currentAtlas = 'myatlas', onOpenSwitcher }) {
+export default function Navbar({ 
+  view, 
+  setView, 
+  searchQuery, 
+  setSearchQuery, 
+  onSearchSubmit, 
+  currentAtlas = 'myatlas', 
+  activeAtlasDetails,
+  onOpenSwitcher 
+}) {
   const [searchOpen, setSearchOpen] = useState(!!searchQuery);
   const [hoveredLabel, setHoveredLabel] = useState('');
 
   const handleLogoClick = () => {
-    setView('posts');
+    setView('home');
   };
 
   const handleInputChange = (e) => {
@@ -21,12 +31,9 @@ export default function Navbar({ view, setView, searchQuery, setSearchQuery, onS
   };
 
   const renderLogo = () => {
-    return (
-      <>
-        <span className="title-reddit highlighted">my</span>
-        <span className="title-booru">atlas</span>
-      </>
-    );
+    const titleText = activeAtlasDetails?.title || currentAtlas;
+    const accentColor = activeAtlasDetails?.accentColor || '#CC5A01';
+    return renderDynamicTitle(titleText, accentColor);
   };
 
   return (
@@ -43,12 +50,25 @@ export default function Navbar({ view, setView, searchQuery, setSearchQuery, onS
           onMouseEnter={() => setHoveredLabel(`switch atlas (${currentAtlas})`)}
           onMouseLeave={() => setHoveredLabel('')}
           title="Switch Sub-Atlas (Ctrl+K)"
+          style={{
+            '--atlas-accent': activeAtlasDetails?.accentColor || '#CC5A01'
+          }}
         >
           <span className="nav-atlas-prefix">atlasnetwork.org/</span>
           <span className="nav-atlas-slug">{currentAtlas}</span>
         </button>
         
         <div className="nav-icon-buttons">
+          <button 
+            className={`nav-icon-btn ${view === 'discovery' ? 'active' : ''}`}
+            onClick={() => setView('discovery')}
+            onMouseEnter={() => setHoveredLabel('discovery cloud')}
+            onMouseLeave={() => setHoveredLabel('')}
+            title="Discovery Cloud 3D"
+          >
+            <Globe size={16} />
+          </button>
+
           <button 
             className={`nav-icon-btn ${view === 'posts' ? 'active' : ''}`}
             onClick={() => setView('posts')}

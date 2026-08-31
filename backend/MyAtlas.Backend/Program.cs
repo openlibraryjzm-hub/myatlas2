@@ -111,9 +111,9 @@ using (var connection = new SqliteConnection(connectionString))
             tauriConn.Open();
 
             using var cmdRead = tauriConn.CreateCommand();
-            cmdRead.CommandText = "SELECT id, file_path, file_name, format, size_bytes, thumbnail_url, tags, created_at FROM local_media;";
+            cmdRead.CommandText = "SELECT id, file_path, file_name, format, size_bytes, thumbnail_url, tags, COALESCE(atlas_id, 'myatlas') AS atlas_id, created_at FROM local_media;";
             
-            var mediaItems = new List<(string id, string path, string name, string format, long size, string thumb, string tags, string created)>();
+            var mediaItems = new List<(string id, string path, string name, string format, long size, string thumb, string tags, string atlasId, string created)>();
             using (var reader = cmdRead.ExecuteReader())
             {
                 while (reader.Read())
@@ -126,7 +126,8 @@ using (var connection = new SqliteConnection(connectionString))
                         reader.IsDBNull(4) ? 0L : reader.GetInt64(4),
                         reader.IsDBNull(5) ? "" : reader.GetString(5),
                         reader.IsDBNull(6) ? "[]" : reader.GetString(6),
-                        reader.IsDBNull(7) ? DateTime.UtcNow.ToString("o") : reader.GetString(7)
+                        reader.IsDBNull(7) ? "myatlas" : reader.GetString(7),
+                        reader.IsDBNull(8) ? DateTime.UtcNow.ToString("o") : reader.GetString(8)
                     ));
                 }
             }
@@ -138,8 +139,8 @@ using (var connection = new SqliteConnection(connectionString))
                 insertCmd.Transaction = tx;
                 insertCmd.CommandText = @"
                     INSERT OR REPLACE INTO local_items 
-                    (id, file_path, title, author, subreddit, format, size_bytes, url, thumbnail_url, tags, created_at)
-                    VALUES ($id, $file_path, $title, 'local_creator', 'localatlas', $format, $size_bytes, $url, $thumbnail_url, $tags, $created_at);
+                    (id, file_path, title, author, subreddit, format, size_bytes, url, thumbnail_url, tags, atlas_id, created_at)
+                    VALUES ($id, $file_path, $title, 'local_creator', 'localatlas', $format, $size_bytes, $url, $thumbnail_url, $tags, $atlas_id, $created_at);
                 ";
 
                 var pId = insertCmd.Parameters.Add("$id", SqliteType.Text);
@@ -150,6 +151,7 @@ using (var connection = new SqliteConnection(connectionString))
                 var pUrl = insertCmd.Parameters.Add("$url", SqliteType.Text);
                 var pThumb = insertCmd.Parameters.Add("$thumbnail_url", SqliteType.Text);
                 var pTags = insertCmd.Parameters.Add("$tags", SqliteType.Text);
+                var pAtlasId = insertCmd.Parameters.Add("$atlas_id", SqliteType.Text);
                 var pCreated = insertCmd.Parameters.Add("$created_at", SqliteType.Text);
 
                 foreach (var item in mediaItems)
@@ -162,6 +164,7 @@ using (var connection = new SqliteConnection(connectionString))
                     pUrl.Value = $"http://127.0.0.1:7171/api/stream/{item.id}";
                     pThumb.Value = $"http://127.0.0.1:7171/api/thumbnail/{item.id}";
                     pTags.Value = item.tags;
+                    pAtlasId.Value = item.atlasId;
                     pCreated.Value = item.created;
                     insertCmd.ExecuteNonQuery();
                 }
@@ -312,7 +315,7 @@ app.MapGet("/api/atlases", () =>
     cmd.CommandText = @"
         SELECT a.id, a.title, a.description, a.accent_color, a.created_at, COUNT(l.id) as item_count
         FROM atlases a
-        LEFT JOIN local_items l ON a.id = l.atlas_id
+        LEFT JOIN local_items l ON LOWER(a.id) = LOWER(l.atlas_id)
         GROUP BY a.id, a.title, a.description, a.accent_color, a.created_at
         ORDER BY a.created_at ASC;
     ";
@@ -503,7 +506,7 @@ app.MapGet("/api/posts", (int page = 1, int limit = 40, string? search = null, s
 
     using (var cmd = conn.CreateCommand())
     {
-        cmd.CommandText = $"SELECT * FROM local_items {whereClause} ORDER BY created_at DESC LIMIT $limit OFFSET $offset;";
+        cmd.CommandText = $"SELECT id, file_path, title, author, subreddit, format, size_bytes, url, thumbnail_url, permalink, score, comments_count, tags, COALESCE(atlas_id, 'myatlas') AS atlas_id, created_at FROM local_items {whereClause} ORDER BY created_at DESC LIMIT $limit OFFSET $offset;";
         BindParameters(cmd);
         cmd.Parameters.AddWithValue("$limit", limit);
         cmd.Parameters.AddWithValue("$offset", offset);
@@ -524,7 +527,7 @@ app.MapGet("/api/posts", (int page = 1, int limit = 40, string? search = null, s
             var score = reader.IsDBNull(10) ? 0 : reader.GetInt32(10);
             var commentsCount = reader.IsDBNull(11) ? 0 : reader.GetInt32(11);
             var rawTags = reader.IsDBNull(12) ? "[]" : reader.GetString(12);
-            var atlasId = reader.FieldCount > 13 && !reader.IsDBNull(13) ? reader.GetString(13) : "myatlas";
+            var atlasId = reader.IsDBNull(13) ? "myatlas" : reader.GetString(13);
 
             List<string> itemTags = new();
             try { itemTags = JsonSerializer.Deserialize<List<string>>(rawTags) ?? new(); } catch { }

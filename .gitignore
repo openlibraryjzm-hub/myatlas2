@@ -30,6 +30,9 @@ Thumbs.db
 
 # Local media downloads & dataset directories
 *_downloads/
+ww2_downloads/
+nasa_downloads/
+ships_downloads/
 tf2_downloads/
 tf2_wiki_downloads/
 pokemon_downloads/
@@ -37,6 +40,11 @@ tes_morrowind_downloads/
 starwars_downloads/
 minecraft_downloads/
 
-# Wiki API scraper & manifest enrichment scripts
-download_*.js
-enrich_*.js
+# Wiki API scraper, manifest enrichment & test scripts
+download_*
+enrich_*
+find_cats.js
+search_pokedex_commons.js
+test_*.js
+backfill_thumbnails.sql
+scratch/

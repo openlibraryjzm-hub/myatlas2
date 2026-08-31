@@ -137,3 +137,52 @@ When an end-user selects local files in the **Upload** view ([`Upload.jsx`](file
 2. **Basename Matching**: Matches file names (e.g. `Creeper.png` or `Creeper`) to manifest entries.
 3. **Auto-Category Registration**: The app invokes `ensureTagCategoriesExist(tags)` ([`mockData.js`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/data/mockData.js)), registering any newly encountered namespaces into `localStorage` (`myatlas_tag_categories`) with auto-assigned palette colors (`PALETTE_COLORS`).
 4. **Sidebar Accordion Integration**: On the **Browse Grid** ([`Posts.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/pages/Posts.jsx)), new categories illuminate as sovereign expandable accordions in the left sidebar with 1-click drill-down filtering and 250ms inspect-hover illumination.
+
+---
+
+## 🎖️ World War II Ingestion Progress & Session Handover Roadmap (Updated 2026-08-30)
+
+### Target Sub-Atlas Strategy: `ww2`
+This project ingests historical World War II equipment, vehicles, small arms, naval craft, and field photography into a dedicated offline Sub-Atlas using **Wikimedia Commons API** (`commons.wikimedia.org/w/api.php`) and **Wikidata SPARQL API** (`query.wikidata.org/sparql`).
+
+### Wikimedia & Wikidata Querying Strategy:
+- **API Candidates**:
+  - MediaWiki Action API: `https://commons.wikimedia.org/w/api.php?action=query&generator=categorymembers&gcmtitle=Category:<Target_Category>&prop=imageinfo&iiprop=url|size|extmetadata&format=json`
+  - Wikidata SPARQL API: `https://query.wikidata.org/sparql?query=<SPARQL>` targeting equipment items (`P31`), country of origin (`P495`), part of World War II (`P361` -> `Q362`), and direct Commons image links (`P18`).
+- **Tag Namespaces**:
+  - `copyright:ww2_history` (anchor)
+  - `license:public_domain` (anchor)
+  - `category:ww2`
+  - `faction:allies` | `faction:axis`
+  - `country:united_states` | `country:germany` | `country:soviet_union` | `country:united_kingdom` | `country:japan` | `country:italy`
+  - `type:armored_vehicle` | `type:aircraft` | `type:warship` | `type:small_arms` | `type:field_photo`
+  - `model:<slug>` (e.g. `model:panzer_iv`, `model:spitfire`, `model:t34`, `model:m1_garand`)
+  - `year:YYYY` & `decade:1940s`
+
+---
+
+### 🛑 Filtering Traps & Warnings for New Session
+1. **Modern Reenactments & Airshows**: Exclude modern airshow photos, reenactor portraits in uniform, and Living History events.
+2. **Scale Models & Die-Cast Toys**: Exclude plastic model kits, RC models, die-cast toys, and box art illustrations.
+3. **Memorial Monuments & Statues**: Exclude modern town square monuments, commemorative plaques, and museum exhibit signs.
+4. **Vector Diagrams**: Exclude `.svg` tactical map vectors or technical blueprints unless photographic media.
+- *Strict Exclusion Pattern*: `/reenactment|airshow|scale\s*model|replica|die-cast|diecast|monument|memorial|statue|museum\s+display|exhibit\s+sign|blueprint|toy|commemoration|gala|anniversary/i`
+
+---
+
+### WWII Planned Media Splits (Roadmap)
+1. **`ww2_downloads/tanks/`**: Armored Fighting Vehicles & Self-Propelled Guns (Panzer, T-34, M4 Sherman, Tiger I, Churchill, KV-1).
+2. **`ww2_downloads/aircraft/`**: Fighter, Bomber & Reconnaissance Aircraft (Spitfire, Bf 109, P-51 Mustang, B-17 Flying Fortress, A6M Zero, Il-2 Sturmovik).
+3. **`ww2_downloads/warships/`**: Naval Warfare, Submarines & Aircraft Carriers (U-boats, USS Enterprise, Yamato, HMS Hood, Bismarck, Fletcher-class).
+4. **`ww2_downloads/small_arms/`**: Infantry Weapons & Artillery (M1 Garand, MP 40, Mosin-Nagant, Thompson SMG, PPSh-41, 88mm Flak).
+5. **`ww2_downloads/pivotal_battles/`**: Authentic Historical Field Photography (Battle of Britain, Stalingrad, D-Day/Normandy, Midway, Iwo Jima, Kursk).
+
+---
+
+### Handover Instructions for New Session:
+- Refer to [`docs/ingestion_manifest_workflow.md`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/ingestion_manifest_workflow.md).
+- Target Sub-Atlas: **`ww2`**.
+- Downloader (`download_ww2_<split>.js`) & enricher (`enrich_ww2_<split>.js`) scripts follow the standard 3-phase workflow.
+- **Rule**: Omit `folder:` anchor tag as per user preference (keep `copyright:ww2_history` & `license:public_domain`).
+- **Rule**: Limit downloads to 100 items per split, then STOP to review and get greenlight for Phase 2!
+

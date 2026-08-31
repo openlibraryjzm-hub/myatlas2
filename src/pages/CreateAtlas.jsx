@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Compass, Sparkles, ArrowLeft, Check, Palette, Shield } from 'lucide-react';
+import { Compass, Sparkles, ArrowLeft, Check, Palette, Shield, Eye } from 'lucide-react';
 import { createServerAtlas } from '../services/api';
+import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './CreateAtlas.css';
 
 const PALETTE_OPTIONS = [
@@ -84,6 +85,17 @@ export default function CreateAtlas({ initialSlug = '', onAtlasCreated, onCancel
           <p className="ca-subtitle">
             Establish a sovereign booru archive for any domain (e.g. space, military, game assets).
           </p>
+        </div>
+
+        {/* Live Option A Header Logo Preview Banner */}
+        <div className="ca-preview-banner" style={{ borderColor: `${accentColor}40`, backgroundColor: `${accentColor}0a` }}>
+          <div className="ca-preview-header">
+            <Eye size={14} style={{ color: accentColor }} />
+            <span>LIVE LOGO & ACCENT PREVIEW</span>
+          </div>
+          <div className="ca-preview-title-box">
+            {renderDynamicTitle(title.trim() || cleanSlug || 'Space Archive', accentColor)}
+          </div>
         </div>
 
         {error && <div className="ca-error-box">{error}</div>}

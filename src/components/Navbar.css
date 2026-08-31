@@ -36,23 +36,15 @@
   color: var(--text-primary);
 }
 
-.nav-logo .title-reddit {
+.nav-logo .title-highlighted {
   font-weight: 700;
-  color: var(--text-primary);
-}
-
-.nav-logo .title-reddit.highlighted {
   color: var(--accent-color);
 }
 
-.nav-logo .title-booru {
-  font-style: italic;
+.nav-logo .title-rest {
   font-weight: 400;
   color: var(--text-primary);
-}
-
-.nav-logo .title-booru.highlighted {
-  color: var(--accent-color);
+  margin-left: 0.25rem;
 }
 
 /* Hyperminimalist Sub-Atlas Navbar Pill */

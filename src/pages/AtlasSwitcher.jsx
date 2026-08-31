@@ -140,35 +140,9 @@ export default function AtlasSwitcher({
           )}
         </div>
 
-        {/* Quick Access Badges Grid */}
+        {/* Scalable Create New Atlas Action */}
         <div className="as-quick-access">
-          <div className="as-quick-title">
-            <Layers size={13} />
-            <span>Active Sub-Atlases ({atlases.length})</span>
-          </div>
-
-          <div className="as-badges-grid">
-            {atlases.map((atlas) => {
-              const isActive = (currentAtlas || 'myatlas').toLowerCase() === atlas.id.toLowerCase();
-              return (
-                <button
-                  key={atlas.id}
-                  className={`as-badge-pill ${isActive ? 'active-pill' : ''}`}
-                  onClick={() => { onSelectAtlas(atlas.id); if (onClose) onClose(); }}
-                  style={{
-                    '--pill-accent': atlas.accentColor || '#CC5A01'
-                  }}
-                >
-                  <span className="as-pill-dot"></span>
-                  <span className="as-pill-name">{atlas.id}</span>
-                  {atlas.title && atlas.title !== atlas.id && (
-                    <span className="as-pill-subtitle">{atlas.title}</span>
-                  )}
-                  {isActive && <Check size={12} className="as-pill-check" />}
-                </button>
-              );
-            })}
-
+          <div className="as-actions-row" style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button
               className="as-badge-pill create-new-pill"
               onClick={() => { onCreateAtlas(''); if (onClose) onClose(); }}

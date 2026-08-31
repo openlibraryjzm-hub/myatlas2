@@ -38,7 +38,8 @@ my atlas 2/
 │       ├── tagger.md       # Speed tagging specs, auto-save on exit, queue timeline & category auto-coloring
 │       ├── upload.md       # Hard drive folder scanner, local file ingestion & background pre-caching
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning
-│       └── categories.md   # Tag Categories Directory specs, namespace management & scalability truncation
+│       ├── categories.md   # Tag Categories Directory specs, namespace management & scalability truncation
+│       └── discovery_cloud.md # Discovery Cloud 3D specs, Fibonacci distribution, filter dimming & scroll lock
 └── src/
     ├── main.jsx            # Application entry mount
     ├── index.css           # Claude visual tokens and design system metrics

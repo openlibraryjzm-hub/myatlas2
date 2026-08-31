@@ -796,27 +796,36 @@ export default function Upload({ currentAtlas = 'myatlas' }) {
             </span>
           </div>
 
-          <div className="upload-target-pills-row">
-            {availableAtlases.map((atlas) => {
-              const isActive = selectedAtlasSlug === atlas.id;
-              return (
-                <button
-                  key={atlas.id}
-                  type="button"
-                  className={`upload-target-pill ${isActive ? 'active' : ''}`}
-                  onClick={() => setSelectedAtlasSlug(atlas.id)}
-                  style={{ '--pill-accent': atlas.accentColor || '#CC5A01' }}
-                >
-                  <span className="upload-target-dot" style={{ backgroundColor: atlas.accentColor || '#CC5A01' }}></span>
-                  <span>atlasnetwork.org/<b>{atlas.id}</b></span>
-                  {isActive && <Check size={13} />}
-                </button>
-              );
-            })}
+          <div className="upload-target-input-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '10px 0' }}>
+            <span style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary, #8C8275)' }}>
+              atlasnetwork.org/
+            </span>
+            <input
+              type="text"
+              className="upload-target-slug-input"
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1.5px solid var(--border-color, #E6E1D7)',
+                background: 'var(--bg-primary, #FFFFFF)',
+                fontFamily: 'var(--font-mono, monospace)',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: 'var(--text-primary, #1A1814)',
+                outline: 'none'
+              }}
+              placeholder="type destination slug (e.g. space, military, myatlas)..."
+              value={selectedAtlasSlug}
+              onChange={(e) => {
+                const clean = e.target.value.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '');
+                setSelectedAtlasSlug(clean);
+              }}
+            />
           </div>
 
           <div className="upload-target-info-footer">
-            Ingestion Target: <b>atlasnetwork.org/{selectedAtlasSlug}</b> &bull; All media & metadata in this batch will be assigned to <code>{selectedAtlasSlug}</code>.
+            Ingestion Target: <b>atlasnetwork.org/{selectedAtlasSlug || 'myatlas'}</b> &bull; All media & metadata in this batch will be assigned to <code>{selectedAtlasSlug || 'myatlas'}</code>.
           </div>
         </div>
 

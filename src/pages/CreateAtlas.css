@@ -40,7 +40,34 @@
 }
 
 .ca-header {
+  margin-bottom: 1.5rem;
+}
+
+.ca-preview-banner {
+  border: 1px dashed;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
   margin-bottom: 2rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.ca-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #8C8275;
+  margin-bottom: 0.4rem;
+}
+
+.ca-preview-title-box {
+  font-family: var(--font-serif, 'Lora', Georgia, serif);
+  font-size: 1.75rem;
+  font-weight: 700;
 }
 
 .ca-icon-wrap {

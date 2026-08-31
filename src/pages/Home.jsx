@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './Home.css';
 
 export default function Home({ 
@@ -12,6 +13,7 @@ export default function Home({
   loadingStats,
   setView,
   currentAtlas = 'myatlas',
+  activeAtlasDetails,
   onConnectAtlas
 }) {
   const [localQuery, setLocalQuery] = useState(searchQuery);
@@ -25,12 +27,14 @@ export default function Home({
     return (totalCount || 0).toLocaleString();
   };
 
+  const titleText = activeAtlasDetails?.title || currentAtlas;
+  const accentColor = activeAtlasDetails?.accentColor || '#CC5A01';
+
   return (
     <main className="home-container">
       <div className="home-logo-container">
         <h1 className="home-title">
-          <span className="title-reddit highlighted">my</span>
-          <span className="title-booru">atlas</span>
+          {renderDynamicTitle(titleText, accentColor)}
         </h1>
       </div>
 

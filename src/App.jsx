@@ -10,14 +10,57 @@ import Users from './pages/Users';
 import Tagger from './pages/Tagger';
 import AtlasSwitcher from './pages/AtlasSwitcher';
 import CreateAtlas from './pages/CreateAtlas';
+import DiscoveryCloud from './pages/DiscoveryCloud';
 import { getLocalScrapes, getLocalMediaFiles } from './services/localDb';
+import { fetchServerAtlases } from './services/api';
+import { DEFAULT_ATLAS } from './utils/subAtlasUtils';
 
 export default function App() {
   const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'subreddits' | 'users' | 'saves' | 'switcher' | 'create-atlas'
 
   const [currentAtlas, setCurrentAtlas] = useState(() => localStorage.getItem('active_atlas') || 'myatlas');
+  const [atlases, setAtlases] = useState([DEFAULT_ATLAS]);
   const [initialCreateSlug, setInitialCreateSlug] = useState('');
   const [showSwitcherModal, setShowSwitcherModal] = useState(false);
+
+  const loadSubAtlases = async () => {
+    try {
+      const serverAtlases = await fetchServerAtlases();
+      const savedLocal = JSON.parse(localStorage.getItem('myatlas_sub_atlases') || '[]');
+      const combined = [DEFAULT_ATLAS];
+      
+      const toMerge = Array.isArray(serverAtlases) && serverAtlases.length > 0 ? serverAtlases : savedLocal;
+      toMerge.forEach(a => {
+        if (!combined.some(c => c.id.toLowerCase() === a.id.toLowerCase())) {
+          combined.push(a);
+        }
+      });
+      setAtlases(combined);
+    } catch (err) {
+      console.warn('Error loading sub-atlases registry:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadSubAtlases();
+  }, [currentAtlas, view]);
+
+  // Compute active atlas details object with default fallback
+  const activeAtlasDetails = atlases.find(
+    a => a.id.toLowerCase() === (currentAtlas || 'myatlas').toLowerCase()
+  ) || {
+    id: currentAtlas || 'myatlas',
+    title: currentAtlas ? (currentAtlas.charAt(0).toUpperCase() + currentAtlas.slice(1)) : 'My Atlas',
+    accentColor: '#CC5A01'
+  };
+
+  // Inject CSS accent colors onto document root
+  useEffect(() => {
+    const color = activeAtlasDetails.accentColor || '#CC5A01';
+    document.documentElement.style.setProperty('--accent-color', color);
+    document.documentElement.style.setProperty('--accent-color-light', `${color}15`);
+    document.documentElement.style.setProperty('--accent-color-border', `${color}30`);
+  }, [activeAtlasDetails.accentColor]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState([]);
@@ -78,29 +121,40 @@ export default function App() {
     setSavedPostIds(saved);
   };
 
-  // Fetch stats dynamically from local SQLite DB
+  // Fetch stats dynamically scoped to active sub-atlas
   const fetchStats = async () => {
     setLoadingStats(true);
     try {
-      const [scrapes, media] = await Promise.all([
-        getLocalScrapes(),
-        getLocalMediaFiles()
-      ]);
-      const totalLocal = scrapes.length + media.length;
-      setTotalCount(totalLocal);
+      const { getPaginatedItems } = await import('./services/localDb');
+      const { fetchServerPosts, checkServerHealth } = await import('./services/api');
+      const slug = (currentAtlas || 'myatlas').toLowerCase();
 
-      // Extract unique categories/subreddits from local items
-      const allTags = [...scrapes, ...media].flatMap(item => item.tags || []);
-      const subs = new Set(allTags.filter(t => typeof t === 'string' && t.startsWith('r/')));
-      const users = new Set(allTags.filter(t => typeof t === 'string' && t.startsWith('u/')));
-      
-      setSubredditsCount(subs.size);
-      setUsersCount(users.size);
+      // 1. Check local SQLite total for active sub-atlas
+      const localResult = await getPaginatedItems({
+        page: 1,
+        limit: 1,
+        atlas: slug
+      });
+
+      let total = localResult?.total || 0;
+
+      // 2. Check server total for active sub-atlas if C# server is online
+      const isOnline = await checkServerHealth();
+      if (isOnline) {
+        const serverResult = await fetchServerPosts({
+          page: 1,
+          limit: 1,
+          atlas: slug
+        });
+        if (serverResult && typeof serverResult.total === 'number') {
+          total = serverResult.total;
+        }
+      }
+
+      setTotalCount(total);
     } catch (err) {
-      console.error('Error fetching local stats:', err);
+      console.error('Error fetching sub-atlas stats:', err);
       setTotalCount(0);
-      setSubredditsCount(0);
-      setUsersCount(0);
     } finally {
       setLoadingStats(false);
     }
@@ -149,7 +203,7 @@ export default function App() {
   };
 
   return (
-    <div className={`app-container theme-${currentAtlas} ${view === 'users' || view === 'posts' ? 'users-view-active' : ''}`}>
+    <div className={`app-container theme-${currentAtlas} ${view === 'users' || view === 'posts' ? 'users-view-active' : ''} ${view === 'discovery' ? 'discovery-view-active' : ''}`}>
       {/* Shared Navbar - Hidden on Home Page */}
       {view !== 'home' && (
         <Navbar 
@@ -159,6 +213,7 @@ export default function App() {
           setSearchQuery={setSearchQuery}
           onSearchSubmit={handleSearchSubmit}
           currentAtlas={currentAtlas}
+          activeAtlasDetails={activeAtlasDetails}
           onOpenSwitcher={() => setShowSwitcherModal(true)}
         />
       )}
@@ -187,6 +242,7 @@ export default function App() {
           loadingStats={loadingStats}
           setView={setView}
           currentAtlas={currentAtlas}
+          activeAtlasDetails={activeAtlasDetails}
           onConnectAtlas={handleConnectAtlas}
         />
       ) : view === 'switcher' ? (
@@ -201,6 +257,8 @@ export default function App() {
           onAtlasCreated={handleSelectAtlas}
           onCancel={() => setView('posts')}
         />
+      ) : view === 'discovery' ? (
+        <DiscoveryCloud atlases={atlases} onSelectAtlas={handleSelectAtlas} />
       ) : view === 'upload' ? (
         <Upload currentAtlas={currentAtlas} />
       ) : view === 'deletor' ? (
@@ -237,7 +295,7 @@ export default function App() {
       )}
 
       {/* Footer */}
-      {view !== 'users' && view !== 'posts' && (
+      {view !== 'users' && view !== 'posts' && view !== 'discovery' && (
         <footer className="app-footer">
           <p>
             <span>my</span>atlas &copy; {new Date().getFullYear()} &bull; Local Bookmark & Media Manager.

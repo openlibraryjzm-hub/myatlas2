@@ -53,8 +53,18 @@ The Sub-Atlas Router allows instant navigation via a terminal-styled prompt matc
 
 ### Live Slug Lookup Behaviors:
 - **Match Found**: Displays green indicator (`✓ Found: "Space & Astronomy Archive" • 1,420 posts`) with `Press Enter ↵ to enter atlas`. Pressing `Enter` navigates to the grid.
-- **Match Not Found**: Displays amber indicator (`+ No sub-atlas "space-x" found. Press Shift+Enter to create it`). Pressing `Enter` or `Shift+Enter` opens the Sub-Atlas Creator with the slug pre-filled.
-- **Quick Access Badges**: Displays small pills for all active sub-atlases below the prompt for 1-click switching.
+- **Match Not Found**: Displays amber indicator (`+ Sub-atlas "atlasnetwork.org/space-x" doesn't exist yet. Press Enter ↵ to create it now!`). Pressing `Enter` opens the Sub-Atlas Creator with the slug pre-filled.
+- **Infinite Scale Typed Router**: Pre-rendered atlas pills are omitted so that navigating between thousands of sub-atlases relies strictly on instant, typed slug inputs (`atlasnetwork.org/<slug>`) with 0ms UI lag or overflow.
+
+---
+
+## 🌌 Discovery Cloud 3D Atlas Galaxy Explorer (`DiscoveryCloud.jsx`)
+
+The **Discovery Cloud** (`view === 'discovery'`, accessible via the Globe header icon) provides an interactive 3D constellation visualizer for sub-atlas archives across the platform:
+- **Mathematical 3D Fibonacci Placement**: Automatically calculates 3D coordinates $(x, y, z)$ across a Fibonacci sphere for any number of registered sub-atlases.
+- **Live Tag Search & Dimming**: Typing tag queries or selecting category filters ignites matching stars in their accent color (`atlas.accentColor`) while dimming non-matching archives down to 8% opacity.
+- **Raycast Hover Inspection**: Hovering near any 3D node displays a popover card showing the sub-atlas display title, slug (`atlasnetwork.org/<slug>`), post count, tags, and a 1-click **"Enter Sub-Atlas"** navigation CTA.
+- **Non-Passive Scroll Locking**: Canvas attaches a native `{ passive: false }` wheel listener that locks viewport scrolling, ensuring mouse wheel interactions purely control 3D camera zoom distance.
 
 ---
 
@@ -76,9 +86,11 @@ Registers a new sub-atlas in SQLite and C# backend:
 
 ---
 
-## 🧭 Header Badge Pill & Quick Switcher Overlay (`Navbar.jsx`)
+## 🧭 Header Badge Pill & Dynamic Title Logo (`Navbar.jsx`)
 
-- **Navbar Badge Pill**: Displays the active sub-atlas pill in the sticky top header (`🌐 atlasnetwork.org/myatlas` or `🚀 atlasnetwork.org/space`).
+- **Dynamic Logo (Option A Word-Splitting)**: Renders the active sub-atlas display title in the top-left logo. The first word is highlighted with the sub-atlas's chosen accent color (`--accent-color`), with remaining words in standard text.
+- **Logo Navigation**: Clicking the top-left active sub-atlas logo navigates directly back to the active sub-atlas's Homepage (`view = 'home'`).
+- **Navbar Badge Pill**: Displays the active sub-atlas pill in the sticky top header (`atlasnetwork.org/myatlas` or `atlasnetwork.org/nasa`) with an active accent border/tint matching the sub-atlas theme color.
 - **Global `Ctrl+K` Shortcut**: Pressing `Ctrl+K` or clicking the Navbar atlas pill opens the hyperminimalist switcher modal overlay from anywhere in the application.
 
 ---
@@ -87,7 +99,7 @@ Registers a new sub-atlas in SQLite and C# backend:
 
 The Ingestion Manager includes an explicit **Target Sub-Atlas Archive Destination Panel**:
 - Automatically defaults to the atlas you opened the upload page from.
-- Renders 1-click pill buttons for all active sub-atlases so you can confirm or switch destination archives before ingesting media.
+- Features a clean, typed slug input (`atlasnetwork.org/<slug>`) so users can type or switch destination archives before ingesting media.
 - Ingested files (local photos, videos, or JSON scrape archives) receive `atlas_id: selectedAtlasSlug` during database commit.
 
 ---
@@ -129,6 +141,7 @@ CREATE INDEX IF NOT EXISTS idx_local_items_atlas ON local_items(atlas_id);
 ---
 
 ## 📄 Related Documentation
+- [Discovery Cloud 3D Specifications](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/views/discovery_cloud.md)
 - [Big Picture Vision & Cloud Conversion Strategy](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/big_picture_dream.md)
 - [System Architecture](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/architecture.md)
 - [Browse Grid & Left Sidebar Specifications](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/views/grid.md)
