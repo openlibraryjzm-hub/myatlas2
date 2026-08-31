@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Compass, Upload, Trash2, Tag, Wrench, Globe } from 'lucide-react';
+import { Search, Compass, Upload, Trash2, Tag, Wrench, Globe, User } from 'lucide-react';
 import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './Navbar.css';
 
@@ -153,6 +153,16 @@ export default function Navbar({
           title="Mass Deletor Studio"
         >
           <Trash2 size={16} />
+        </button>
+
+        <button 
+          className={`nav-icon-btn ${view === 'users' ? 'active' : ''}`}
+          onClick={() => setView('users')}
+          onMouseEnter={() => setHoveredLabel('user profile')}
+          onMouseLeave={() => setHoveredLabel('')}
+          title="User Profile"
+        >
+          <User size={16} />
         </button>
       </div>
     </header>

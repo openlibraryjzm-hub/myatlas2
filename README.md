@@ -39,7 +39,8 @@ my atlas 2/
 │       ├── upload.md       # Hard drive folder scanner, local file ingestion & background pre-caching
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning
 │       ├── categories.md   # Tag Categories Directory specs, namespace management & scalability truncation
-│       └── discovery_cloud.md # Discovery Cloud 3D specs, Fibonacci distribution, filter dimming & scroll lock
+│       ├── discovery_cloud.md # Discovery Cloud 3D specs, Fibonacci distribution, filter dimming & scroll lock
+│       └── users.md        # User Profile specs, avatar placeholder, icon options & showcase bars
 └── src/
     ├── main.jsx            # Application entry mount
     ├── index.css           # Claude visual tokens and design system metrics
@@ -57,7 +58,8 @@ my atlas 2/
         ├── Tagger.jsx      # Speed tagging interface with category slots
         ├── Upload.jsx      # Hard drive folder scanner & local file batch ingestion
         ├── Deletor.jsx     # Mass Deletor Studio for batch tag pruning
-        └── Categories.jsx  # Tag Categories Directory for inspecting & managing namespaces
+        ├── Categories.jsx  # Tag Categories Directory for inspecting & managing namespaces
+        └── Users.jsx       # User Profile view with avatar placeholder, icon options & showcase bars
 ```
 
 ---
