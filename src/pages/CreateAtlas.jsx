@@ -15,7 +15,7 @@ const PALETTE_OPTIONS = [
   { name: 'Burnt Orange', hex: '#ea580c' }
 ];
 
-export default function CreateAtlas({ initialSlug = '', onAtlasCreated, onCancel }) {
+export default function CreateAtlas({ initialSlug = '', currentUser, onAtlasCreated, onCancel }) {
   const [slug, setSlug] = useState(initialSlug);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -49,7 +49,9 @@ export default function CreateAtlas({ initialSlug = '', onAtlasCreated, onCancel
         id: cleanSlug,
         title: finalTitle,
         description: description.trim(),
-        accentColor
+        accentColor,
+        ownerUserId: currentUser?.id || 'usr_curator',
+        ownerUsername: currentUser?.username || 'curator'
       };
 
       // 1. Sync to C# Backend if online

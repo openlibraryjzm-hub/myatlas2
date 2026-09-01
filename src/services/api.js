@@ -82,14 +82,84 @@ export async function fetchServerAtlas(id) {
 }
 
 /**
+ * Fetch all local users from C# Backend
+ */
+export async function fetchServerUsers() {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/users`);
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.warn('C# backend users offline:', err.message);
+    return [];
+  }
+}
+
+/**
+ * Fetch details for a single user by username
+ */
+export async function fetchServerUser(username) {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/users/${encodeURIComponent(username)}`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.warn(`Failed to fetch user '${username}':`, err.message);
+    return null;
+  }
+}
+
+/**
+ * Authenticate local session by username & password
+ */
+export async function loginServerUser(username, password) {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/users/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || `Server returned ${res.status}`);
+    }
+    return await res.json();
+  } catch (err) {
+    console.warn('Login failed:', err.message);
+    throw err;
+  }
+}
+
+/**
+ * Register a new local user account with password
+ */
+export async function registerServerUser({ username, displayName, password, avatarUrl = '' }) {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/users/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, displayName, password, avatarUrl })
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || `Server returned ${res.status}`);
+    }
+    return await res.json();
+  } catch (err) {
+    console.warn('Register failed:', err.message);
+    throw err;
+  }
+}
+
+/**
  * Create or update a Sub-Atlas on C# Backend
  */
-export async function createServerAtlas({ id, title, description = '', accentColor = '#CC5A01' }) {
+export async function createServerAtlas({ id, title, description = '', accentColor = '#CC5A01', ownerUserId = 'usr_curator' }) {
   try {
     const res = await fetch(`${SERVER_BASE_URL}/api/atlases`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, title, description, accentColor })
+      body: JSON.stringify({ id, title, description, accentColor, ownerUserId })
     });
     if (!res.ok) throw new Error(`Server returned ${res.status}`);
     return await res.json();

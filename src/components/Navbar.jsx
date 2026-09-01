@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Compass, Upload, Trash2, Tag, Wrench, Globe, User } from 'lucide-react';
+import { Search, Compass, Upload, Trash2, Tag, Wrench, Globe, User, Settings } from 'lucide-react';
 import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './Navbar.css';
 
@@ -11,6 +11,7 @@ export default function Navbar({
   onSearchSubmit, 
   currentAtlas = 'myatlas', 
   activeAtlasDetails,
+  currentUser,
   onOpenSwitcher 
 }) {
   const [searchOpen, setSearchOpen] = useState(!!searchQuery);
@@ -56,6 +57,17 @@ export default function Navbar({
         >
           <span className="nav-atlas-prefix">atlasnetwork.org/</span>
           <span className="nav-atlas-slug">{currentAtlas}</span>
+        </button>
+
+        {/* Atlas Settings / Moderation Gear Button */}
+        <button
+          className={`nav-icon-btn ${view === 'atlas-settings' ? 'active' : ''}`}
+          onClick={() => setView('atlas-settings')}
+          onMouseEnter={() => setHoveredLabel('atlas settings & moderation')}
+          onMouseLeave={() => setHoveredLabel('')}
+          title="Atlas Settings & Moderation"
+        >
+          <Settings size={15} />
         </button>
         
         <div className="nav-icon-buttons">
@@ -158,9 +170,9 @@ export default function Navbar({
         <button 
           className={`nav-icon-btn ${view === 'users' ? 'active' : ''}`}
           onClick={() => setView('users')}
-          onMouseEnter={() => setHoveredLabel('user profile')}
+          onMouseEnter={() => setHoveredLabel(currentUser ? `@${currentUser.username}` : 'sign in / profile')}
           onMouseLeave={() => setHoveredLabel('')}
-          title="User Profile"
+          title={currentUser ? `Profile (@${currentUser.username})` : 'User Profile / Sign In'}
         >
           <User size={16} />
         </button>

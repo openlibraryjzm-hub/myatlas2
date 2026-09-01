@@ -1,5 +1,6 @@
-import React from 'react';
-import { Heart, Settings, LogOut, Award, Globe, Image as ImageIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { Heart, Settings, LogOut, Award, Globe, Image as ImageIcon, User, UserPlus, LogIn } from 'lucide-react';
+import { loginServerUser, registerServerUser } from '../services/api';
 import './Users.css';
 
 // Custom Mythological Atlas SVG Icon (Titan holding up the celestial sphere)
@@ -38,17 +39,171 @@ function MythologicalAtlasIcon({ size = 18, className = "" }) {
   );
 }
 
-export default function Users() {
+export default function Users({ currentUser, onLogin, onLogout }) {
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
+  const [usernameInput, setUsernameInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [displayNameInput, setDisplayNameInput] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    if (!usernameInput.trim() || !passwordInput) return;
+
+    setErrorMsg('');
+    setSubmitting(true);
+
+    try {
+      if (authMode === 'login') {
+        const res = await loginServerUser(usernameInput.trim(), passwordInput);
+        if (res && res.user) {
+          onLogin(res.user);
+        }
+      } else {
+        const res = await registerServerUser({
+          username: usernameInput.trim(),
+          displayName: displayNameInput.trim() || usernameInput.trim(),
+          password: passwordInput
+        });
+        if (res && res.user) {
+          onLogin(res.user);
+        }
+      }
+    } catch (err) {
+      setErrorMsg(err.message || 'Authentication failed. Check credentials or C# backend.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // -------------------------------------------------------------
+  // STATE 1: UNAUTHENTICATED / LOGGED OUT
+  // -------------------------------------------------------------
+  if (!currentUser) {
+    return (
+      <div className="user-profile-page logged-out-view">
+        <div className="auth-card-container">
+          <div className="auth-card-header">
+            <div className="auth-header-icon-badge">
+              <User size={24} />
+            </div>
+            <h2 className="auth-title">
+              {authMode === 'login' ? 'Sign In to Atlas Network' : 'Create Local Account'}
+            </h2>
+            <p className="auth-subtitle">
+              {authMode === 'login' 
+                ? 'Enter your local handle and password to manage sovereign sub-atlases' 
+                : 'Register a new offline local identity for media curation'}
+            </p>
+          </div>
+
+          <div className="auth-tabs">
+            <button 
+              className={`auth-tab-btn ${authMode === 'login' ? 'active' : ''}`}
+              onClick={() => { setAuthMode('login'); setErrorMsg(''); }}
+            >
+              <LogIn size={15} />
+              <span>Sign In</span>
+            </button>
+            <button 
+              className={`auth-tab-btn ${authMode === 'register' ? 'active' : ''}`}
+              onClick={() => { setAuthMode('register'); setErrorMsg(''); }}
+            >
+              <UserPlus size={15} />
+              <span>Register</span>
+            </button>
+          </div>
+
+          {errorMsg && (
+            <div className="auth-error-banner">
+              {errorMsg}
+            </div>
+          )}
+
+          <form onSubmit={handleAuthSubmit} className="auth-form">
+            <div className="auth-field">
+              <label className="auth-label">Username Handle</label>
+              <div className="auth-input-wrapper">
+                <span className="auth-handle-prefix">@</span>
+                <input 
+                  type="text"
+                  placeholder="curator"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  className="auth-input"
+                  autoFocus
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="auth-field">
+              <label className="auth-label">Password</label>
+              <input 
+                type="password"
+                placeholder="••••••••"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                className="auth-input standalone-input"
+                required
+              />
+            </div>
+
+            {authMode === 'register' && (
+              <div className="auth-field">
+                <label className="auth-label">Display Name</label>
+                <input 
+                  type="text"
+                  placeholder="Curator"
+                  value={displayNameInput}
+                  onChange={(e) => setDisplayNameInput(e.target.value)}
+                  className="auth-input standalone-input"
+                />
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              className="auth-submit-btn" 
+              disabled={submitting || !usernameInput.trim() || !passwordInput}
+            >
+              {submitting 
+                ? 'Authenticating...' 
+                : authMode === 'login' 
+                  ? 'Sign In to Profile' 
+                  : 'Create Local Profile'}
+            </button>
+          </form>
+
+          <div className="auth-footer-note">
+            100% offline local authentication store operating on C# SQLite.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------
+  // STATE 2: AUTHENTICATED / LOGGED IN PROFILE
+  // -------------------------------------------------------------
+  const initialLetter = (currentUser.displayName || currentUser.username || 'C').charAt(0).toUpperCase();
+
   return (
     <div className="user-profile-page">
       <div className="user-profile-container">
-        {/* Left Side: Avatar, Icon Options, and Giant Bio Box */}
+        {/* Left Side: Avatar, Icon Options, and Bio Box */}
         <aside className="user-profile-left">
           {/* Large Square Profile Picture Placeholder */}
           <div className="user-avatar-square-placeholder">
-            <div className="avatar-blank-inner">
-              <span className="avatar-placeholder-text">-placeholder-</span>
-            </div>
+            {currentUser.avatarUrl ? (
+              <img src={currentUser.avatarUrl} alt={currentUser.username} className="avatar-img-full" />
+            ) : (
+              <div className="avatar-blank-inner">
+                <span className="avatar-initial-badge">{initialLetter}</span>
+                <span className="avatar-handle-badge">@{currentUser.username}</span>
+              </div>
+            )}
           </div>
 
           {/* Pure Icon-Only Action Options */}
@@ -62,14 +217,22 @@ export default function Users() {
             <button className="user-option-icon-btn" title="Options" onClick={(e) => e.preventDefault()}>
               <Settings size={18} />
             </button>
-            <button className="user-option-icon-btn" title="Log Out" onClick={(e) => e.preventDefault()}>
+            <button 
+              className="user-option-icon-btn logout-btn" 
+              title="Log Out" 
+              onClick={onLogout}
+            >
               <LogOut size={18} />
             </button>
           </div>
 
-          {/* Giant Text Box with Centered Placeholder */}
+          {/* Giant Text Box with User Details */}
           <div className="user-bio-giant-textbox">
-            <span className="giant-textbox-placeholder-text">-placeholder-</span>
+            <div className="user-bio-content">
+              <h3 className="user-display-name">{currentUser.displayName || currentUser.username}</h3>
+              <p className="user-handle-sub">@{currentUser.username}</p>
+              <div className="user-role-badge">Local Curator</div>
+            </div>
           </div>
         </aside>
 
@@ -82,11 +245,14 @@ export default function Users() {
                 <Award className="showcase-icon" size={16} />
                 <h3 className="showcase-title">Badge Showcase</h3>
               </div>
-              <span className="showcase-badge-count">0 Badges</span>
+              <span className="showcase-badge-count">1 Badge</span>
             </div>
             <div className="showcase-bar-content">
               <div className="showcase-blank-grid">
-                {[1, 2, 3, 4, 5].map((idx) => (
+                <div className="showcase-blank-card active-badge-card">
+                  <span className="blank-card-text">🏛️ Creator</span>
+                </div>
+                {[1, 2, 3, 4].map((idx) => (
                   <div key={`badge-slot-${idx}`} className="showcase-blank-card">
                     <span className="blank-card-text">-placeholder-</span>
                   </div>
@@ -102,11 +268,14 @@ export default function Users() {
                 <Globe className="showcase-icon" size={16} />
                 <h3 className="showcase-title">Atlas Showcase</h3>
               </div>
-              <span className="showcase-badge-count">0 Featured</span>
+              <span className="showcase-badge-count">1 Featured</span>
             </div>
             <div className="showcase-bar-content">
               <div className="showcase-blank-grid">
-                {[1, 2, 3].map((idx) => (
+                <div className="showcase-blank-card showcase-wide-card active-atlas-showcase">
+                  <span className="blank-card-text">🌐 myatlas</span>
+                </div>
+                {[1, 2].map((idx) => (
                   <div key={`atlas-slot-${idx}`} className="showcase-blank-card showcase-wide-card">
                     <span className="blank-card-text">-placeholder-</span>
                   </div>

@@ -40,6 +40,21 @@ The User Profile view uses a two-column responsive flex layout (`.user-profile-c
 └──────────────────────────────┴──────────────────────────────────────────┘
 ```
 
+## 🔐 Authentication & Session View States
+
+The User Profile page renders two distinct view states depending on `currentUser`:
+
+### 1. Logged Out State (`currentUser === null`)
+- Renders an **Authentication Card** (`.auth-card-container`, max-width `440px`) centered on the cream backdrop.
+- **Auth Tabs**: Switch between **Sign In** and **Register** forms.
+- **Inputs**: Username Handle (`@username`) and Password field (`type="password"`).
+- **Authentication**: Connects to `POST /api/users/login` and `POST /api/users/register` on the C# backend.
+
+### 2. Logged In State (`currentUser !== null`)
+- Renders the full two-column user profile layout detailed below.
+- Avatar shows user initials or avatar image with `@username` handle badge.
+- Clicking **Log Out** (`<LogOut size={18} />`) clears session state and transitions back to the Logged Out state.
+
 ---
 
 ## 👤 Left Column System (`.user-profile-left`)

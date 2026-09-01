@@ -11,12 +11,32 @@ import Tagger from './pages/Tagger';
 import AtlasSwitcher from './pages/AtlasSwitcher';
 import CreateAtlas from './pages/CreateAtlas';
 import DiscoveryCloud from './pages/DiscoveryCloud';
+import AtlasSettings from './pages/AtlasSettings';
 import { getLocalScrapes, getLocalMediaFiles } from './services/localDb';
 import { fetchServerAtlases } from './services/api';
 import { DEFAULT_ATLAS } from './utils/subAtlasUtils';
 
 export default function App() {
   const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'subreddits' | 'users' | 'saves' | 'switcher' | 'create-atlas'
+
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('myatlas_current_user');
+      return saved ? JSON.parse(saved) : { id: 'usr_curator', username: 'curator', displayName: 'Curator' };
+    } catch {
+      return { id: 'usr_curator', username: 'curator', displayName: 'Curator' };
+    }
+  });
+
+  const handleLogin = (userObj) => {
+    setCurrentUser(userObj);
+    localStorage.setItem('myatlas_current_user', JSON.stringify(userObj));
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('myatlas_current_user');
+  };
 
   const [currentAtlas, setCurrentAtlas] = useState(() => localStorage.getItem('active_atlas') || 'myatlas');
   const [atlases, setAtlases] = useState([DEFAULT_ATLAS]);
@@ -214,6 +234,7 @@ export default function App() {
           onSearchSubmit={handleSearchSubmit}
           currentAtlas={currentAtlas}
           activeAtlasDetails={activeAtlasDetails}
+          currentUser={currentUser}
           onOpenSwitcher={() => setShowSwitcherModal(true)}
         />
       )}
@@ -254,8 +275,17 @@ export default function App() {
       ) : view === 'create-atlas' ? (
         <CreateAtlas
           initialSlug={initialCreateSlug}
+          currentUser={currentUser}
           onAtlasCreated={handleSelectAtlas}
           onCancel={() => setView('posts')}
+        />
+      ) : view === 'atlas-settings' ? (
+        <AtlasSettings
+          currentAtlas={currentAtlas}
+          activeAtlasDetails={activeAtlasDetails}
+          currentUser={currentUser}
+          onUpdateAtlas={() => { loadSubAtlases(); setView('posts'); }}
+          onNavigateBack={() => setView('posts')}
         />
       ) : view === 'discovery' ? (
         <DiscoveryCloud atlases={atlases} onSelectAtlas={handleSelectAtlas} />
@@ -268,7 +298,12 @@ export default function App() {
       ) : view === 'subreddits' ? (
         <Subreddits onSubredditClick={handleTagToggle} />
       ) : view === 'users' ? (
-        <Users searchQuery={searchQuery} />
+        <Users 
+          searchQuery={searchQuery} 
+          currentUser={currentUser}
+          onLogin={handleLogin}
+          onLogout={handleLogout}
+        />
       ) : view === 'tagger' ? (
         <Tagger 
           currentAtlas={currentAtlas} 

@@ -53,15 +53,31 @@ using (var connection = new SqliteConnection(connectionString))
     }
     var command = connection.CreateCommand();
     command.CommandText = @"
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            username TEXT UNIQUE NOT NULL,
+            display_name TEXT,
+            avatar_url TEXT,
+            password_hash TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
         CREATE TABLE IF NOT EXISTS atlases (
             id TEXT PRIMARY KEY,
             title TEXT NOT NULL,
             description TEXT,
             accent_color TEXT DEFAULT '#CC5A01',
+            owner_user_id TEXT DEFAULT 'usr_curator',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-        INSERT OR IGNORE INTO atlases (id, title, description, accent_color) 
-        VALUES ('myatlas', 'My Atlas', 'Default main atlas archive', '#CC5A01');
+
+        CREATE TABLE IF NOT EXISTS atlas_members (
+            atlas_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            role TEXT DEFAULT 'member',
+            joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY(atlas_id, user_id)
+        );
 
         CREATE TABLE IF NOT EXISTS local_items (
             id TEXT PRIMARY KEY,
@@ -87,10 +103,70 @@ using (var connection = new SqliteConnection(connectionString))
 
     try
     {
+        using (var alterPassCmd = connection.CreateCommand())
+        {
+            alterPassCmd.CommandText = "ALTER TABLE users ADD COLUMN password_hash TEXT;";
+            alterPassCmd.ExecuteNonQuery();
+        }
+    }
+    catch { /* Column already exists */ }
+
+    try
+    {
         using (var alterCmd = connection.CreateCommand())
         {
             alterCmd.CommandText = "ALTER TABLE local_items ADD COLUMN atlas_id TEXT DEFAULT 'myatlas';";
             alterCmd.ExecuteNonQuery();
+        }
+    }
+    catch { /* Column already exists */ }
+
+    try
+    {
+        using (var alterOwnerCmd = connection.CreateCommand())
+        {
+            alterOwnerCmd.CommandText = "ALTER TABLE atlases ADD COLUMN owner_user_id TEXT DEFAULT 'usr_curator';";
+            alterOwnerCmd.ExecuteNonQuery();
+        }
+    }
+    catch { /* Column already exists */ }
+
+    // Seed default curator account & default atlas
+    string curatorPassHash = HashUserPassword("crocattack67");
+    using (var seedCmd = connection.CreateCommand())
+    {
+        seedCmd.CommandText = @"
+            INSERT OR IGNORE INTO users (id, username, display_name, avatar_url, password_hash)
+            VALUES ('usr_curator', 'curator', 'Curator', '', $passHash);
+
+            UPDATE users SET password_hash = $passHash WHERE LOWER(username) = 'curator';
+
+            INSERT OR IGNORE INTO atlases (id, title, description, accent_color, owner_user_id) 
+            VALUES ('myatlas', 'My Atlas', 'Default main atlas archive', '#CC5A01', 'usr_curator');
+
+            INSERT OR IGNORE INTO atlas_members (atlas_id, user_id, role)
+            VALUES ('myatlas', 'usr_curator', 'owner');
+        ";
+        seedCmd.Parameters.AddWithValue("$passHash", curatorPassHash);
+        seedCmd.ExecuteNonQuery();
+    }
+
+    try
+    {
+        using (var alterCmd = connection.CreateCommand())
+        {
+            alterCmd.CommandText = "ALTER TABLE local_items ADD COLUMN atlas_id TEXT DEFAULT 'myatlas';";
+            alterCmd.ExecuteNonQuery();
+        }
+    }
+    catch { /* Column already exists */ }
+
+    try
+    {
+        using (var alterOwnerCmd = connection.CreateCommand())
+        {
+            alterOwnerCmd.CommandText = "ALTER TABLE atlases ADD COLUMN owner_user_id TEXT DEFAULT 'usr_curator';";
+            alterOwnerCmd.ExecuteNonQuery();
         }
     }
     catch { /* Column already exists */ }
@@ -304,7 +380,178 @@ app.MapGet("/api/stats", () =>
     });
 });
 
-// List All Sub-Atlases with Post Counts
+// -------------------------------------------------------------
+// USER & ACCOUNT ENDPOINTS
+// -------------------------------------------------------------
+
+// List All Local Users
+app.MapGet("/api/users", () =>
+{
+    using var conn = new SqliteConnection(connectionString);
+    conn.Open();
+    var usersList = new List<object>();
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = "SELECT id, username, display_name, avatar_url, created_at FROM users ORDER BY created_at ASC;";
+    using var reader = cmd.ExecuteReader();
+    while (reader.Read())
+    {
+        usersList.Add(new
+        {
+            id = reader.GetString(0),
+            username = reader.GetString(1),
+            displayName = reader.IsDBNull(2) ? reader.GetString(1) : reader.GetString(2),
+            avatarUrl = reader.IsDBNull(3) ? "" : reader.GetString(3),
+            createdAt = reader.IsDBNull(4) ? "" : reader.GetString(4)
+        });
+    }
+    return Results.Ok(usersList);
+});
+
+// Get Single User Details
+app.MapGet("/api/users/{username}", (string username) =>
+{
+    using var conn = new SqliteConnection(connectionString);
+    conn.Open();
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = "SELECT id, username, display_name, avatar_url, created_at FROM users WHERE LOWER(username) = LOWER($username) LIMIT 1;";
+    cmd.Parameters.AddWithValue("$username", username.Trim());
+    using var reader = cmd.ExecuteReader();
+    if (reader.Read())
+    {
+        return Results.Ok(new
+        {
+            id = reader.GetString(0),
+            username = reader.GetString(1),
+            displayName = reader.IsDBNull(2) ? reader.GetString(1) : reader.GetString(2),
+            avatarUrl = reader.IsDBNull(3) ? "" : reader.GetString(3),
+            createdAt = reader.IsDBNull(4) ? "" : reader.GetString(4)
+        });
+    }
+    return Results.NotFound(new { error = $"User '@{username}' not found" });
+});
+
+// Helper for hashing user passwords locally with SHA-256
+static string HashUserPassword(string rawPassword)
+{
+    if (string.IsNullOrEmpty(rawPassword)) return "";
+    using var sha = System.Security.Cryptography.SHA256.Create();
+    byte[] b = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes("myatlas_salt_" + rawPassword));
+    return Convert.ToHexString(b);
+}
+
+// Authenticate Local Session
+app.MapPost("/api/users/login", async (HttpRequest request) =>
+{
+    try
+    {
+        using var reader = new StreamReader(request.Body);
+        var bodyText = await reader.ReadToEndAsync();
+        using var doc = JsonDocument.Parse(bodyText);
+        var root = doc.RootElement;
+        string username = root.TryGetProperty("username", out var uProp) ? uProp.GetString() ?? "" : "";
+        string password = root.TryGetProperty("password", out var pProp) ? pProp.GetString() ?? "" : "";
+        username = username.Trim().ToLower();
+        if (string.IsNullOrEmpty(username)) return Results.BadRequest(new { error = "Username is required" });
+
+        using var conn = new SqliteConnection(connectionString);
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT id, username, display_name, avatar_url, password_hash, created_at FROM users WHERE LOWER(username) = LOWER($username) LIMIT 1;";
+        cmd.Parameters.AddWithValue("$username", username);
+        using var r = cmd.ExecuteReader();
+        if (r.Read())
+        {
+            string storedHash = r.IsDBNull(4) ? "" : r.GetString(4);
+            if (!string.IsNullOrEmpty(storedHash))
+            {
+                string inputHash = HashUserPassword(password);
+                if (!string.Equals(storedHash, inputHash, StringComparison.OrdinalIgnoreCase))
+                {
+                    return Results.BadRequest(new { error = "Invalid password. Please check your credentials." });
+                }
+            }
+
+            return Results.Ok(new
+            {
+                success = true,
+                user = new
+                {
+                    id = r.GetString(0),
+                    username = r.GetString(1),
+                    displayName = r.IsDBNull(2) ? r.GetString(1) : r.GetString(2),
+                    avatarUrl = r.IsDBNull(3) ? "" : r.GetString(3),
+                    createdAt = r.IsDBNull(5) ? "" : r.GetString(5)
+                }
+            });
+        }
+        return Results.NotFound(new { error = $"User '@{username}' not found. Please register." });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
+});
+
+// Register New Local Account
+app.MapPost("/api/users/register", async (HttpRequest request) =>
+{
+    try
+    {
+        using var reader = new StreamReader(request.Body);
+        var bodyText = await reader.ReadToEndAsync();
+        using var doc = JsonDocument.Parse(bodyText);
+        var root = doc.RootElement;
+
+        string username = root.TryGetProperty("username", out var uProp) ? uProp.GetString() ?? "" : "";
+        username = username.Trim().ToLower().Replace(" ", "_");
+        if (string.IsNullOrEmpty(username)) return Results.BadRequest(new { error = "Username is required" });
+
+        string password = root.TryGetProperty("password", out var passProp) ? passProp.GetString() ?? "" : "";
+        if (string.IsNullOrWhiteSpace(password)) return Results.BadRequest(new { error = "Password is required" });
+
+        string displayName = root.TryGetProperty("displayName", out var dProp) ? dProp.GetString() ?? username : username;
+        string avatarUrl = root.TryGetProperty("avatarUrl", out var aProp) ? aProp.GetString() ?? "" : "";
+
+        string userId = $"usr_{username}_{Guid.NewGuid().ToString("N")[..6]}";
+        string passHash = HashUserPassword(password);
+
+        using var conn = new SqliteConnection(connectionString);
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO users (id, username, display_name, avatar_url, password_hash)
+            VALUES ($id, $username, $displayName, $avatarUrl, $passHash);
+        ";
+        cmd.Parameters.AddWithValue("$id", userId);
+        cmd.Parameters.AddWithValue("$username", username);
+        cmd.Parameters.AddWithValue("$displayName", displayName);
+        cmd.Parameters.AddWithValue("$avatarUrl", avatarUrl);
+        cmd.Parameters.AddWithValue("$passHash", passHash);
+        cmd.ExecuteNonQuery();
+
+        return Results.Ok(new
+        {
+            success = true,
+            user = new
+            {
+                id = userId,
+                username,
+                displayName,
+                avatarUrl
+            }
+        });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
+});
+
+// -------------------------------------------------------------
+// ATLAS ENDPOINTS
+// -------------------------------------------------------------
+
+// List All Sub-Atlases with Post Counts & Owner Details
 app.MapGet("/api/atlases", () =>
 {
     using var conn = new SqliteConnection(connectionString);
@@ -313,10 +560,15 @@ app.MapGet("/api/atlases", () =>
     var result = new List<object>();
     using var cmd = conn.CreateCommand();
     cmd.CommandText = @"
-        SELECT a.id, a.title, a.description, a.accent_color, a.created_at, COUNT(l.id) as item_count
+        SELECT a.id, a.title, a.description, a.accent_color, a.created_at, COUNT(l.id) as item_count,
+               COALESCE(u.username, 'curator') as owner_username,
+               COALESCE(u.display_name, 'Curator') as owner_display_name,
+               COALESCE(u.avatar_url, '') as owner_avatar,
+               COALESCE(a.owner_user_id, 'usr_curator') as owner_user_id
         FROM atlases a
         LEFT JOIN local_items l ON LOWER(a.id) = LOWER(l.atlas_id)
-        GROUP BY a.id, a.title, a.description, a.accent_color, a.created_at
+        LEFT JOIN users u ON LOWER(a.owner_user_id) = LOWER(u.id) OR LOWER(a.owner_user_id) = LOWER(u.username)
+        GROUP BY a.id, a.title, a.description, a.accent_color, a.created_at, u.username, u.display_name, u.avatar_url, a.owner_user_id
         ORDER BY a.created_at ASC;
     ";
 
@@ -330,7 +582,11 @@ app.MapGet("/api/atlases", () =>
             description = reader.IsDBNull(2) ? "" : reader.GetString(2),
             accentColor = reader.IsDBNull(3) ? "#CC5A01" : reader.GetString(3),
             createdAt = reader.IsDBNull(4) ? "" : reader.GetString(4),
-            itemCount = reader.GetInt64(5)
+            itemCount = reader.GetInt64(5),
+            ownerUsername = reader.GetString(6),
+            ownerDisplayName = reader.GetString(7),
+            ownerAvatar = reader.GetString(8),
+            ownerUserId = reader.GetString(9)
         });
     }
 
@@ -344,11 +600,16 @@ app.MapGet("/api/atlases/{id}", (string id) =>
     conn.Open();
     using var cmd = conn.CreateCommand();
     cmd.CommandText = @"
-        SELECT a.id, a.title, a.description, a.accent_color, a.created_at, COUNT(l.id) as item_count
+        SELECT a.id, a.title, a.description, a.accent_color, a.created_at, COUNT(l.id) as item_count,
+               COALESCE(u.username, 'curator') as owner_username,
+               COALESCE(u.display_name, 'Curator') as owner_display_name,
+               COALESCE(u.avatar_url, '') as owner_avatar,
+               COALESCE(a.owner_user_id, 'usr_curator') as owner_user_id
         FROM atlases a
-        LEFT JOIN local_items l ON a.id = l.atlas_id
+        LEFT JOIN local_items l ON LOWER(a.id) = LOWER(l.atlas_id)
+        LEFT JOIN users u ON LOWER(a.owner_user_id) = LOWER(u.id) OR LOWER(a.owner_user_id) = LOWER(u.username)
         WHERE LOWER(a.id) = LOWER($id)
-        GROUP BY a.id, a.title, a.description, a.accent_color, a.created_at;
+        GROUP BY a.id, a.title, a.description, a.accent_color, a.created_at, u.username, u.display_name, u.avatar_url, a.owner_user_id;
     ";
     cmd.Parameters.AddWithValue("$id", id.Trim());
 
@@ -362,7 +623,11 @@ app.MapGet("/api/atlases/{id}", (string id) =>
             description = reader.IsDBNull(2) ? "" : reader.GetString(2),
             accentColor = reader.IsDBNull(3) ? "#CC5A01" : reader.GetString(3),
             createdAt = reader.IsDBNull(4) ? "" : reader.GetString(4),
-            itemCount = reader.GetInt64(5)
+            itemCount = reader.GetInt64(5),
+            ownerUsername = reader.GetString(6),
+            ownerDisplayName = reader.GetString(7),
+            ownerAvatar = reader.GetString(8),
+            ownerUserId = reader.GetString(9)
         });
     }
     return Results.NotFound(new { error = $"Atlas '{id}' not found" });
@@ -385,25 +650,37 @@ app.MapPost("/api/atlases", async (HttpRequest request) =>
         string title = root.TryGetProperty("title", out var titleProp) ? titleProp.GetString() ?? id : id;
         string description = root.TryGetProperty("description", out var descProp) ? descProp.GetString() ?? "" : "";
         string accentColor = root.TryGetProperty("accentColor", out var colorProp) ? colorProp.GetString() ?? "#CC5A01" : "#CC5A01";
+        string ownerUserId = root.TryGetProperty("ownerUserId", out var ownerProp) ? ownerProp.GetString() ?? "usr_curator" : "usr_curator";
 
         using var conn = new SqliteConnection(connectionString);
         conn.Open();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO atlases (id, title, description, accent_color)
-            VALUES ($id, $title, $description, $color)
+            INSERT INTO atlases (id, title, description, accent_color, owner_user_id)
+            VALUES ($id, $title, $description, $color, $owner)
             ON CONFLICT(id) DO UPDATE SET
                 title = excluded.title,
                 description = excluded.description,
-                accent_color = excluded.accent_color;
+                accent_color = excluded.accent_color,
+                owner_user_id = excluded.owner_user_id;
         ";
         cmd.Parameters.AddWithValue("$id", id);
         cmd.Parameters.AddWithValue("$title", title);
         cmd.Parameters.AddWithValue("$description", description);
         cmd.Parameters.AddWithValue("$color", accentColor);
+        cmd.Parameters.AddWithValue("$owner", ownerUserId);
         cmd.ExecuteNonQuery();
 
-        return Results.Ok(new { success = true, id, title, description, accentColor });
+        using var memberCmd = conn.CreateCommand();
+        memberCmd.CommandText = @"
+            INSERT OR IGNORE INTO atlas_members (atlas_id, user_id, role)
+            VALUES ($atlasId, $userId, 'owner');
+        ";
+        memberCmd.Parameters.AddWithValue("$atlasId", id);
+        memberCmd.Parameters.AddWithValue("$userId", ownerUserId);
+        memberCmd.ExecuteNonQuery();
+
+        return Results.Ok(new { success = true, id, title, description, accentColor, ownerUserId });
     }
     catch (Exception ex)
     {

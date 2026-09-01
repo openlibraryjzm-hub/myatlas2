@@ -126,6 +126,9 @@ export default function AtlasSwitcher({
               <span className="as-badge-dot" style={{ backgroundColor: matchedAtlas.accentColor || '#CC5A01' }}></span>
               <Check size={14} className="as-match-icon" />
               <span className="as-match-title">{matchedAtlas.title}</span>
+              {matchedAtlas.ownerUsername && (
+                <span className="as-match-owner">👑 @{matchedAtlas.ownerUsername}</span>
+              )}
               {matchedAtlas.itemCount > 0 && (
                 <span className="as-match-count">({matchedAtlas.itemCount.toLocaleString()} posts)</span>
               )}

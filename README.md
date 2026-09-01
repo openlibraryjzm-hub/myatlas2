@@ -28,6 +28,7 @@ my atlas 2/
 │   ├── big_picture_dream.md # Grand vision strategy: offline desktop app to public "Reddit for Boorus" platform
 │   ├── sub_atlases.md      # Sub-Atlas domain architecture: hyperminimalist router, creator & backend scoping
 │   ├── architecture.md     # Desktop app runtime, C# sidecar engine, WebP proxy & STA video frame extractor
+│   ├── accountbackend.md   # Account & auth backend engine: users table, SHA-256 hashing & atlas_members roles
 │   ├── taxonomy.md         # Tag categories, boolean namespaces & expandable slot config
 │   ├── storage/
 │   │   ├── sqlite.md       # SQLite schema, dual storage model & reset endpoints
@@ -40,7 +41,8 @@ my atlas 2/
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning
 │       ├── categories.md   # Tag Categories Directory specs, namespace management & scalability truncation
 │       ├── discovery_cloud.md # Discovery Cloud 3D specs, Fibonacci distribution, filter dimming & scroll lock
-│       └── users.md        # User Profile specs, avatar placeholder, icon options & showcase bars
+│       ├── users.md        # User Profile specs, avatar placeholder, icon options & showcase bars
+│       └── atlas_management.md # Atlas Settings & Moderation Studio specs, owner litmus test & logo preview
 └── src/
     ├── main.jsx            # Application entry mount
     ├── index.css           # Claude visual tokens and design system metrics
