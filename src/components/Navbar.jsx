@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Compass, Upload, Trash2, Tag, Wrench, Globe, User, Settings } from 'lucide-react';
+import { Search, Compass, Upload, Trash2, Tag, Wrench, Globe, User, Settings, LayoutGrid } from 'lucide-react';
 import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './Navbar.css';
 
@@ -71,6 +71,16 @@ export default function Navbar({
         </button>
         
         <div className="nav-icon-buttons">
+          <button 
+            className={`nav-icon-btn ${view === 'landing' ? 'active' : ''}`}
+            onClick={() => setView('landing')}
+            onMouseEnter={() => setHoveredLabel('landing page')}
+            onMouseLeave={() => setHoveredLabel('')}
+            title="Atlas Network Landing Page"
+          >
+            <LayoutGrid size={16} />
+          </button>
+
           <button 
             className={`nav-icon-btn ${view === 'discovery' ? 'active' : ''}`}
             onClick={() => setView('discovery')}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import Landing from './pages/Landing';
 import Posts from './pages/Posts';
 import Upload from './pages/Upload';
 import Deletor from './pages/Deletor';
@@ -224,8 +225,8 @@ export default function App() {
 
   return (
     <div className={`app-container theme-${currentAtlas} ${view === 'users' || view === 'posts' ? 'users-view-active' : ''} ${view === 'discovery' ? 'discovery-view-active' : ''}`}>
-      {/* Shared Navbar - Hidden on Home Page */}
-      {view !== 'home' && (
+      {/* Shared Navbar - Hidden on Home and Landing Pages */}
+      {view !== 'home' && view !== 'landing' && (
         <Navbar 
           view={view} 
           setView={setView} 
@@ -251,7 +252,12 @@ export default function App() {
       )}
 
       {/* Page Routing */}
-      {view === 'home' ? (
+      {view === 'landing' ? (
+        <Landing 
+          setView={setView}
+          onSelectAtlas={handleSelectAtlas}
+        />
+      ) : view === 'home' ? (
         <Home 
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -330,7 +336,7 @@ export default function App() {
       )}
 
       {/* Footer */}
-      {view !== 'users' && view !== 'posts' && view !== 'discovery' && (
+      {view !== 'users' && view !== 'posts' && view !== 'discovery' && view !== 'landing' && (
         <footer className="app-footer">
           <p>
             <span>my</span>atlas &copy; {new Date().getFullYear()} &bull; Local Bookmark & Media Manager.

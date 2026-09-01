@@ -141,6 +141,7 @@ CREATE INDEX IF NOT EXISTS idx_local_items_atlas ON local_items(atlas_id);
 ---
 
 ## 📄 Related Documentation
+- [Landing Page Specifications](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/views/landingpage.md)
 - [Discovery Cloud 3D Specifications](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/views/discovery_cloud.md)
 - [Big Picture Vision & Cloud Conversion Strategy](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/big_picture_dream.md)
 - [System Architecture](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/architecture.md)

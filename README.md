@@ -41,6 +41,7 @@ my atlas 2/
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning
 │       ├── categories.md   # Tag Categories Directory specs, namespace management & scalability truncation
 │       ├── discovery_cloud.md # Discovery Cloud 3D specs, Fibonacci distribution, filter dimming & scroll lock
+│       ├── landingpage.md   # Landing Page specs, 4x6 hero select matrix, dot categories & 3D particle swarm
 │       ├── users.md        # User Profile specs, avatar placeholder, icon options & showcase bars
 │       └── atlas_management.md # Atlas Settings & Moderation Studio specs, owner litmus test & logo preview
 └── src/
