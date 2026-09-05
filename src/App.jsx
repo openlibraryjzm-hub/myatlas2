@@ -10,7 +10,7 @@ import Users from './pages/Users';
 import Tagger from './pages/Tagger';
 import AtlasSwitcher from './pages/AtlasSwitcher';
 import { fetchServerAtlases } from './services/api';
-import { DEFAULT_ATLAS } from './utils/subAtlasUtils';
+import { BUILTIN_ATLASES, DEFAULT_ATLAS } from './utils/subAtlasUtils';
 
 export default function App() {
   const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'deletor' | 'categories' | 'subreddits' | 'users' | 'tagger' | 'switcher'
@@ -18,14 +18,14 @@ export default function App() {
   const currentUser = { id: 'usr_curator', username: 'curator', displayName: 'Curator' };
 
   const [currentAtlas, setCurrentAtlas] = useState(() => localStorage.getItem('active_atlas') || 'myatlas');
-  const [atlases, setAtlases] = useState([DEFAULT_ATLAS]);
+  const [atlases, setAtlases] = useState(BUILTIN_ATLASES);
   const [showSwitcherModal, setShowSwitcherModal] = useState(false);
 
   const loadSubAtlases = async () => {
     try {
       const serverAtlases = await fetchServerAtlases();
       const savedLocal = JSON.parse(localStorage.getItem('myatlas_sub_atlases') || '[]');
-      const combined = [DEFAULT_ATLAS];
+      const combined = [...BUILTIN_ATLASES];
       
       const toMerge = Array.isArray(serverAtlases) && serverAtlases.length > 0 ? serverAtlases : savedLocal;
       toMerge.forEach(a => {
@@ -71,12 +71,14 @@ export default function App() {
   const [savedPostIds, setSavedPostIds] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
 
-  const handleSelectAtlas = (atlasId) => {
+  const handleSelectAtlas = (atlasId, options = {}) => {
     const slug = (atlasId || 'myatlas').toLowerCase();
     setCurrentAtlas(slug);
     localStorage.setItem('active_atlas', slug);
     setShowSwitcherModal(false);
-    setView('posts');
+    if (options.navigateToPosts || (view !== 'home' && !options.stayOnHome)) {
+      setView('posts');
+    }
     setCurrentPage(1);
   };
 
@@ -233,6 +235,7 @@ export default function App() {
           setView={setView}
           currentAtlas={currentAtlas}
           activeAtlasDetails={activeAtlasDetails}
+          onSelectAtlas={handleSelectAtlas}
           onConnectAtlas={handleConnectAtlas}
         />
       ) : view === 'switcher' ? (

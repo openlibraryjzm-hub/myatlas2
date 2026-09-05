@@ -5,17 +5,24 @@
   align-items: center;
   justify-content: flex-start;
   flex-grow: 1;
-  padding: 18vh 2rem 4rem;
-  max-width: 520px;
+  padding: 14vh 2rem 4rem;
+  max-width: 540px;
   margin: 0 auto;
   text-align: center;
+}
+
+.home-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.75rem;
 }
 
 .home-title {
   font-size: 4.5rem;
   letter-spacing: -0.03em;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.2rem;
   user-select: none;
   transition: var(--transition-smooth);
 }
@@ -32,13 +39,51 @@
   cursor: default;
 }
 
+.home-total-count {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.15em;
+  margin-top: 0.35rem;
+  user-select: none;
+  opacity: 0.85;
+  transition: var(--transition-smooth);
+  text-indent: 0.15em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.home-total-count-arrow {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  opacity: 0.5;
+  transition: var(--transition-smooth);
+  display: inline-block;
+}
+
+.home-total-count.clickable {
+  cursor: pointer;
+}
+
+.home-total-count.clickable:hover {
+  opacity: 1;
+  color: var(--accent-color);
+}
+
+.home-total-count.clickable:hover .home-total-count-arrow {
+  transform: translateX(3px);
+  opacity: 1;
+  color: var(--accent-color);
+}
+
 .home-options-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1.15rem;
-  margin-top: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
 }
 
 .home-option-item {
@@ -47,7 +92,7 @@
   align-items: center;
   gap: 0.35rem;
   cursor: pointer;
-  padding: 0.4rem 0.6rem;
+  padding: 0.45rem 0.65rem;
   border-radius: 8px;
   transition: var(--transition-smooth);
   user-select: none;
@@ -82,6 +127,24 @@
   color: var(--text-primary);
 }
 
+/* Active Atlas Option Item Highlighting */
+.home-option-item.active-atlas-item .home-option-link {
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+/* Bottom Centered Account Section */
+.home-account-container {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-account-item {
+  padding: 0.35rem 0.85rem;
+}
+
 .home-profile-icon-link,
 .home-icon-option-link {
   display: inline-flex;
@@ -94,32 +157,6 @@
 .home-profile-icon-link:hover,
 .home-icon-option-link:hover {
   color: var(--accent-color);
-}
-
-.home-mode-dots {
-  display: flex;
-  gap: 0.4rem;
-  align-items: center;
-}
-
-.home-mode-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  border: 1px solid var(--border-color);
-  background-color: transparent;
-  cursor: pointer;
-  padding: 0;
-  transition: var(--transition-smooth);
-}
-
-.home-mode-dot:hover {
-  border-color: var(--accent-color);
-}
-
-.home-mode-dot.active {
-  border-color: var(--accent-color);
-  background-color: var(--accent-color);
 }
 
 .title-prefix {
@@ -166,69 +203,4 @@
   color: var(--text-primary);
   background: transparent;
   font-weight: 300;
-}
-
-.home-total-count {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 0.15em;
-  margin-top: 3.5rem;
-  user-select: none;
-  opacity: 0.9;
-  transition: var(--transition-smooth);
-  text-indent: 0.15em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.home-total-count-arrow {
-  font-family: var(--font-sans);
-  font-weight: 300;
-  opacity: 0.5;
-  transition: var(--transition-smooth);
-  display: inline-block;
-}
-
-.home-total-count.clickable {
-  cursor: pointer;
-}
-
-.home-total-count.clickable:hover {
-  opacity: 1;
-  color: var(--accent-color);
-}
-
-.home-total-count.clickable:hover .home-total-count-arrow {
-  transform: translateX(3px);
-  opacity: 1;
-  color: var(--accent-color);
-}
-
-/* Pulsing accent-color glow for highlighted homepage links (faint/subtle) */
-@keyframes accentPulseGlow {
-  0% {
-    text-shadow: 0 0 1px color-mix(in srgb, var(--accent-color) 15%, transparent);
-    opacity: 0.95;
-  }
-  50% {
-    text-shadow: 0 0 4px color-mix(in srgb, var(--accent-color) 45%, transparent);
-    opacity: 1;
-  }
-  100% {
-    text-shadow: 0 0 1px color-mix(in srgb, var(--accent-color) 15%, transparent);
-    opacity: 0.95;
-  }
-}
-
-.home-option-link.pulse-glow-btn {
-  color: var(--accent-color) !important;
-  font-weight: 600;
-  animation: accentPulseGlow 2.5s infinite ease-in-out;
-}
-
-.home-option-link.pulse-glow-btn:hover {
-  text-shadow: 0 0 6px color-mix(in srgb, var(--accent-color) 60%, transparent) !important;
-  opacity: 1;
 }

@@ -1,19 +1,53 @@
 import React from 'react';
 
 /**
- * Default Sub-Atlas metadata fallback
+ * Built-in Sub-Atlas definitions
  */
-export const DEFAULT_ATLAS = {
-  id: 'myatlas',
-  title: 'my atlas',
-  description: 'Default main atlas archive',
-  accentColor: '#CC5A01'
-};
+export const BUILTIN_ATLASES = [
+  {
+    id: 'myatlas',
+    title: 'my atlas',
+    description: 'Default personal editable archive',
+    accentColor: '#CC5A01'
+  },
+  {
+    id: 'amberatlas',
+    title: 'amber atlas',
+    description: 'Amber visual booru archive',
+    accentColor: '#D97706'
+  },
+  {
+    id: 'youtubeatlas',
+    title: 'youtube atlas',
+    description: 'Curated YouTube video collection',
+    accentColor: '#EF4444'
+  },
+  {
+    id: 'wikiatlas',
+    title: 'wiki atlas',
+    description: 'Wiki document archive',
+    accentColor: '#4F46E5'
+  },
+  {
+    id: 'gamesatlas',
+    title: 'games atlas',
+    description: 'Games & interactive media archive',
+    accentColor: '#2563EB'
+  },
+  {
+    id: 'toolsatlas',
+    title: 'tools atlas',
+    description: 'Tools & web software directory',
+    accentColor: '#16A34A'
+  }
+];
+
+export const DEFAULT_ATLAS = BUILTIN_ATLASES[0];
 
 /**
  * Helper to split title for Option A logo/heading rendering:
- * - "my atlas": "my" highlighted in orange/accent color, "atlas" in black, closely spaced in lowercase.
- * - Multi-word title: First word in accent color, remaining words in dark heading text.
+ * - "my atlas": "my" highlighted in orange/accent color, "atlas" in black.
+ * - Multi-word title (e.g. "youtube atlas"): First word in accent color, remaining words in dark heading text.
  *
  * @param {string} title - Display title or fallback slug
  * @param {string} accentColor - Hex color for the primary highlighted word

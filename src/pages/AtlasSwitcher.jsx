@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, ArrowRight, Check, Compass, Lock } from 'lucide-react';
 import { fetchServerAtlases } from '../services/api';
+import { BUILTIN_ATLASES } from '../utils/subAtlasUtils';
 import './AtlasSwitcher.css';
 
 export default function AtlasSwitcher({
@@ -10,9 +11,7 @@ export default function AtlasSwitcher({
   onClose
 }) {
   const [slugQuery, setSlugQuery] = useState('');
-  const [atlases, setAtlases] = useState([
-    { id: 'myatlas', title: 'My Atlas', description: 'Default personal editable archive', accentColor: '#CC5A01', itemCount: 0 }
-  ]);
+  const [atlases, setAtlases] = useState(BUILTIN_ATLASES);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
 
@@ -21,16 +20,17 @@ export default function AtlasSwitcher({
     setLoading(true);
     try {
       const serverAtlases = await fetchServerAtlases();
-      if (Array.isArray(serverAtlases) && serverAtlases.length > 0) {
-        setAtlases(serverAtlases);
-      } else {
-        const saved = JSON.parse(localStorage.getItem('myatlas_sub_atlases') || '[]');
-        const merged = [{ id: 'myatlas', title: 'My Atlas', description: 'Default personal editable archive', accentColor: '#CC5A01', itemCount: 0 }];
-        saved.forEach(a => {
-          if (!merged.some(m => m.id.toLowerCase() === a.id.toLowerCase())) merged.push(a);
-        });
-        setAtlases(merged);
-      }
+      const combined = [...BUILTIN_ATLASES];
+      const toMerge = Array.isArray(serverAtlases) && serverAtlases.length > 0
+        ? serverAtlases
+        : JSON.parse(localStorage.getItem('myatlas_sub_atlases') || '[]');
+      
+      toMerge.forEach(a => {
+        if (!combined.some(m => m.id.toLowerCase() === a.id.toLowerCase())) {
+          combined.push(a);
+        }
+      });
+      setAtlases(combined);
     } catch (e) {
       console.warn('Error loading atlases:', e);
     } finally {
