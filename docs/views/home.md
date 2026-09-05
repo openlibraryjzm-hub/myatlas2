@@ -4,14 +4,14 @@ This document defines the specifications, layout metrics, interactive state mach
 
 ---
 
-## 🎨 Dynamic Sub-Atlas Branding & Layout
+## 🎨 Dynamic Atlas Branding & Layout
 
 - **Header Hiding**: On the home page (`view === 'home'`), the global sticky navbar (`Navbar.jsx`) is hidden entirely.
-- **Dynamic Sub-Atlas Title (Option A Word-Splitting)**:
+- **Dynamic Atlas Title (Option A Word-Splitting)**:
   - Renders `<h1 className="home-title">` dynamically based on `activeAtlasDetails.title`.
-  - **Multi-Word Titles** (e.g. *"Space & Astronomy Archive"*): The first word is highlighted in the active sub-atlas's `--accent-color`, while remaining words render in standard dark heading text.
+  - **Multi-Word Titles** (e.g. *"Space & Astronomy Archive"*): The first word is highlighted in the active atlas's `--accent-color`, while remaining words render in standard dark heading text.
   - **Single-Word Titles** (e.g. *"Military"*): The entire word is highlighted in the active `--accent-color`.
-- **Dynamic Theme Accent Palette**: Injects `--accent-color` into CSS variables on document root (`document.documentElement`), re-skinning buttons and accents to match the active sub-atlas color.
+- **Dynamic Theme Accent Palette**: Injects `--accent-color` into CSS variables on document root (`document.documentElement`), re-skinning buttons and accents to match the active atlas theme.
 
 ---
 
@@ -23,8 +23,8 @@ This document defines the specifications, layout metrics, interactive state mach
 
 ---
 
-## 📊 Sub-Atlas Isolated Post Counter
+## 📊 Atlas Isolated Post Counter
 
-- **Sub-Atlas Scoped Count**: Displays the total count of indexed items **strictly for the active sub-atlas** (e.g. `2` for `nasa`, `1,525` for `myatlas`).
-- **Hover Transition**: Hovering over the counter reveals a smooth sliding `>` arrow text indicator styled in the sub-atlas accent color.
+- **Atlas Scoped Count**: Displays the total count of indexed items **strictly for the active atlas** (e.g. `1,525` for `myatlas`).
+- **Hover Transition**: Hovering over the counter reveals a smooth sliding `>` arrow text indicator styled in the atlas accent color.
 - **Navigation**: Clicking the numeric counter transitions the user directly to the Browse Grid view (`view = 'posts'`).

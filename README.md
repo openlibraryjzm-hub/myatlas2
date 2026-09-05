@@ -25,10 +25,9 @@ Documentation is maintained in the [`docs/`](file:///c:/Users/jodyn/Desktop/my%2
 my atlas 2/
 ├── README.md               # Quickstart & project overview
 ├── docs/
-│   ├── big_picture_dream.md # Grand vision strategy: offline desktop app to public "Reddit for Boorus" platform
-│   ├── sub_atlases.md      # Sub-Atlas domain architecture: hyperminimalist router, creator & backend scoping
+│   ├── big_picture_dream.md # Strategic vision: offline desktop app & booru platform roadmap
+│   ├── sub_atlases.md      # Atlas architecture: personal myatlas workspace & curated read-only Atlases
 │   ├── architecture.md     # Desktop app runtime, C# sidecar engine, WebP proxy & STA video frame extractor
-│   ├── accountbackend.md   # Account & auth backend engine: users table, SHA-256 hashing & atlas_members roles
 │   ├── taxonomy.md         # Tag categories, boolean namespaces & expandable slot config
 │   ├── storage/
 │   │   ├── sqlite.md       # SQLite schema, dual storage model & reset endpoints
@@ -40,10 +39,9 @@ my atlas 2/
 │       ├── upload.md       # Hard drive folder scanner, local file ingestion & background pre-caching
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning
 │       ├── categories.md   # Tag Categories Directory specs, namespace management & scalability truncation
-│       ├── discovery_cloud.md # Discovery Cloud 3D specs, Fibonacci distribution, filter dimming & scroll lock
-│       ├── landingpage.md   # Landing Page specs, 4x6 hero select matrix, dot categories & 3D particle swarm
-│       ├── users.md        # User Profile specs, avatar placeholder, icon options & showcase bars
-│       └── atlas_management.md # Atlas Settings & Moderation Studio specs, owner litmus test & logo preview
+│       ├── home.md         # Home View specs, Option A dynamic word-split title logo & blinking caret search
+│       ├── shop.md         # Shop Atlases specs, Smash Ultimate character select screen layout
+│       └── users.md        # Curator Profile specs, avatar, Titan Atlas SVG icon, bio & showcase bars
 └── src/
     ├── main.jsx            # Application entry mount
     ├── index.css           # Claude visual tokens and design system metrics
@@ -53,7 +51,7 @@ my atlas 2/
     ├── utils/
     │   └── localFiles.js   # Local filesystem loader & Tauri asset protocols
     ├── components/
-    │   ├── Navbar.jsx      # Sticky header with search utility & brand logo
+    │   ├── Navbar.jsx      # Header navigation bar & brand logo
     │   └── PostCard.jsx    # High-density card, WebP thumbnail rendering & video hover player
     └── pages/
         ├── Home.jsx        # Minimalist home view with search input
@@ -62,7 +60,9 @@ my atlas 2/
         ├── Upload.jsx      # Hard drive folder scanner & local file batch ingestion
         ├── Deletor.jsx     # Mass Deletor Studio for batch tag pruning
         ├── Categories.jsx  # Tag Categories Directory for inspecting & managing namespaces
-        └── Users.jsx       # User Profile view with avatar placeholder, icon options & showcase bars
+        ├── AtlasSwitcher.jsx # Quick switcher modal (Ctrl+K) for myatlas & curated atlases
+        ├── Shop.jsx        # Dedicated Shop Atlases page (Smash Bros Ultimate CSS style)
+        └── Users.jsx       # Curator Profile view with avatar, Titan Atlas icon, bio & showcase bars
 ```
 
 ---

@@ -133,7 +133,7 @@ function PreviewCard({ post, onRemove }) {
   );
 }
 
-export default function Upload({ currentAtlas = 'myatlas' }) {
+export default function Upload({ currentAtlas = 'myatlas', isReadOnly = false }) {
   const [selectedAtlasSlug, setSelectedAtlasSlug] = useState(() => currentAtlas || 'myatlas');
   const [availableAtlases, setAvailableAtlases] = useState([
     { id: 'myatlas', title: 'My Atlas', accentColor: '#CC5A01' }

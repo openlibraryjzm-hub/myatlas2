@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import Landing from './pages/Landing';
 import Posts from './pages/Posts';
 import Upload from './pages/Upload';
 import Deletor from './pages/Deletor';
@@ -10,38 +9,17 @@ import Subreddits from './pages/Subreddits';
 import Users from './pages/Users';
 import Tagger from './pages/Tagger';
 import AtlasSwitcher from './pages/AtlasSwitcher';
-import CreateAtlas from './pages/CreateAtlas';
-import DiscoveryCloud from './pages/DiscoveryCloud';
-import AtlasSettings from './pages/AtlasSettings';
-import { getLocalScrapes, getLocalMediaFiles } from './services/localDb';
+import Shop from './pages/Shop';
 import { fetchServerAtlases } from './services/api';
 import { DEFAULT_ATLAS } from './utils/subAtlasUtils';
 
 export default function App() {
-  const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'subreddits' | 'users' | 'saves' | 'switcher' | 'create-atlas'
+  const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'deletor' | 'categories' | 'subreddits' | 'users' | 'tagger' | 'switcher'
 
-  const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('myatlas_current_user');
-      return saved ? JSON.parse(saved) : { id: 'usr_curator', username: 'curator', displayName: 'Curator' };
-    } catch {
-      return { id: 'usr_curator', username: 'curator', displayName: 'Curator' };
-    }
-  });
-
-  const handleLogin = (userObj) => {
-    setCurrentUser(userObj);
-    localStorage.setItem('myatlas_current_user', JSON.stringify(userObj));
-  };
-
-  const handleLogout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem('myatlas_current_user');
-  };
+  const currentUser = { id: 'usr_curator', username: 'curator', displayName: 'Curator' };
 
   const [currentAtlas, setCurrentAtlas] = useState(() => localStorage.getItem('active_atlas') || 'myatlas');
   const [atlases, setAtlases] = useState([DEFAULT_ATLAS]);
-  const [initialCreateSlug, setInitialCreateSlug] = useState('');
   const [showSwitcherModal, setShowSwitcherModal] = useState(false);
 
   const loadSubAtlases = async () => {
@@ -75,6 +53,8 @@ export default function App() {
     accentColor: '#CC5A01'
   };
 
+  const isReadOnly = (currentAtlas || 'myatlas').toLowerCase() !== 'myatlas';
+
   // Inject CSS accent colors onto document root
   useEffect(() => {
     const color = activeAtlasDetails.accentColor || '#CC5A01';
@@ -101,12 +81,6 @@ export default function App() {
     setCurrentPage(1);
   };
 
-  const handleStartCreateAtlas = (slug) => {
-    setInitialCreateSlug(slug || '');
-    setShowSwitcherModal(false);
-    setView('create-atlas');
-  };
-
   const handleConnectAtlas = (atlasName) => {
     handleSelectAtlas(atlasName || 'myatlas');
   };
@@ -127,9 +101,6 @@ export default function App() {
     const saved = JSON.parse(localStorage.getItem('saves') || '[]');
     setSavedPostIds(saved);
   }, []);
-
-
-
 
   const handleToggleSave = (id) => {
     let saved = JSON.parse(localStorage.getItem('saves') || '[]');
@@ -224,9 +195,9 @@ export default function App() {
   };
 
   return (
-    <div className={`app-container theme-${currentAtlas} ${view === 'users' || view === 'posts' ? 'users-view-active' : ''} ${view === 'discovery' ? 'discovery-view-active' : ''}`}>
-      {/* Shared Navbar - Hidden on Home and Landing Pages */}
-      {view !== 'home' && view !== 'landing' && (
+    <div className={`app-container theme-${currentAtlas} ${view === 'users' || view === 'posts' ? 'users-view-active' : ''}`}>
+      {/* Shared Navbar - Hidden on Home and Shop Pages */}
+      {view !== 'home' && view !== 'shop' && (
         <Navbar 
           view={view} 
           setView={setView} 
@@ -236,7 +207,6 @@ export default function App() {
           currentAtlas={currentAtlas}
           activeAtlasDetails={activeAtlasDetails}
           currentUser={currentUser}
-          onOpenSwitcher={() => setShowSwitcherModal(true)}
         />
       )}
 
@@ -245,19 +215,13 @@ export default function App() {
         <AtlasSwitcher
           currentAtlas={currentAtlas}
           onSelectAtlas={handleSelectAtlas}
-          onCreateAtlas={handleStartCreateAtlas}
           isModal={true}
           onClose={() => setShowSwitcherModal(false)}
         />
       )}
 
       {/* Page Routing */}
-      {view === 'landing' ? (
-        <Landing 
-          setView={setView}
-          onSelectAtlas={handleSelectAtlas}
-        />
-      ) : view === 'home' ? (
+      {view === 'home' ? (
         <Home 
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -276,40 +240,23 @@ export default function App() {
         <AtlasSwitcher
           currentAtlas={currentAtlas}
           onSelectAtlas={handleSelectAtlas}
-          onCreateAtlas={handleStartCreateAtlas}
         />
-      ) : view === 'create-atlas' ? (
-        <CreateAtlas
-          initialSlug={initialCreateSlug}
-          currentUser={currentUser}
-          onAtlasCreated={handleSelectAtlas}
-          onCancel={() => setView('posts')}
+      ) : view === 'shop' ? (
+        <Shop 
+          setView={setView} 
+          onSelectAtlas={handleSelectAtlas} 
+          onTagClick={(tag) => { handleTagToggle(tag); setView('posts'); }} 
         />
-      ) : view === 'atlas-settings' ? (
-        <AtlasSettings
-          currentAtlas={currentAtlas}
-          activeAtlasDetails={activeAtlasDetails}
-          currentUser={currentUser}
-          onUpdateAtlas={() => { loadSubAtlases(); setView('posts'); }}
-          onNavigateBack={() => setView('posts')}
-        />
-      ) : view === 'discovery' ? (
-        <DiscoveryCloud atlases={atlases} onSelectAtlas={handleSelectAtlas} />
       ) : view === 'upload' ? (
-        <Upload currentAtlas={currentAtlas} />
+        <Upload currentAtlas={currentAtlas} isReadOnly={isReadOnly} />
       ) : view === 'deletor' ? (
-        <Deletor />
+        <Deletor isReadOnly={isReadOnly} />
       ) : view === 'categories' ? (
         <Categories onTagClick={(tag) => { handleTagToggle(tag); setView('posts'); }} />
       ) : view === 'subreddits' ? (
         <Subreddits onSubredditClick={handleTagToggle} />
       ) : view === 'users' ? (
-        <Users 
-          searchQuery={searchQuery} 
-          currentUser={currentUser}
-          onLogin={handleLogin}
-          onLogout={handleLogout}
-        />
+        <Users currentUser={currentUser} />
       ) : view === 'tagger' ? (
         <Tagger 
           currentAtlas={currentAtlas} 
@@ -317,6 +264,7 @@ export default function App() {
           searchQuery={searchQuery}
           currentPage={currentPage}
           onExit={() => setView('posts')}
+          isReadOnly={isReadOnly}
         />
       ) : (
         <Posts 
@@ -332,11 +280,12 @@ export default function App() {
           onNavigateHome={() => setView('home')}
           onNavigateUpload={() => setView('upload')}
           onNavigateDeletor={() => setView('deletor')}
+          isReadOnly={isReadOnly}
         />
       )}
 
       {/* Footer */}
-      {view !== 'users' && view !== 'posts' && view !== 'discovery' && view !== 'landing' && (
+      {view !== 'users' && view !== 'posts' && view !== 'shop' && (
         <footer className="app-footer">
           <p>
             <span>my</span>atlas &copy; {new Date().getFullYear()} &bull; Local Bookmark & Media Manager.

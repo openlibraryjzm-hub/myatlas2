@@ -4,7 +4,7 @@ import { getAllItems, getAllMetaUploadTags, deletePostsByTag, clearAllLocalStore
 import { getOptimizedThumbnailUrl } from '../utils/localFiles';
 import './Deletor.css';
 
-export default function Deletor() {
+export default function Deletor({ isReadOnly = false }) {
   const [batches, setBatches] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
   const [allAvailableTags, setAllAvailableTags] = useState([]);
@@ -130,6 +130,13 @@ export default function Deletor() {
           </button>
         </div>
       </div>
+
+      {isReadOnly && (
+        <div style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a', borderRadius: '8px', padding: '12px 16px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertTriangle size={18} />
+          <span>Active atlas is a <strong>read-only curated archive</strong>. Switch to <strong>myatlas</strong> to delete items.</span>
+        </div>
+      )}
 
       {/* Status Feedback Message */}
       {statusMessage && (

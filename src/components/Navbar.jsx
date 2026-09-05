@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Compass, Upload, Trash2, Tag, Wrench, Globe, User, Settings, LayoutGrid } from 'lucide-react';
+import { Search, Compass, Upload, Trash2, Tag, Wrench, User } from 'lucide-react';
 import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './Navbar.css';
 
@@ -10,9 +10,7 @@ export default function Navbar({
   setSearchQuery, 
   onSearchSubmit, 
   currentAtlas = 'myatlas', 
-  activeAtlasDetails,
-  currentUser,
-  onOpenSwitcher 
+  activeAtlasDetails
 }) {
   const [searchOpen, setSearchOpen] = useState(!!searchQuery);
   const [hoveredLabel, setHoveredLabel] = useState('');
@@ -40,57 +38,11 @@ export default function Navbar({
   return (
     <header className="nav-header">
       <div className="nav-left-group">
-        <div className="nav-logo" onClick={handleLogoClick}>
+        <div className="nav-logo" onClick={handleLogoClick} title="Go to Home Page">
           {renderLogo()}
         </div>
-
-        {/* Hyperminimalist Sub-Atlas Pill Switcher */}
-        <button
-          className={`nav-atlas-pill ${view === 'switcher' ? 'active' : ''}`}
-          onClick={() => onOpenSwitcher ? onOpenSwitcher() : setView('switcher')}
-          onMouseEnter={() => setHoveredLabel(`switch atlas (${currentAtlas})`)}
-          onMouseLeave={() => setHoveredLabel('')}
-          title="Switch Sub-Atlas (Ctrl+K)"
-          style={{
-            '--atlas-accent': activeAtlasDetails?.accentColor || '#CC5A01'
-          }}
-        >
-          <span className="nav-atlas-prefix">atlasnetwork.org/</span>
-          <span className="nav-atlas-slug">{currentAtlas}</span>
-        </button>
-
-        {/* Atlas Settings / Moderation Gear Button */}
-        <button
-          className={`nav-icon-btn ${view === 'atlas-settings' ? 'active' : ''}`}
-          onClick={() => setView('atlas-settings')}
-          onMouseEnter={() => setHoveredLabel('atlas settings & moderation')}
-          onMouseLeave={() => setHoveredLabel('')}
-          title="Atlas Settings & Moderation"
-        >
-          <Settings size={15} />
-        </button>
         
         <div className="nav-icon-buttons">
-          <button 
-            className={`nav-icon-btn ${view === 'landing' ? 'active' : ''}`}
-            onClick={() => setView('landing')}
-            onMouseEnter={() => setHoveredLabel('landing page')}
-            onMouseLeave={() => setHoveredLabel('')}
-            title="Atlas Network Landing Page"
-          >
-            <LayoutGrid size={16} />
-          </button>
-
-          <button 
-            className={`nav-icon-btn ${view === 'discovery' ? 'active' : ''}`}
-            onClick={() => setView('discovery')}
-            onMouseEnter={() => setHoveredLabel('discovery cloud')}
-            onMouseLeave={() => setHoveredLabel('')}
-            title="Discovery Cloud 3D"
-          >
-            <Globe size={16} />
-          </button>
-
           <button 
             className={`nav-icon-btn ${view === 'posts' ? 'active' : ''}`}
             onClick={() => setView('posts')}
@@ -180,9 +132,9 @@ export default function Navbar({
         <button 
           className={`nav-icon-btn ${view === 'users' ? 'active' : ''}`}
           onClick={() => setView('users')}
-          onMouseEnter={() => setHoveredLabel(currentUser ? `@${currentUser.username}` : 'sign in / profile')}
+          onMouseEnter={() => setHoveredLabel('curator profile')}
           onMouseLeave={() => setHoveredLabel('')}
-          title={currentUser ? `Profile (@${currentUser.username})` : 'User Profile / Sign In'}
+          title="Curator Profile"
         >
           <User size={16} />
         </button>
