@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Check, RefreshCw, AlertCircle } from 'lucide-react';
+import { Check, RefreshCw, AlertCircle, Pencil, Eye } from 'lucide-react';
 import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj, parseTagsArray } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache } from '../services/localDb';
 
@@ -8,13 +8,20 @@ export default function MorphingTaggerPanel({
   onTagsSaved,
   onAdvanceNext,
   onRegressPrev,
-  onSkip
+  onSkip,
+  onTagClick,
+  isEditing: isEditingProp = false
 }) {
   const namespaces = getActiveCategories();
 
   const [stagedTags, setStagedTags] = useState([]);
   const [existingTags, setExistingTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [isEditing, setIsEditing] = useState(isEditingProp);
+
+  useEffect(() => {
+    setIsEditing(isEditingProp);
+  }, [isEditingProp]);
 
   // Command Mode States
   const [isCommandMode, setIsCommandMode] = useState(false);
@@ -85,15 +92,16 @@ export default function MorphingTaggerPanel({
       setInputValue('');
       setSaveStatus('idle');
       setSelectedTagIndex(0);
+      setIsEditing(false);
     }
   }, [currentPost]);
 
-  // Keep input focused
+  // Focus input when entering edit mode
   useEffect(() => {
-    if (inputRef.current && !isCommandMode) {
+    if (inputRef.current && isEditing && !isCommandMode) {
       inputRef.current.focus();
     }
-  }, [currentPost, isCommandMode]);
+  }, [currentPost, isEditing, isCommandMode]);
 
   const normalizeTag = (tagStr, prefix) => {
     let clean = tagStr.trim().toLowerCase();
@@ -274,7 +282,7 @@ export default function MorphingTaggerPanel({
       {/* Title Header */}
       <div style={{ textAlign: 'center' }}>
         <span style={{ color: 'var(--accent-color)', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          {currentPost.subreddit ? `r/${currentPost.subreddit}` : 'Local File'}
+          {currentPost.subreddit && currentPost.subreddit !== 'localatlas' ? (currentPost.subreddit.startsWith('r/') ? currentPost.subreddit : `r/${currentPost.subreddit}`) : 'Local File'}
         </span>
         <h3 style={{ color: '#ffffff', fontSize: '1.05rem', fontWeight: 600, margin: '2px 0 0 0' }}>
           {currentPost.title || currentPost.fileName || 'Untitled Item'}
@@ -303,8 +311,14 @@ export default function MorphingTaggerPanel({
                   alignItems: 'center',
                   gap: '5px'
                 }}
-                onClick={() => isStaged ? removeStagedTag(tag) : removeExistingTag(tag)}
-                title={isStaged ? 'Click to remove staged tag' : 'Click to delete tag'}
+                onClick={() => {
+                  if (isEditing) {
+                    isStaged ? removeStagedTag(tag) : removeExistingTag(tag);
+                  } else if (onTagClick) {
+                    onTagClick(tag);
+                  }
+                }}
+                title={isEditing ? (isStaged ? 'Click to remove staged tag' : 'Click to delete tag') : 'Click to filter grid by this tag'}
               >
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: catObj.color }} />
                 {getDisplayTagName(tag)}
@@ -314,64 +328,68 @@ export default function MorphingTaggerPanel({
           );
         })}
 
-        {/* Inline Caret Input & Autocomplete */}
-        <div style={{ position: 'relative', display: 'inline-block' }}>
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            placeholder={existingTags.length === 0 && stagedTags.length === 0 ? "type tag... (comma to stage)" : "add tag..."}
-            style={{
-              border: 'none',
-              outline: 'none',
-              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-              color: activeInputCategoryColor,
-              fontSize: '1.05rem',
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 600,
-              caretColor: '#facc15',
-              padding: '2px 8px',
-              borderRadius: '4px',
-              width: `${Math.max(12, (inputValue.length || 10) * 1.15)}ch`,
-              transition: 'color 0.15s ease'
-            }}
-          />
+        {/* Inline Caret Input & Autocomplete when in Edit Mode */}
+        {isEditing && (
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+              placeholder={existingTags.length === 0 && stagedTags.length === 0 ? "type tag... (comma to stage)" : "add tag..."}
+              style={{
+                border: 'none',
+                outline: 'none',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: activeInputCategoryColor,
+                fontSize: '1.05rem',
+                fontFamily: 'var(--font-sans)',
+                fontWeight: 600,
+                caretColor: '#facc15',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                width: `${Math.max(12, (inputValue.length || 10) * 1.15)}ch`,
+                transition: 'color 0.15s ease'
+              }}
+            />
 
-          {/* Autocomplete Popover */}
-          {suggestions.length > 0 && (
-            <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#1e1d1b', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', minWidth: '220px', zIndex: 100, padding: '4px' }}>
-              {suggestions.map((sugg, sIdx) => {
-                const suggCat = getCategoryObj(sugg.name);
-                const isHighlight = sIdx === selectedSuggestionIndex;
-                return (
-                  <div
-                    key={sugg.name}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', borderRadius: '4px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', backgroundColor: isHighlight ? 'rgba(255, 255, 255, 0.1)' : 'transparent' }}
-                    onClick={() => selectSuggestion(sugg)}
-                  >
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: suggCat.color }} />
-                    <span style={{ flex: 1, color: suggCat.color, textAlign: 'left' }}>{sugg.display}</span>
-                    <span style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.4)' }}>({sugg.count})</span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+            {/* Autocomplete Popover */}
+            {suggestions.length > 0 && (
+              <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#1e1d1b', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', minWidth: '220px', zIndex: 100, padding: '4px' }}>
+                {suggestions.map((sugg, sIdx) => {
+                  const suggCat = getCategoryObj(sugg.name);
+                  const isHighlight = sIdx === selectedSuggestionIndex;
+                  return (
+                    <div
+                      key={sugg.name}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', borderRadius: '4px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', backgroundColor: isHighlight ? 'rgba(255, 255, 255, 0.1)' : 'transparent' }}
+                      onClick={() => selectSuggestion(sugg)}
+                    >
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: suggCat.color }} />
+                      <span style={{ flex: 1, color: suggCat.color, textAlign: 'left' }}>{sugg.display}</span>
+                      <span style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.4)' }}>({sugg.count})</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Hints & Save Status */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.5)' }}>
-        <span><kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>,</kbd> Stage</span>
-        <span><kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>ENTER</kbd> Save & Next</span>
-        <span><kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>ESC</kbd> Skip</span>
-        <span><kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>`</kbd> Prev</span>
+      {isEditing && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+          <span><kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>,</kbd> Stage</span>
+          <span><kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>ENTER</kbd> Save & Next</span>
+          <span><kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>ESC</kbd> Skip</span>
+          <span><kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>`</kbd> Prev</span>
 
-        {saveStatus === 'saving' && <span style={{ color: '#facc15' }}><RefreshCw size={12} className="animate-spin" /> Saving...</span>}
-        {saveStatus === 'success' && <span style={{ color: '#22c55e' }}><Check size={12} /> Saved!</span>}
-        {saveStatus === 'error' && <span style={{ color: '#ef4444' }}><AlertCircle size={12} /> Error</span>}
-      </div>
+          {saveStatus === 'saving' && <span style={{ color: '#facc15' }}><RefreshCw size={12} className="animate-spin" /> Saving...</span>}
+          {saveStatus === 'success' && <span style={{ color: '#22c55e' }}><Check size={12} /> Saved!</span>}
+          {saveStatus === 'error' && <span style={{ color: '#ef4444' }}><AlertCircle size={12} /> Error</span>}
+        </div>
+      )}
     </div>
   );
 }

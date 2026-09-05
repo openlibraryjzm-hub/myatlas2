@@ -992,7 +992,7 @@ export default function Tagger({
 
               <div className="tagger-post-info-centered">
                 <span className="tagger-post-subreddit-centered" style={{ color: 'var(--color-subreddit)' }}>
-                  r/{currentPost.subreddit}
+                  {currentPost.subreddit && currentPost.subreddit !== 'localatlas' ? (currentPost.subreddit.startsWith('r/') ? currentPost.subreddit : `r/${currentPost.subreddit}`) : 'Local File'}
                 </span>
                 <h3 className="tagger-post-title-centered">{currentPost.title}</h3>
               </div>
@@ -1121,7 +1121,9 @@ export default function Tagger({
 
                     <div className="tagger-timeline-info">
                       <span className="tagger-timeline-id">#{post.id}</span>
-                      <span className="tagger-timeline-sub">r/{post.subreddit}</span>
+                      <span className="tagger-timeline-sub">
+                        {post.subreddit && post.subreddit !== 'localatlas' ? (post.subreddit.startsWith('r/') ? post.subreddit : `r/${post.subreddit}`) : (post.fileName || 'Item')}
+                      </span>
                     </div>
                   </div>
                 );

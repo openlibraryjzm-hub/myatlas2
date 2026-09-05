@@ -31,7 +31,7 @@ The Speed Tagger interface ([`Tagger.jsx`](file:///c:/Users/jodyn/Desktop/my%20a
   - **Static Thumbnails & Images**: Standard `<img>` tags for images or posts with pre-rendered `thumbnailUrl`.
   - **Video Formats (`.mp4`, `.webm`, `.mov`, `meta:format:video`)**: HTML5 `<video src={url} muted playsInline loop preload="metadata" />` elements.
 - **Queue Timeline Item Rendering**: Timeline thumbnails display native video frames or static thumbnails cleanly without broken image link icons.
-- **Fullscreen Overlay**: Pressing `TAB` or `F` opens full-screen media expanded view (`96vw`/`96vh`). Pressing `Esc`, `Tab`, or `F` closes the overlay.
+- **TAB / F Navigation**: Cycles through viewer overlay modes (`Media` → `Tags` → `Edit` → `Media`).
 
 ---
 
@@ -42,7 +42,7 @@ The Speed Tagger interface ([`Tagger.jsx`](file:///c:/Users/jodyn/Desktop/my%20a
 - `ENTER`: Saves staged tags to local SQLite database, invalidates memory cache, and advances to the next item in queue.
 - `ESC`: Skips current item without saving.
 - `` ` `` (Backtick): Returns to the previous item in queue.
-- `TAB` / `F`: Toggles fullscreen media view.
+- `TAB` / `F`: Cycles through `Media` → `Tags` → `Edit` modes.
 - `CapsLock`: Toggles Command Mode.
 
 ### 2. Command Mode (Toggled via CapsLock)

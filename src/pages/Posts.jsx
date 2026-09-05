@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, X, Image as ImageIcon, Glasses, Trash2, Feather, Star, Tag } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { ChevronLeft, ChevronRight, ChevronDown, X, Image as ImageIcon, Glasses, Trash2, Feather, Star, Tag, Maximize2, Pencil } from 'lucide-react';
 import PostCard from '../components/PostCard';
 import QueueTimeline from '../components/QueueTimeline';
 import MorphingTaggerPanel from '../components/MorphingTaggerPanel';
@@ -64,6 +64,26 @@ export default function Posts({
   const [hoveredPostTags, setHoveredPostTags] = useState(null);
   const [modalImageError, setModalImageError] = useState(false);
   const [pendingPostSelect, setPendingPostSelect] = useState(null); // 'first' | 'last'
+  const mediaContainerRef = useRef(null);
+
+  const handleToggleFullscreen = (e) => {
+    if (e) e.stopPropagation();
+    const elem = mediaContainerRef.current;
+    if (!elem) return;
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+  };
 
   // Close post modal helper
   const handleCloseModal = () => {
@@ -110,13 +130,12 @@ export default function Posts({
           handleCloseModal();
         }
       } else if (e.key === 'Tab' || e.key === 'f' || e.key === 'F') {
-        if (viewerMode === 'image') {
-          e.preventDefault();
-          setViewerMode('tagger');
-        } else if (viewerMode === 'tagger') {
-          e.preventDefault();
-          setViewerMode('image');
-        }
+        e.preventDefault();
+        setViewerMode(prev => {
+          if (prev === 'image') return 'tagger';
+          if (prev === 'tagger') return 'edit';
+          return 'image';
+        });
       } else if (viewerMode === 'image') {
         if (e.key === 'ArrowLeft') {
           handlePrevPost();
@@ -440,7 +459,7 @@ export default function Posts({
             thumbnailUrl: fp
           });
         }
-        alert(`Indexed ${filePaths.length} local file(s) into localatlas!`);
+        alert(`Indexed ${filePaths.length} local file(s)!`);
         fetchPosts();
       }
     } else {
@@ -459,7 +478,7 @@ export default function Posts({
             thumbnailUrl: objectUrl
           });
         }
-        alert(`Indexed ${files.length} local file(s) into localatlas!`);
+        alert(`Indexed ${files.length} local file(s)!`);
         fetchPosts();
       };
       input.click();
@@ -848,7 +867,7 @@ export default function Posts({
                 </span>
               </div>
 
-              {/* Centered Mode Switcher: Media vs Tags */}
+              {/* Centered Mode Switcher: Media vs Tags vs Edit */}
               <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '0.35rem' }}>
                 <button
                   className="tagger-settings-trigger"
@@ -862,9 +881,17 @@ export default function Posts({
                   className="tagger-settings-trigger"
                   style={{ backgroundColor: viewerMode === 'tagger' ? 'var(--bg-secondary)' : 'transparent', color: viewerMode === 'tagger' ? 'var(--accent-color)' : 'var(--text-secondary)', border: '1px solid ' + (viewerMode === 'tagger' ? 'var(--border-color)' : 'transparent') }}
                   onClick={() => setViewerMode('tagger')}
-                  title="Tags View (Tab / F)"
+                  title="Tags View (View-only search)"
                 >
                   <Tag size={14} /> Tags
+                </button>
+                <button
+                  className="tagger-settings-trigger"
+                  style={{ backgroundColor: viewerMode === 'edit' ? 'var(--bg-secondary)' : 'transparent', color: viewerMode === 'edit' ? 'var(--accent-color)' : 'var(--text-secondary)', border: '1px solid ' + (viewerMode === 'edit' ? 'var(--border-color)' : 'transparent') }}
+                  onClick={() => setViewerMode('edit')}
+                  title="Edit Mode (Speed Tagger)"
+                >
+                  <Pencil size={14} /> Edit
                 </button>
               </div>
 
@@ -914,7 +941,7 @@ export default function Posts({
                                 (selectedPost.filePath && selectedPost.filePath.match(/\.(mp4|webm|mov|mkv|avi)$/i)) || 
                                 (selectedPost.url && selectedPost.url.match(/\.(mp4|webm|mov|mkv|avi)$/i));
 
-                const isTagger = viewerMode === 'tagger';
+                const isTagger = viewerMode === 'tagger' || viewerMode === 'edit';
                 const mediaStyle = {
                   maxHeight: isTagger ? '180px' : '60vh',
                   maxWidth: isTagger ? '240px' : '88vw',
@@ -925,12 +952,14 @@ export default function Posts({
                   transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                 };
 
+                let mediaNode = null;
+
                 if (isVideo) {
                   const streamUrl = selectedPost.id ? `http://127.0.0.1:7171/api/stream/${encodeURIComponent(selectedPost.id)}` : formatLocalAssetUrl(selectedPost.filePath || selectedPost.url);
                   const fallbackUrl = formatLocalAssetUrl(selectedPost.filePath || selectedPost.url);
                   const activeSrc = modalImageError ? fallbackUrl : streamUrl;
 
-                  return (
+                  mediaNode = (
                     <video 
                       src={activeSrc} 
                       style={mediaStyle}
@@ -940,26 +969,42 @@ export default function Posts({
                       muted={isTagger}
                       playsInline
                       onError={() => setModalImageError(true)}
-                      onClick={() => setViewerMode(prev => prev === 'image' ? 'tagger' : 'image')}
-                      title={isTagger ? "Click to expand to Full Image" : "Click to shrink to Speed Tagger"}
+                      onClick={() => setViewerMode(prev => prev === 'image' ? 'tagger' : (prev === 'tagger' ? 'edit' : 'image'))}
+                      title={isTagger ? "Click to toggle mode" : "Click to switch to Speed Tagger"}
+                    />
+                  );
+                } else {
+                  const fullImgSrc = modalImageError 
+                    ? formatLocalAssetUrl(selectedPost.filePath || selectedPost.url || selectedPost.thumbnail) 
+                    : (selectedPost.url || formatLocalAssetUrl(selectedPost.filePath || selectedPost.thumbnail));
+
+                  mediaNode = (
+                    <img 
+                      src={fullImgSrc} 
+                      alt={selectedPost.title || ''} 
+                      style={mediaStyle} 
+                      referrerPolicy="no-referrer"
+                      onError={() => setModalImageError(true)}
+                      onClick={() => setViewerMode(prev => prev === 'image' ? 'tagger' : (prev === 'tagger' ? 'edit' : 'image'))}
+                      title={isTagger ? "Click to toggle mode" : "Click to switch to Speed Tagger"}
                     />
                   );
                 }
 
-                const fullImgSrc = modalImageError 
-                  ? formatLocalAssetUrl(selectedPost.filePath || selectedPost.url || selectedPost.thumbnail) 
-                  : (selectedPost.url || formatLocalAssetUrl(selectedPost.filePath || selectedPost.thumbnail));
-
                 return (
-                  <img 
-                    src={fullImgSrc} 
-                    alt={selectedPost.title || ''} 
-                    style={mediaStyle} 
-                    referrerPolicy="no-referrer"
-                    onError={() => setModalImageError(true)}
-                    onClick={() => setViewerMode(prev => prev === 'image' ? 'tagger' : 'image')}
-                    title={isTagger ? "Click to expand to Full Image" : "Click to shrink to Speed Tagger"}
-                  />
+                  <div ref={mediaContainerRef} className="morphing-media-container">
+                    {mediaNode}
+                    {!isTagger && (
+                      <button
+                        className="media-fullscreen-hover-btn"
+                        onClick={handleToggleFullscreen}
+                        title="Enter Fullscreen Mode"
+                      >
+                        <Maximize2 size={15} />
+                        <span>Fullscreen</span>
+                      </button>
+                    )}
+                  </div>
                 );
               })()}
 
@@ -975,9 +1020,10 @@ export default function Posts({
               </button>
 
               {/* Dynamic Content Below Media */}
-              {viewerMode === 'tagger' ? (
+              {viewerMode === 'tagger' || viewerMode === 'edit' ? (
                 <MorphingTaggerPanel
                   currentPost={selectedPost}
+                  isEditing={viewerMode === 'edit'}
                   onTagsSaved={(postId, newTags) => {
                     if (postId && newTags) {
                       setPosts(prev => prev.map(p => p.id === postId ? { ...p, tags: newTags } : p));
@@ -988,11 +1034,15 @@ export default function Posts({
                   onAdvanceNext={handleNextPost}
                   onRegressPrev={handlePrevPost}
                   onSkip={handleNextPost}
+                  onTagClick={(tag) => {
+                    handleCloseModal();
+                    if (onTagClick) onTagClick(tag);
+                  }}
                 />
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', textAlign: 'center', maxWidth: '850px', marginTop: '0.5rem' }}>
                   <span style={{ color: 'var(--accent-color)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    {selectedPost.subreddit ? `r/${selectedPost.subreddit}` : 'Local Media'}
+                    {selectedPost.subreddit && selectedPost.subreddit !== 'localatlas' ? (selectedPost.subreddit.startsWith('r/') ? selectedPost.subreddit : `r/${selectedPost.subreddit}`) : 'Local Media'}
                   </span>
                   <h3 style={{ color: 'var(--text-primary)', fontSize: '1.05rem', fontWeight: 600, margin: 0 }}>
                     {selectedPost.title || selectedPost.fileName || ''}

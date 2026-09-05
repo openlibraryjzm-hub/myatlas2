@@ -145,7 +145,7 @@ export default function QueueTimeline({
               <div className="queue-timeline-info">
                 <span className="queue-timeline-id">#{idx + 1}</span>
                 <span className="queue-timeline-sub">
-                  {post.subreddit ? `r/${post.subreddit}` : (post.fileName || 'Item')}
+                  {post.subreddit && post.subreddit !== 'localatlas' ? (post.subreddit.startsWith('r/') ? post.subreddit : `r/${post.subreddit}`) : (post.fileName || 'Item')}
                 </span>
               </div>
             </div>
