@@ -18,20 +18,13 @@ export const getTagCategory = (tag) => {
   if (!tag || typeof tag !== 'string') return "general";
   const trimmed = tag.trim();
   const lower = trimmed.toLowerCase();
-  if (lower.startsWith("r/")) return "subreddit";
-  if (lower.startsWith("qid:") || lower.startsWith("artist:") || lower.startsWith("meta:artist:") || lower.startsWith("u/")) return "artist"; 
-  if (lower.startsWith("copyright:") || lower.startsWith("meta:copyright:")) return "copyright";
+
+  if (lower.startsWith("r/") || lower.startsWith("subreddit:") || lower.startsWith("meta:subreddit:")) return "subreddit";
+  if (lower.startsWith("creator:") || lower.startsWith("artist:") || lower.startsWith("u/") || lower.startsWith("qid:") || lower.startsWith("meta:creator:") || lower.startsWith("meta:artist:")) return "creator";
+  if (lower.startsWith("source:") || lower.startsWith("copyright:") || lower.startsWith("meta:source:") || lower.startsWith("meta:copyright:")) return "source";
+  if (lower.startsWith("work:") || lower.startsWith("meta:work:")) return "work";
   if (lower.startsWith("character:") || lower.startsWith("meta:character:")) return "character";
-  if (lower.startsWith("flair:") || lower.startsWith("meta:flair:")) return "flair";
-  if (lower.startsWith("folder:") || lower.startsWith("meta:folder:")) return "folder";
   if (lower.startsWith("meta:")) return "meta";
-  
-  if (trimmed.includes(":")) {
-    const prefix = trimmed.split(":")[0].toLowerCase();
-    if (prefix && prefix !== "http" && prefix !== "https") {
-      return prefix;
-    }
-  }
 
   return "general";
 };
@@ -67,165 +60,53 @@ export const getDisplayTagName = (tag) => {
 };
 
 export const PALETTE_COLORS = [
-  '#0d9488', // Teal
-  '#e11d48', // Rose
-  '#4f46e5', // Indigo
-  '#059669', // Emerald
-  '#0891b2', // Cyan
-  '#ea580c', // Orange
-  '#9333ea', // Violet
-  '#ca8a04'  // Gold
+  '#cc5a01', // General (Amber)
+  '#4b5563', // Meta (Slate)
+  '#7c3aed', // Source (Purple)
+  '#0284c7', // Work (Sky Blue)
+  '#b45309', // Subreddit (Amber Gold)
+  '#16a34a', // Character (Green)
+  '#2563eb'  // Creator (Royal Blue)
 ];
 
 export const DEFAULT_CATEGORIES = [
-  { key: 'subreddit', prefix: 'r/', label: 'Subreddits', color: '#b45309', bg: '#fef3c7', isDefault: true },
-  { key: 'folder', prefix: 'folder:', label: 'Folders', color: '#0284c7', bg: '#e0f2fe', isDefault: true },
-  { key: 'copyright', prefix: 'copyright:', label: 'Copyright', color: '#7c3aed', bg: '#f3e8ff', isDefault: true },
-  { key: 'character', prefix: 'character:', label: 'Characters', color: '#16a34a', bg: '#dcfce7', isDefault: true },
-  { key: 'artist', prefix: 'artist:', label: 'Artists', color: '#2563eb', bg: '#dbeafe', isDefault: true },
-  { key: 'flair', prefix: 'flair:', label: 'Flairs', color: '#db2777', bg: '#fce7f3', isDefault: true },
+  { key: 'general', prefix: '', label: 'General Tags', color: '#cc5a01', bg: '#fdf5e6', isDefault: true },
   { key: 'meta', prefix: 'meta:', label: 'Metadata', color: '#4b5563', bg: '#f3f4f6', isDefault: true },
-  { key: 'general', prefix: '', label: 'General Tags', color: '#cc5a01', bg: '#fdf5e6', isDefault: true }
+  { key: 'source', prefix: 'source:', label: 'Source', color: '#7c3aed', bg: '#f3e8ff', isDefault: true },
+  { key: 'work', prefix: 'work:', label: 'Work', color: '#0284c7', bg: '#e0f2fe', isDefault: true },
+  { key: 'subreddit', prefix: 'r/', label: 'Subreddits', color: '#b45309', bg: '#fef3c7', isDefault: true },
+  { key: 'character', prefix: 'character:', label: 'Characters', color: '#16a34a', bg: '#dcfce7', isDefault: true },
+  { key: 'creator', prefix: 'creator:', label: 'Creator', color: '#2563eb', bg: '#dbeafe', isDefault: true }
 ];
 
-export const getTagCategories = () => {
-  try {
-    const saved = localStorage.getItem('myatlas_tag_categories');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const unique = [];
-        const seen = new Set();
-        parsed.forEach(c => {
-          if (c && c.key && !seen.has(c.key.toLowerCase())) {
-            seen.add(c.key.toLowerCase());
-            unique.push(c);
-          }
-        });
-        if (unique.length > 0) return unique;
-      }
-    }
-  } catch (e) {}
-  return DEFAULT_CATEGORIES;
-};
-
-export const saveTagCategories = (categories) => {
-  try {
-    localStorage.setItem('myatlas_tag_categories', JSON.stringify(categories));
-  } catch (e) {}
-};
-
-export const addTagCategory = (inputStr) => {
-  if (!inputStr || typeof inputStr !== 'string') return getTagCategories();
-  let raw = inputStr.trim().toLowerCase();
-  if (!raw) return getTagCategories();
-
-  if (raw !== 'general' && !raw.startsWith('r/') && !raw.startsWith('u/') && !raw.endsWith(':')) {
-    raw = `${raw}:`;
-  }
-
-  const current = getTagCategories();
-  const existing = current.find(c => c.prefix === raw || c.key === raw.replace(':', ''));
-  if (existing) return current;
-
-  const key = raw.endsWith(':') ? raw.slice(0, -1) : raw;
-  const label = key.charAt(0).toUpperCase() + key.slice(1);
-  const colorIndex = (current.length - DEFAULT_CATEGORIES.length) % PALETTE_COLORS.length;
-  const assignedColor = PALETTE_COLORS[Math.max(0, colorIndex)];
-
-  const newCat = {
-    key,
-    prefix: raw,
-    label,
-    color: assignedColor,
-    bg: `${assignedColor}18`,
-    isDefault: false
-  };
-
-  const updated = [...current, newCat];
-  saveTagCategories(updated);
-  return updated;
-};
-
-export const ensureTagCategoriesExist = (tagsArray) => {
-  if (!Array.isArray(tagsArray)) return;
-  const current = getTagCategories();
-  const existingPrefixes = new Set(current.map(c => c.prefix.toLowerCase()));
-  const existingKeys = new Set(current.map(c => c.key.toLowerCase()));
-
-  tagsArray.forEach(tag => {
-    if (typeof tag !== 'string' || !tag.includes(':')) return;
-    const parts = tag.trim().split(':');
-    const prefix = parts[0].toLowerCase();
-    if (prefix && prefix !== 'http' && prefix !== 'https' && prefix !== 'meta' && prefix !== 'r' && prefix !== 'u') {
-      const fullPrefix = `${prefix}:`;
-      if (!existingPrefixes.has(fullPrefix) && !existingKeys.has(prefix)) {
-        addTagCategory(fullPrefix);
-        existingPrefixes.add(fullPrefix);
-        existingKeys.add(prefix);
-      }
-    }
-  });
-};
-
-export const removeTagCategory = (prefixToRemove) => {
-  const current = getTagCategories();
-  const updated = current.filter(c => c.prefix !== prefixToRemove && c.key !== prefixToRemove);
-  saveTagCategories(updated);
-  return updated;
-};
-
-export const resetTagCategories = () => {
-  saveTagCategories(DEFAULT_CATEGORIES);
-  return DEFAULT_CATEGORIES;
-};
-
-const hashCode = (str) => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return hash;
-};
+export const getTagCategories = () => DEFAULT_CATEGORIES;
+export const saveTagCategories = () => DEFAULT_CATEGORIES;
+export const addTagCategory = () => DEFAULT_CATEGORIES;
+export const ensureTagCategoriesExist = () => {};
+export const removeTagCategory = () => DEFAULT_CATEGORIES;
+export const resetTagCategories = () => DEFAULT_CATEGORIES;
 
 // Helper: retrieve category object for a tag or category key
 export const getCategoryObj = (tagOrKey) => {
-  if (!tagOrKey) return DEFAULT_CATEGORIES.find(c => c.key === 'general');
-  const categories = getTagCategories();
+  if (!tagOrKey) return DEFAULT_CATEGORIES[0];
   const raw = String(tagOrKey).trim();
   const lower = raw.toLowerCase().replace(/:$/, '');
 
-  // 1. Direct match on registered category key or prefix (e.g. 'character', 'character:', 'r/')
-  const directMatch = categories.find(c => 
+  // 1. Direct match on registered category key or prefix
+  const directMatch = DEFAULT_CATEGORIES.find(c => 
     c.key.toLowerCase() === lower || 
     c.prefix.toLowerCase().replace(/:$/, '') === lower ||
     c.prefix.toLowerCase() === lower
   );
   if (directMatch) return directMatch;
 
-  // 2. Resolve category key via getTagCategory (e.g. 'landscape' -> 'general', 'character:goku' -> 'character')
+  // 2. Resolve category key via getTagCategory
   const catKey = getTagCategory(raw);
-  const catMatch = categories.find(c => c.key.toLowerCase() === catKey.toLowerCase());
+  const catMatch = DEFAULT_CATEGORIES.find(c => c.key.toLowerCase() === catKey.toLowerCase());
   if (catMatch) return catMatch;
 
-  // 3. Fallback for custom dynamic namespace prefix (e.g. 'ship:otago' -> catKey 'ship')
-  if (catKey && catKey.toLowerCase() !== 'general') {
-    const label = catKey.charAt(0).toUpperCase() + catKey.slice(1);
-    const colorIndex = Math.abs(hashCode(catKey.toLowerCase())) % PALETTE_COLORS.length;
-    const color = PALETTE_COLORS[colorIndex];
-    return {
-      key: catKey.toLowerCase(),
-      prefix: `${catKey.toLowerCase()}:`,
-      label,
-      color,
-      bg: `${color}18`,
-      isDefault: false
-    };
-  }
-
-  // 4. Default to General Tags
-  return categories.find(c => c.key === 'general') || DEFAULT_CATEGORIES.find(c => c.key === 'general');
+  // 3. Default to General Tags
+  return DEFAULT_CATEGORIES[0];
 };
 
 export const getActiveCategories = getTagCategories;

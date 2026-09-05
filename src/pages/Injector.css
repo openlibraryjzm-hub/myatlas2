@@ -1,0 +1,307 @@
+.injector-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: calc(100vh - 52px);
+  padding: 3rem 1.5rem 4rem 1.5rem;
+  background-color: var(--bg-primary, #FBFAF7);
+  color: var(--text-primary, #1e293b);
+  box-sizing: border-box;
+}
+
+.injector-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 580px;
+  margin-bottom: 2.25rem;
+}
+
+.injector-icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--accent-color-light, #FDF5E6);
+  border: 1px solid var(--accent-color-border, #fce7f3);
+  margin-bottom: 1rem;
+}
+
+.injector-title {
+  font-family: 'Lora', serif;
+  font-size: 2.1rem;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.injector-subtitle {
+  font-size: 0.92rem;
+  color: var(--text-secondary, #64748b);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.injector-card {
+  width: 100%;
+  max-width: 580px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 14px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.injector-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.injector-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary, #334155);
+  letter-spacing: 0.01em;
+}
+
+.injector-match-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-color, #CC5A01);
+  background-color: var(--accent-color-light, #FDF5E6);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.injector-cat-preview-pill {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: capitalize;
+}
+
+.injector-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.injector-input-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.injector-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 40px 0 42px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text-primary, #1e293b);
+  background-color: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.injector-input:focus {
+  background-color: #ffffff;
+  border-color: var(--accent-color, #CC5A01);
+  box-shadow: 0 0 0 3px var(--accent-color-light, rgba(204, 90, 1, 0.12));
+}
+
+.injector-clear-btn {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.injector-clear-btn:hover {
+  color: #475569;
+  background-color: #e2e8f0;
+}
+
+.injector-suggestions-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.injector-suggestion-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.injector-suggestion-item:hover,
+.injector-suggestion-item.active {
+  background-color: var(--accent-color-light, #FDF5E6);
+}
+
+.injector-sug-name {
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.injector-sug-count {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.76rem;
+  color: #94a3b8;
+}
+
+/* Matching Media Preview Strip */
+.injector-preview-section {
+  margin-top: 0.85rem;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+}
+
+.injector-preview-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.injector-preview-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.injector-preview-thumb-box {
+  width: 54px;
+  height: 54px;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #e2e8f0;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.injector-preview-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.injector-no-matches {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  font-style: italic;
+  text-align: center;
+  padding: 0.25rem 0;
+}
+
+/* Status Banner */
+.injector-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.injector-status-banner.success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.injector-status-banner.error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* Action Trigger Button */
+.injector-action-row {
+  margin-top: 1.5rem;
+}
+
+.injector-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 48px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: var(--accent-color, #CC5A01);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(204, 90, 1, 0.25);
+}
+
+.injector-submit-btn:hover:not(:disabled) {
+  background-color: var(--accent-color-hover, #b24d00);
+  box-shadow: 0 4px 14px rgba(204, 90, 1, 0.35);
+  transform: translateY(-1px);
+}
+
+.injector-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}

@@ -651,4 +651,35 @@ export async function clearAllLocalStores() {
   invalidateItemsCache();
 }
 
+export async function bulkInjectTagToFilter(targetFilterTag, newTagToInject) {
+  if (!targetFilterTag || !newTagToInject) return 0;
+  const filterQuery = String(targetFilterTag).trim().toLowerCase();
+  const tagToAdd = String(newTagToInject).trim();
+  if (!filterQuery || !tagToAdd) return 0;
+
+  const allItems = await getAllItems(true);
+  const matching = allItems.filter(item => {
+    const tags = parseTagsList(item.tags);
+    return tags.some(t => {
+      const lower = String(t).toLowerCase();
+      return lower === filterQuery || lower.startsWith(`${filterQuery}:`) || lower.startsWith(filterQuery);
+    });
+  });
+
+  if (matching.length === 0) return 0;
+
+  let modifiedCount = 0;
+  for (const item of matching) {
+    const existing = parseTagsList(item.tags);
+    if (!existing.includes(tagToAdd)) {
+      const updated = [...existing, tagToAdd];
+      await updateItemTags(item.id, updated);
+      modifiedCount++;
+    }
+  }
+
+  invalidateItemsCache();
+  return modifiedCount;
+}
+
 

@@ -1,41 +1,40 @@
 # Tagging & Category Taxonomy (`docs/taxonomy.md`)
 
-This document defines the boolean tag categorization, namespace schema, database mappings, auto-coloring palette, and user-expandable flat taxonomy system used to organize and query items in **MyAtlas**.
+This document defines the boolean tag categorization, namespace schema, database mappings, auto-coloring palette, and 7-category fixed taxonomy system used to organize and query items in **MyAtlas**.
 
 ---
 
-## 🏷️ Namespace Categories & Schema
+## 🏷️ Fixed 7-Category Namespace Schema
 
 Tags follow a booru-style boolean namespace system (`category:tag_name` or `namespace:value`) to classify content.
 
-The default taxonomy includes the following core categories:
+The system enforces a **strict, fixed 7-category taxonomy**:
 
-| Category | Namespace Prefix | Searchable / Filterable | Example Tags | Default Color |
-| :--- | :--- | :--- | :--- | :--- |
-| **General** | *No prefix (default)* | Yes | `landscape`, `cyberpunk`, `minimal` | Warm Amber (`#cc5a01`) |
-| **Folders** | `folder:` | Yes | `folder:scifi`, `folder:wallpapers` | Sky Blue (`#0284c7`) |
-| **Character / Subject** | `character:` | Yes | `character:goku`, `character:wolf` | Forest Green (`#16a34a`) |
-| **Artist / Creator** | `artist:` / `u/` | Yes | `artist:kyacchan`, `u/username` | Royal Blue (`#2563eb`) |
-| **Copyright / Source** | `copyright:` | Yes | `copyright:sekiro`, `copyright:dragon_ball` | Deep Purple (`#7c3aed`) |
-| **Flair / Format Label** | `flair:` | Yes | `flair:concept_art`, `flair:digital_art` | Hot Pink (`#db2777`) |
-| **Medium / Format** | `medium:` | Yes | `medium:3d`, `medium:digital`, `medium:photo` | Amber Gold (`#b45309`) |
-| **Metadata** | `meta:` | Yes | `meta:format:image`, `meta:extension:png`, `meta:folder:scifi`, `meta:atlas:my_collection` | Slate Gray (`#4b5563`) |
+| Category Key | Label | Main Prefix | Handled / Legacy Prefixes | Searchable / Filterable | Example Tags | Default Color |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`general`** | General Tags | *(none)* | `general:`, any unregistered prefix (e.g. `folder:`, `flair:`, `medium:`) | Yes | `landscape`, `cyberpunk`, `minimal` | Warm Amber (`#cc5a01`) |
+| **`meta`** | Metadata | `meta:` | `meta:` | Yes | `meta:format:image`, `meta:extension:png` | Slate Gray (`#4b5563`) |
+| **`source`** | Source | `source:` | `source:`, `copyright:`, `meta:copyright:` | Yes | `source:artstation`, `copyright:sekiro` | Deep Purple (`#7c3aed`) |
+| **`work`** | Work | `work:` | `work:`, `meta:work:` | Yes | `work:elden_ring`, `work:star_wars` | Sky Blue (`#0284c7`) |
+| **`subreddit`** | Subreddits | `subreddit:` | `subreddit:`, `r/`, `meta:subreddit:` | Yes | `r/wallpapers`, `r/conceptart` | Amber Gold (`#b45309`) |
+| **`character`** | Characters | `character:` | `character:`, `meta:character:` | Yes | `character:goku`, `character:wolf` | Forest Green (`#16a34a`) |
+| **`creator`** | Creator | `creator:` | `creator:`, `artist:`, `u/`, `qid:`, `meta:artist:` | Yes | `creator:kyacchan`, `u/username` | Royal Blue (`#2563eb`) |
 
 ---
 
-## ⚙️ First-Colon & Sub-Prefix Namespace Parsing Rule
+## ⚙️ Namespace Parsing & Fallback Rule
 
-Namespace extraction evaluates category classification using the following precedence rules:
+Category extraction evaluates tags against the 7 fixed categories:
 
-1. **Meta Sub-Prefix Routing**: Sub-prefixes under `meta:` like `meta:folder:`, `meta:artist:`, `meta:copyright:`, `meta:character:`, and `meta:flair:` route directly to their target core category (e.g. `meta:folder:scifi` routes to **Folders** (`folder:`)).
-2. **First-Colon Extraction**: The substring preceding the first colon is evaluated as the category key (e.g. in `ship:hms_victory`, `ship` is the namespace).
-3. **Value Tag Preservation**: Any subsequent colons or semicolons following the first colon are preserved 100% intact as part of the value string.
+1. **Direct Prefix Matching**: Recognized prefixes (`r/`, `subreddit:`, `creator:`, `artist:`, `u/`, `qid:`, `source:`, `copyright:`, `work:`, `character:`, `meta:`) resolve to their respective fixed category.
+2. **Meta Sub-Prefix Routing**: Sub-prefixes under `meta:` like `meta:creator:`, `meta:source:`, `meta:work:`, `meta:character:`, `meta:subreddit:` route directly to their target category.
+3. **General Fallback**: Any tag without a namespace, or with an unrecognized prefix (e.g. `folder:`, `flair:`, `medium:`, `game:`), defaults cleanly to **General Tags** (`general`).
 
 ---
 
 ## 🛡️ Robust Tag Array Normalization Specification
 
-To ensure high-performance execution and prevent runtime errors when consuming tags from SQLite or local storage, all tag consumers utilize robust array normalization (`ensureTagsArray` / `parseTagsArray`):
+To ensure high-performance execution and prevent runtime errors when consuming tags from SQLite or local storage, all tag consumers utilize robust array normalization (`parseTagsArray`):
 
 ```javascript
 export const parseTagsArray = (rawTags) => {
@@ -53,64 +52,17 @@ export const parseTagsArray = (rawTags) => {
 };
 ```
 
-This normalization handles raw Javascript arrays, stringified JSON arrays (`"[\"folder:scifi\"]"`), and flat delimiter-separated tag strings cleanly.
-
 ---
 
-## 🎨 User-Defined Custom Categories & Auto-Coloring (`PALETTE_COLORS`)
+## 🎨 Fixed Category Palette (`PALETTE_COLORS`) & Category Resolution
 
-Users can register custom tag category prefixes (e.g. `medium:`, `genre:`, `game:`, `location:`, `camera:`) via the **Tag Categories Directory** ([`Categories.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/pages/Categories.jsx)).
+Each of the 7 fixed categories is assigned a distinct accent color and background tint in `DEFAULT_CATEGORIES`:
 
-Newly added custom categories automatically draw distinct accent colors from the `PALETTE_COLORS` array:
+- **General**: `#cc5a01` / `#fdf5e6`
+- **Metadata**: `#4b5563` / `#f3f4f6`
+- **Source**: `#7c3aed` / `#f3e8ff`
+- **Work**: `#0284c7` / `#e0f2fe`
+- **Subreddits**: `#b45309` / `#fef3c7`
+- **Characters**: `#16a34a` / `#dcfce7`
+- **Creator**: `#2563eb` / `#dbeafe`
 
-1. **Teal** (`#0d9488`)
-2. **Crimson Rose** (`#e11d48`)
-3. **Indigo** (`#4f46e5`)
-4. **Emerald** (`#059669`)
-5. **Cyan** (`#0891b2`)
-6. **Burnt Orange** (`#ea580c`)
-7. **Vivid Violet** (`#9333ea`)
-8. **Dark Gold** (`#ca8a04`)
-
----
-
-## ⚙️ Dynamic Category Resolution Algorithm (`getCategoryObj`)
-
-Dynamic tag classification resolves category objects (`key`, `prefix`, `label`, `color`, `bg`) using `getCategoryObj(tagOrKey)`:
-
-```javascript
-export const getCategoryObj = (tagOrKey) => {
-  if (!tagOrKey) return DEFAULT_CATEGORIES.find(c => c.key === 'general');
-  const categories = getTagCategories();
-  const lower = String(tagOrKey).toLowerCase().trim();
-  
-  // Direct key or prefix match (e.g. 'folder', 'folder:', 'r/', 'copyright')
-  const directMatch = categories.find(c => 
-    c.key.toLowerCase() === lower || 
-    c.prefix.toLowerCase() === lower ||
-    c.prefix.toLowerCase() === `${lower}:`
-  );
-  if (directMatch) return directMatch;
-
-  // Prefix extraction for full tags (e.g. 'folder:scifi')
-  const catKey = getTagCategory(tagOrKey);
-  const found = categories.find(c => c.key === catKey || c.prefix === tagOrKey);
-  if (found) return found;
-
-  return DEFAULT_CATEGORIES.find(c => c.key === 'general');
-};
-```
-
----
-
-## 💾 Taxonomy Registry Persistence
-
-Taxonomy category definitions are stored in `localStorage` under `'myatlas_tag_categories'` as a flat JSON array of category objects:
-
-```json
-[
-  { "key": "subreddit", "label": "Subreddits", "prefix": "r/", "color": "#b45309", "isDefault": true },
-  { "key": "folder", "label": "Folders", "prefix": "folder:", "color": "#0284c7", "isDefault": true },
-  { "key": "medium", "label": "Medium", "prefix": "medium:", "color": "#0d9488", "isDefault": false }
-]
-```

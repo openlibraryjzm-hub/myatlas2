@@ -11,7 +11,7 @@ MyAtlas is engineered as a **High-Performance Local Media Booru & Bookmark Manag
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    React 19 + Vite 8 UI                     │
-│    (Claude Aesthetic, Grid, Tagger, Deletor, Lucide Icons)   │
+│    (Claude Aesthetic, Grid, Tagger, Injector, Deletor, Lucide Icons)   │
 └──────────────────────────────┬──────────────────────────────┘
                                │ REST API (http://127.0.0.1:7171)
                                ▼

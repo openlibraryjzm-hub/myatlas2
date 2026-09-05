@@ -4,16 +4,16 @@ import Home from './pages/Home';
 import Posts from './pages/Posts';
 import Upload from './pages/Upload';
 import Deletor from './pages/Deletor';
-import Categories from './pages/Categories';
 import Subreddits from './pages/Subreddits';
 import Users from './pages/Users';
 import Tagger from './pages/Tagger';
+import Injector from './pages/Injector';
 import AtlasSwitcher from './pages/AtlasSwitcher';
 import { fetchServerAtlases } from './services/api';
 import { BUILTIN_ATLASES, DEFAULT_ATLAS } from './utils/subAtlasUtils';
 
 export default function App() {
-  const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'deletor' | 'categories' | 'subreddits' | 'users' | 'tagger' | 'switcher'
+  const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'deletor' | 'subreddits' | 'users' | 'tagger' | 'injector' | 'switcher'
 
   const currentUser = { id: 'usr_curator', username: 'curator', displayName: 'Curator' };
 
@@ -247,8 +247,6 @@ export default function App() {
         <Upload currentAtlas={currentAtlas} isReadOnly={isReadOnly} />
       ) : view === 'deletor' ? (
         <Deletor isReadOnly={isReadOnly} />
-      ) : view === 'categories' ? (
-        <Categories onTagClick={(tag) => { handleTagToggle(tag); setView('posts'); }} />
       ) : view === 'subreddits' ? (
         <Subreddits onSubredditClick={handleTagToggle} />
       ) : view === 'users' ? (
@@ -261,6 +259,11 @@ export default function App() {
           currentPage={currentPage}
           onExit={() => setView('posts')}
           isReadOnly={isReadOnly}
+        />
+      ) : view === 'injector' ? (
+        <Injector 
+          isReadOnly={isReadOnly}
+          onNavigatePosts={() => setView('posts')}
         />
       ) : (
         <Posts 

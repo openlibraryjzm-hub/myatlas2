@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Compass, Upload, Trash2, Tag, Wrench, User } from 'lucide-react';
+import { Search, Compass, Upload, Trash2, Wrench, Layers, User } from 'lucide-react';
 import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './Navbar.css';
 
@@ -54,16 +54,6 @@ export default function Navbar({
           </button>
 
           <button 
-            className={`nav-icon-btn ${view === 'categories' ? 'active' : ''}`}
-            onClick={() => setView('categories')}
-            onMouseEnter={() => setHoveredLabel('tag categories')}
-            onMouseLeave={() => setHoveredLabel('')}
-            title="Tag Categories Directory"
-          >
-            <Tag size={16} />
-          </button>
-
-          <button 
             className={`nav-icon-btn ${view === 'tagger' ? 'active' : ''}`}
             onClick={() => setView('tagger')}
             onMouseEnter={() => setHoveredLabel('speed tagger')}
@@ -71,6 +61,16 @@ export default function Navbar({
             title="Speed Tagger"
           >
             <Wrench size={16} />
+          </button>
+
+          <button 
+            className={`nav-icon-btn ${view === 'injector' ? 'active' : ''}`}
+            onClick={() => setView('injector')}
+            onMouseEnter={() => setHoveredLabel('bulk tag injector')}
+            onMouseLeave={() => setHoveredLabel('')}
+            title="Bulk Tag Injector"
+          >
+            <Layers size={16} />
           </button>
 
           <div className={`nav-search-wrapper ${searchOpen ? 'expanded' : ''}`}>
