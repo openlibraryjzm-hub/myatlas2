@@ -23,6 +23,19 @@ This document defines the specifications, layout metrics, interactive state mach
 
 ---
 
+## 🖼️ Option Quick-Links Bar
+
+Centered below the search input, a row of 6 tactile option quick-links renders high-resolution transparent PNG/WebP graphics stacked above monospace text labels (`34px × 34px`):
+
+1. **Amber**: `/bernstein-261133_1280.png` — Triggers `amber` tag search.
+2. **Youtube**: `/pngtree-a-straight-shot-of-a-realistic-eighties-crt-television-set-png-image_19729924.webp` — Triggers `youtube` tag search.
+3. **Wiki**: `/pngtree-stack-of-books-image-png-image_17810565.png` — Triggers `wiki` tag search.
+4. **Games**: `/Game-Boy-FL.png` — Triggers `games` tag search.
+5. **Tools**: `/pngtree-work-and-repair-tools-png-image_14699823.png` — Triggers `tools` tag search.
+6. **Account**: `AccountRingIcon` — Switches view context to Curator Profile (`view = 'users'`).
+
+---
+
 ## 📊 Atlas Isolated Post Counter
 
 - **Atlas Scoped Count**: Displays the total count of indexed items **strictly for the active atlas** (e.g. `1,525` for `myatlas`).

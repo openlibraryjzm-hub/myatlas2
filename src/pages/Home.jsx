@@ -119,42 +119,62 @@ export default function Home({
       <div className="home-options-container">
         <div className="home-option-item" onClick={() => onSearchSubmit('amber')}>
           <div className="home-option-icon">
-            <AmberBugIcon size={22} color="#D97706" />
+            <img 
+              src="/bernstein-261133_1280.png" 
+              alt="Amber" 
+              style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
+            />
           </div>
           <span className="home-option-link">Amber</span>
         </div>
 
         <div className="home-option-item" onClick={() => onSearchSubmit('youtube')}>
           <div className="home-option-icon">
-            <YouTubeScreenIcon size={22} color="#EF4444" />
+            <img 
+              src="/pngtree-a-straight-shot-of-a-realistic-eighties-crt-television-set-png-image_19729924.webp" 
+              alt="Youtube" 
+              style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
+            />
           </div>
           <span className="home-option-link">Youtube</span>
         </div>
 
         <div className="home-option-item" onClick={() => onSearchSubmit('wiki')}>
           <div className="home-option-icon">
-            <WikiBookIcon size={22} color="#4F46E5" />
+            <img 
+              src="/pngtree-stack-of-books-image-png-image_17810565.png" 
+              alt="Wiki" 
+              style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
+            />
           </div>
           <span className="home-option-link">Wiki</span>
         </div>
 
         <div className="home-option-item" onClick={() => onSearchSubmit('games')}>
           <div className="home-option-icon">
-            <AngledJoystickIcon size={22} color="#2563EB" />
+            <img 
+              src="/Game-Boy-FL.png" 
+              alt="Games" 
+              style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
+            />
           </div>
           <span className="home-option-link">Games</span>
         </div>
 
-        <div className="home-option-item" onClick={() => setView('shop')}>
+        <div className="home-option-item" onClick={() => onSearchSubmit('tools')}>
           <div className="home-option-icon">
-            <GreenShoppingBagIcon size={22} color="#16A34A" />
+            <img 
+              src="/pngtree-work-and-repair-tools-png-image_14699823.png" 
+              alt="Tools" 
+              style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
+            />
           </div>
-          <span className="home-option-link">Shop</span>
+          <span className="home-option-link">Tools</span>
         </div>
 
         <div className="home-option-item" onClick={() => setView('users')}>
           <div className="home-option-icon">
-            <AccountRingIcon size={22} color="#CC5A01" />
+            <AccountRingIcon size={34} color="#CC5A01" />
           </div>
           <span className="home-option-link">Account</span>
         </div>

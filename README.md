@@ -39,8 +39,7 @@ my atlas 2/
 │       ├── upload.md       # Hard drive folder scanner, local file ingestion & background pre-caching
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning
 │       ├── categories.md   # Tag Categories Directory specs, namespace management & scalability truncation
-│       ├── home.md         # Home View specs, Option A dynamic word-split title logo & blinking caret search
-│       ├── shop.md         # Shop Atlases specs, Smash Ultimate character select screen layout
+│       ├── home.md         # Home View specs, Option A dynamic word-split title logo & transparent PNG quick-links
 │       └── users.md        # Curator Profile specs, avatar, Titan Atlas SVG icon, bio & showcase bars
 └── src/
     ├── main.jsx            # Application entry mount
@@ -54,14 +53,13 @@ my atlas 2/
     │   ├── Navbar.jsx      # Header navigation bar & brand logo
     │   └── PostCard.jsx    # High-density card, WebP thumbnail rendering & video hover player
     └── pages/
-        ├── Home.jsx        # Minimalist home view with search input
+        ├── Home.jsx        # Minimalist home view with search input & tactile PNG quick-links
         ├── Posts.jsx       # Browse Grid view with scale slider (4c-10c) & 3-col tag matrix
         ├── Tagger.jsx      # Speed tagging interface with category slots
         ├── Upload.jsx      # Hard drive folder scanner & local file batch ingestion
         ├── Deletor.jsx     # Mass Deletor Studio for batch tag pruning
         ├── Categories.jsx  # Tag Categories Directory for inspecting & managing namespaces
         ├── AtlasSwitcher.jsx # Quick switcher modal (Ctrl+K) for myatlas & curated atlases
-        ├── Shop.jsx        # Dedicated Shop Atlases page (Smash Bros Ultimate CSS style)
         └── Users.jsx       # Curator Profile view with avatar, Titan Atlas icon, bio & showcase bars
 ```
 

@@ -9,7 +9,6 @@ import Subreddits from './pages/Subreddits';
 import Users from './pages/Users';
 import Tagger from './pages/Tagger';
 import AtlasSwitcher from './pages/AtlasSwitcher';
-import Shop from './pages/Shop';
 import { fetchServerAtlases } from './services/api';
 import { DEFAULT_ATLAS } from './utils/subAtlasUtils';
 
@@ -196,8 +195,8 @@ export default function App() {
 
   return (
     <div className={`app-container theme-${currentAtlas} ${view === 'users' || view === 'posts' ? 'users-view-active' : ''}`}>
-      {/* Shared Navbar - Hidden on Home and Shop Pages */}
-      {view !== 'home' && view !== 'shop' && (
+      {/* Shared Navbar - Hidden on Home Page */}
+      {view !== 'home' && (
         <Navbar 
           view={view} 
           setView={setView} 
@@ -241,12 +240,6 @@ export default function App() {
           currentAtlas={currentAtlas}
           onSelectAtlas={handleSelectAtlas}
         />
-      ) : view === 'shop' ? (
-        <Shop 
-          setView={setView} 
-          onSelectAtlas={handleSelectAtlas} 
-          onTagClick={(tag) => { handleTagToggle(tag); setView('posts'); }} 
-        />
       ) : view === 'upload' ? (
         <Upload currentAtlas={currentAtlas} isReadOnly={isReadOnly} />
       ) : view === 'deletor' ? (
@@ -285,7 +278,7 @@ export default function App() {
       )}
 
       {/* Footer */}
-      {view !== 'users' && view !== 'posts' && view !== 'shop' && (
+      {view !== 'users' && view !== 'posts' && (
         <footer className="app-footer">
           <p>
             <span>my</span>atlas &copy; {new Date().getFullYear()} &bull; Local Bookmark & Media Manager.
