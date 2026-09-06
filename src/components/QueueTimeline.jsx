@@ -33,10 +33,15 @@ export default function QueueTimeline({
     return () => cancelAnimationFrame(rafId);
   }, [currentIndex]);
 
-  // Map vertical wheel scrolling to horizontal timeline scroll instantly
+  // Map vertical wheel & click-and-drag scrolling to horizontal timeline scroll instantly
   useEffect(() => {
     const el = timelineRef.current;
     if (!el) return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let isDraggingFar = false;
 
     const handleWheel = (e) => {
       if (e.deltaY !== 0) {
@@ -45,8 +50,62 @@ export default function QueueTimeline({
       }
     };
 
+    const handleMouseDown = (e) => {
+      if (e.button !== 0) return;
+      isDown = true;
+      isDraggingFar = false;
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+      el.style.cursor = 'grabbing';
+      el.style.userSelect = 'none';
+    };
+
+    const handleMouseLeave = () => {
+      isDown = false;
+      el.style.cursor = 'grab';
+      el.style.removeProperty('user-select');
+    };
+
+    const handleMouseUp = () => {
+      isDown = false;
+      el.style.cursor = 'grab';
+      el.style.removeProperty('user-select');
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      if (Math.abs(x - startX) > 5) {
+        isDraggingFar = true;
+      }
+      el.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleClickCapture = (e) => {
+      if (isDraggingFar) {
+        e.stopPropagation();
+        e.preventDefault();
+        isDraggingFar = false;
+      }
+    };
+
     el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
+    el.addEventListener('mousedown', handleMouseDown);
+    el.addEventListener('mouseleave', handleMouseLeave);
+    el.addEventListener('mouseup', handleMouseUp);
+    el.addEventListener('mousemove', handleMouseMove);
+    el.addEventListener('click', handleClickCapture, true);
+
+    return () => {
+      el.removeEventListener('wheel', handleWheel);
+      el.removeEventListener('mousedown', handleMouseDown);
+      el.removeEventListener('mouseleave', handleMouseLeave);
+      el.removeEventListener('mouseup', handleMouseUp);
+      el.removeEventListener('mousemove', handleMouseMove);
+      el.removeEventListener('click', handleClickCapture, true);
+    };
   }, []);
 
   // Helper to test if post is a video format

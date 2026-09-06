@@ -25,11 +25,11 @@ This document defines the layout architecture, visual design system, left sideba
 
 - **Dimensions**: Fixed width of `180px` (`flex-shrink: 0`), floating unbordered on the warm cream backdrop (`margin-right: 2.25rem`).
 - **Controls & Navigation**:
-  1. **Implicit Threshold Inspect Mode (250ms Threshold)**: Hovering over a sidebar tag or category header row for > 250ms automatically illuminates matching post cards on the grid and dims non-matching cards. Moving the cursor away instantly resets all elements to normal with 0ms delay.
-  2. **Grid Card Inspect Hover**: Hovering over any post card on the Browse Grid for > 250ms highlights its tags in the left sidebar matrix and dims non-matching post cards on the grid.
-  3. **Item Count & Reset**: Displays `{totalCount} posts` alongside a clear filter trigger (`<Trash2 size={12} />`).
-  4. **1-Click Drill-Down Category Tree**: Groups active page tags by the 7 fixed namespace categories (`General Tags`, `Metadata`, `Source`, `Work`, `Subreddits`, `Characters`, `Creator`). Each active category header displays an arrow (`ChevronRight`/`ChevronDown`), a 6px category accent dot, category name, and count (`({groupTags.length})`). 1-click expands/collapses the category right in the sidebar to reveal its value tags below!
-  5. **Auto-Expanding Inspect Mode Hover**: Hovering over any post card for > 250ms automatically filters the sidebar to *only* the categories and value tags applying to that specific post, auto-expanding those categories to reveal the exact tags on that item!
+  1. **Gelbooru / Danbooru Standard Flat Tag Stream**: Displays a clean, fixed flat list of the top active page tags (capped at 20) sorted by canonical Booru category priority (`Copyright` → `Character` → `Artist` → `General` → `Meta`) and frequency count descending.
+  2. **Booru Category Color Badges**: Each tag features a 6px category accent dot (`catObj.color`) and category-tinted styling for instant visual distinction.
+  3. **Sidebar Tag Inspect Hover (250ms Threshold)**: Hovering over any sidebar tag for > 250ms automatically illuminates matching post cards on the grid and dims non-matching cards. Moving the cursor away resets grid highlights instantly with 0ms delay.
+  4. **Decoupled Grid Thumbnail Hover**: Hovering over post thumbnails on the grid leaves the sidebar tag list static and untouched.
+  5. **Item Count & Reset**: Displays `{totalCount} posts` alongside a clear filter trigger (`<Trash2 size={12} />`).
 
 ---
 

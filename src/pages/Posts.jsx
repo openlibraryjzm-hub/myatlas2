@@ -547,168 +547,88 @@ export default function Posts({
     return buttons;
   };
 
-  // Sidebar Category Expand/Collapse state
-  const [expandedSidebarCats, setExpandedSidebarCats] = useState(new Set());
-
-  const toggleSidebarCat = (catKey) => {
-    setExpandedSidebarCats(prev => {
-      const next = new Set(prev);
-      if (next.has(catKey)) next.delete(catKey);
-      else next.add(catKey);
-      return next;
-    });
-  };
-
-  // Render 1-click drill-down sidebar category tree
-  const renderCategorizedSidebarTags = (tagList, isInspectMode = false) => {
+  // Render Gelbooru / Danbooru style flat sidebar tag list (Top 20 tags, sorted by Booru category priority & usage count)
+  const renderGelbooruSidebarTags = (tagList) => {
     if (!tagList || tagList.length === 0) {
       return (
         <ul className="sidebar-tag-list-dense">
           <li className="sidebar-tag-item-dense empty-tag-placeholder" style={{ opacity: 0.5, fontStyle: 'italic', paddingLeft: '4px', pointerEvents: 'none' }}>
-            {isInspectMode ? 'Hover over a post card to inspect tags' : 'No active tags on page'}
+            No active tags on page
           </li>
         </ul>
       );
     }
 
-    // Group active tags by Category Object (meta, atlas, r, artist, character, etc.)
-    const categoryGroupsMap = new Map();
-    tagList.forEach(tag => {
-      const catObj = getCategoryObj(tag.name || tag.category);
-      const groupKey = catObj.key || 'general';
-      if (!categoryGroupsMap.has(groupKey)) {
-        categoryGroupsMap.set(groupKey, {
-          catObj,
-          tags: []
-        });
+    // Canonical Booru category order priority
+    const categoryPriority = {
+      copyright: 1,
+      character: 2,
+      artist: 3,
+      general: 4,
+      subreddit: 5,
+      flair: 5,
+      meta: 6
+    };
+
+    // Sort active page tags by category priority, then by post count descending
+    const sortedTags = [...tagList].sort((a, b) => {
+      const catA = (getCategoryObj(a.name || a.category)?.key || 'general').toLowerCase();
+      const catB = (getCategoryObj(b.name || b.category)?.key || 'general').toLowerCase();
+      const prioA = categoryPriority[catA] ?? 99;
+      const prioB = categoryPriority[catB] ?? 99;
+
+      if (prioA !== prioB) {
+        return prioA - prioB;
       }
-      categoryGroupsMap.get(groupKey).tags.push(tag);
+      return (b.count || 0) - (a.count || 0);
     });
 
-    // Convert map to sorted array
-    const categoryGroups = Array.from(categoryGroupsMap.values()).sort((a, b) => {
-      return b.tags.length - a.tags.length || a.catObj.label.localeCompare(b.catObj.label);
-    });
+    // Cap display at top 20 tags
+    const displayTags = sortedTags.slice(0, 20);
 
     return (
-      <div className="sidebar-categories-tree">
-        {categoryGroups.map((group, groupIdx) => {
-          const { catObj, tags: groupTags } = group;
-          const groupKey = (catObj && catObj.key) ? String(catObj.key).toLowerCase() : `group_${groupIdx}`;
-          const hasActiveFilter = groupTags.some(t => activeFilters.includes(t.name));
-          // In inspect mode on hover, auto-expand all categories applying to the hovered post!
-          const isExpanded = isInspectMode || expandedSidebarCats.has(catObj.key) || hasActiveFilter;
+      <ul className="sidebar-tag-list-dense">
+        {displayTags.map(tag => {
+          const isActive = activeFilters.includes(tag.name);
+          const displayName = getDisplayTagName(tag.name);
+          const catObj = getCategoryObj(tag.name || tag.category);
 
           return (
-            <div key={`${groupKey}_${groupIdx}`} className="sidebar-category-group">
-              {/* Category Header Row */}
-              <div 
-                className={`sidebar-tag-item-dense category-header-row ${hasActiveFilter ? 'active' : ''}`}
-                onClick={() => toggleSidebarCat(catObj.key)}
-                onMouseEnter={(e) => handleCategoryMouseEnter(e, catObj.key, groupTags)}
-                onMouseLeave={handleTagMouseLeave}
-                style={{ 
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '4px 6px',
-                  borderRadius: '4px',
-                  backgroundColor: isExpanded ? 'rgba(0, 0, 0, 0.03)' : 'transparent',
-                  marginBottom: '2px'
-                }}
-              >
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                  {isExpanded ? (
-                    <ChevronDown size={12} style={{ color: catObj.color }} />
-                  ) : (
-                    <ChevronRight size={12} style={{ color: 'var(--text-tertiary)' }} />
-                  )}
-                  <span 
-                    style={{ 
-                      width: '6px', 
-                      height: '6px', 
-                      borderRadius: '50%', 
-                      backgroundColor: catObj.color,
-                      flexShrink: 0,
-                      display: 'inline-block' 
-                    }} 
-                  />
-                  <span style={{ fontSize: '0.82rem', color: 'var(--text-primary)' }}>
-                    {catObj.label}
-                  </span>
+            <li 
+              key={tag.name} 
+              className={`sidebar-tag-item-dense ${isActive ? 'active' : ''}`}
+              data-tag={tag.name}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTagClick(tag.name);
+              }}
+              onMouseEnter={(e) => handleTagMouseEnter(e, tag.name)}
+              onMouseLeave={handleTagMouseLeave}
+            >
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span 
+                  style={{ 
+                    width: '6px', 
+                    height: '6px', 
+                    borderRadius: '50%', 
+                    backgroundColor: catObj.color,
+                    flexShrink: 0,
+                    display: 'inline-block' 
+                  }} 
+                />
+                <span 
+                  className={`sidebar-tag-link-dense ${isActive ? 'active' : ''}`}
+                  style={isActive ? { color: catObj.color, fontWeight: 700 } : {}}
+                >
+                  {isActive ? '✓ ' : ''}{displayName}
                 </span>
-                <span className="sidebar-tag-count-dense" style={{ fontSize: '0.75rem', fontWeight: 600 }}>
-                  ({groupTags.length})
-                </span>
-              </div>
-
-              {/* Drill-down Sub-tags List */}
-              {isExpanded && (
-                <ul className="sidebar-tag-list-dense" style={{ paddingLeft: '1rem', marginBottom: '6px', borderLeft: `2px solid ${catObj.color}35` }}>
-                  {groupTags.map(tag => {
-                    const isActive = activeFilters.includes(tag.name);
-                    const displayName = getDisplayTagName(tag.name);
-
-                    return (
-                      <li 
-                        key={tag.name} 
-                        className={`sidebar-tag-item-dense ${isActive ? 'active' : ''}`}
-                        data-tag={tag.name}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onTagClick(tag.name);
-                        }}
-                        onMouseEnter={(e) => handleTagMouseEnter(e, tag.name)}
-                        onMouseLeave={handleTagMouseLeave}
-                      >
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <span 
-                            style={{ 
-                              width: '4px', 
-                              height: '4px', 
-                              borderRadius: '50%', 
-                              backgroundColor: catObj.color,
-                              flexShrink: 0,
-                              display: 'inline-block',
-                              opacity: 0.7 
-                            }} 
-                          />
-                          <span 
-                            className={`sidebar-tag-link-dense ${isActive ? 'active' : ''}`}
-                            style={isActive ? { color: catObj.color, fontWeight: 700 } : {}}
-                          >
-                            {isActive ? '✓ ' : ''}{displayName}
-                          </span>
-                        </span>
-                        <span className="sidebar-tag-count-dense">({tag.count})</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
+              </span>
+              <span className="sidebar-tag-count-dense">({tag.count})</span>
+            </li>
           );
         })}
-      </div>
+      </ul>
     );
-  };
-  const hasActiveFiltersInMode = (modeIndex) => {
-    return activeFilters.some(filter => {
-      const cat = getTagCategory(filter);
-      if (currentAtlas === 'toolatlas' || currentAtlas === 'wikiatlas') {
-        if (modeIndex === 0) return cat === 'artist';
-        if (modeIndex === 1) return cat === 'general';
-        if (modeIndex === 2) return cat === 'flair' || cat === 'copyright';
-        if (modeIndex === 3) return cat === 'meta';
-      }
-      if (modeIndex === 0) return cat === 'subreddit';
-      if (modeIndex === 1) return cat === 'general';
-      if (modeIndex === 2) return ['copyright', 'character', 'artist', 'flair'].includes(cat);
-      if (modeIndex === 3) return cat === 'meta';
-      return false;
-    });
   };
 
   return (
@@ -735,13 +655,7 @@ export default function Posts({
         {loadingTags ? (
           <div className="sidebar-tag-count-dense">Loading tags...</div>
         ) : (
-          <>
-            {hoveredPostTags ? (
-              renderCategorizedSidebarTags(hoveredPostTagsList, true)
-            ) : (
-              renderCategorizedSidebarTags(tags.filter(t => activePageTagsSet.has(t.name)), false)
-            )}
-          </>
+          renderGelbooruSidebarTags(tags.filter(t => activePageTagsSet.has(t.name)))
         )}
 
       </aside>
@@ -796,11 +710,7 @@ export default function Posts({
           </div>
         ) : posts.length > 0 ? (
           <>
-            <div 
-              className="gallery-grid-dense"
-              onMouseOver={handleGridMouseOver}
-              onMouseOut={handleGridMouseOut}
-            >
+            <div className="gallery-grid-dense">
               {posts.map((post, idx) => (
                 <PostCard 
                   key={post.id} 

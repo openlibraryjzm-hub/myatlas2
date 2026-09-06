@@ -4,10 +4,13 @@
   max-width: 1024px;
   width: 100%;
   margin: 0 auto;
-  padding: 1.5rem 2rem;
+  padding: 1rem 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  height: calc(100vh - 52px);
+  max-height: calc(100vh - 52px);
+  box-sizing: border-box;
+  overflow: hidden;
   flex: 1;
 }
 
@@ -53,24 +56,31 @@
 .tagger-workspace {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  justify-content: space-between;
+  height: 100%;
+  flex: 1;
+  gap: 1rem;
+  min-height: 0;
 }
 
-/* Center-Focused Main Workspace Panel */
+/* Top-Aligned Main Workspace Panel */
 .tagger-main-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2rem;
+  justify-content: flex-start;
+  gap: 1rem;
   background-color: transparent;
   border: none;
-  padding: 1.5rem 2rem;
+  padding: 1rem 1rem 0.5rem 1rem;
   box-shadow: none;
   max-width: 760px;
   width: 100%;
   margin: 0 auto;
   text-align: center;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* Centered Post Header (Small thumbnail + title) */
@@ -169,7 +179,7 @@
   text-align: center;
   max-width: 650px;
   width: 100%;
-  margin: 0.5rem auto 1.5rem auto;
+  margin: 0.25rem auto 0.75rem auto;
   cursor: text;
   word-break: break-word;
 }
@@ -306,10 +316,12 @@
 /* Timeline Scroll component at bottom */
 .tagger-timeline-wrapper {
   border-top: 1px solid var(--border-color);
-  padding-top: 1.25rem;
+  padding-top: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .tagger-timeline-header {
@@ -334,6 +346,7 @@
   overflow-x: auto;
   padding-bottom: 0.5rem;
   scrollbar-width: thin;
+  cursor: grab;
 }
 
 .tagger-timeline-scroll::-webkit-scrollbar {
@@ -569,7 +582,6 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem 1rem 1rem;
-  animation: fadeInOverlay 0.15s ease-out;
 }
 
 .tagger-fullscreen-content {

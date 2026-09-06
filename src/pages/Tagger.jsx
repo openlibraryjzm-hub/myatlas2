@@ -15,11 +15,18 @@ export default function Tagger({
   activeFilters = [],
   searchQuery = '',
   currentPage = 1,
-  selectedPostId = null
+  selectedPostId = null,
+  initialMediaMode = true
 } = {}) {
   const namespaces = getActiveCategories();
   const [posts, setPosts] = useState(propPosts || []);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    if (selectedPostId && propPosts && propPosts.length > 0) {
+      const foundIdx = propPosts.findIndex(p => p.id === selectedPostId);
+      return foundIdx !== -1 ? foundIdx : 0;
+    }
+    return 0;
+  });
   const [loading, setLoading] = useState(!propPosts);
   const [filterMode, setFilterMode] = useState('all'); // 'all' | 'untagged'
 
@@ -51,7 +58,7 @@ export default function Tagger({
   const [editValue, setEditValue] = useState('');
 
   // Fullscreen state
-  const [isFullscreenMedia, setIsFullscreenMedia] = useState(false);
+  const [isFullscreenMedia, setIsFullscreenMedia] = useState(initialMediaMode);
 
   // Settings Modal State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -74,7 +81,7 @@ export default function Tagger({
   const inputRef = useRef(null);
   const timelineRef = useRef(null);
   const fullscreenImgContainerRef = useRef(null);
-  const isInitializedRef = useRef(false);
+  const isInitializedRef = useRef(!!(selectedPostId && propPosts && propPosts.length > 0));
 
   const handleTriggerNativeFullscreen = (e) => {
     if (e) e.stopPropagation();
@@ -285,10 +292,15 @@ export default function Tagger({
     }
   }, [currentIndex]);
 
-  // Enable horizontal mouse wheel scrolling on queue timeline
+  // Enable horizontal mouse wheel & click-and-drag scrolling on queue timeline
   useEffect(() => {
     const el = timelineRef.current;
     if (!el) return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let isDraggingFar = false;
 
     const handleWheel = (e) => {
       if (e.deltaY !== 0) {
@@ -297,9 +309,61 @@ export default function Tagger({
       }
     };
 
+    const handleMouseDown = (e) => {
+      if (e.button !== 0) return;
+      isDown = true;
+      isDraggingFar = false;
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+      el.style.cursor = 'grabbing';
+      el.style.userSelect = 'none';
+    };
+
+    const handleMouseLeave = () => {
+      isDown = false;
+      el.style.cursor = 'grab';
+      el.style.removeProperty('user-select');
+    };
+
+    const handleMouseUp = () => {
+      isDown = false;
+      el.style.cursor = 'grab';
+      el.style.removeProperty('user-select');
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      if (Math.abs(x - startX) > 5) {
+        isDraggingFar = true;
+      }
+      el.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleClickCapture = (e) => {
+      if (isDraggingFar) {
+        e.stopPropagation();
+        e.preventDefault();
+        isDraggingFar = false;
+      }
+    };
+
     el.addEventListener('wheel', handleWheel, { passive: false });
+    el.addEventListener('mousedown', handleMouseDown);
+    el.addEventListener('mouseleave', handleMouseLeave);
+    el.addEventListener('mouseup', handleMouseUp);
+    el.addEventListener('mousemove', handleMouseMove);
+    el.addEventListener('click', handleClickCapture, true);
+
     return () => {
       el.removeEventListener('wheel', handleWheel);
+      el.removeEventListener('mousedown', handleMouseDown);
+      el.removeEventListener('mouseleave', handleMouseLeave);
+      el.removeEventListener('mouseup', handleMouseUp);
+      el.removeEventListener('mousemove', handleMouseMove);
+      el.removeEventListener('click', handleClickCapture, true);
     };
   }, [posts]);
 
@@ -1217,9 +1281,9 @@ export default function Tagger({
               <button 
                 className="tagger-fullscreen-pill-close" 
                 onClick={() => setIsFullscreenMedia(false)}
-                title="Close Fullscreen (Esc / F)"
+                title="Switch to Tags View (Esc / F)"
               >
-                <X size={15} /> Exit
+                <Tag size={15} /> Tags
               </button>
             </div>
 

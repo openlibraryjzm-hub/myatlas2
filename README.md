@@ -33,7 +33,7 @@ my atlas 2/
 │   │   ├── sqlite.md       # SQLite schema, dual storage model & reset endpoints
 │   │   └── file_loader.md  # Asset protocol, HTTP 206 range streaming & WebP thumbnail routing
 │   └── views/
-│       ├── grid.md         # Browse Grid specs, Category Index sidebar, 1-click drill-down & direct Tagger navigation
+│       ├── grid.md         # Browse Grid specs, Gelbooru flat sidebar tag stream & direct Tagger navigation
 │       ├── viewer_overlay.md # Archived Overlay Viewer specs & 3-tab morphing specs
 │       ├── tagger.md       # Speed Tagger specs, Full Media View mode, Q/W navigation & category auto-coloring
 │       ├── upload.md       # Hard drive folder scanner, local file ingestion & background pre-caching

@@ -35,6 +35,7 @@
   scrollbar-width: thin;
   will-change: scroll-position;
   transform: translateZ(0);
+  cursor: grab;
 }
 
 .queue-timeline-scroll::-webkit-scrollbar {

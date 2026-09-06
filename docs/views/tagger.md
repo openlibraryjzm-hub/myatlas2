@@ -8,9 +8,9 @@ This document defines the speed tagger keyboard workflow, namespace prefix forma
 
 The Speed Tagger interface ([`Tagger.jsx`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/src/pages/Tagger.jsx) & [`MorphingTaggerPanel.jsx`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/src/components/MorphingTaggerPanel.jsx)) is engineered for rapid keyboard-driven item tagging and metadata classification.
 
-- **Primary Grid Navigation Target**: Clicking or right-clicking any post card on the Browse Grid ([`grid.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/views/grid.md)) transitions directly to the full-page Speed Tagger view with initial focus on the clicked post (`selectedPostId`).
-- **Centered Viewport Layout**: Displays item preview media surrounded by active tag pills, interactive inline caret input, and bottom queue timeline.
-- **Current Page Queue Boundary & Highlight Positioning**: Speed Tagger receives the active page's item array (up to **40 items per page**). When launched from a clicked card, it automatically initializes the queue timeline at that exact post index.
+- **Primary Grid Navigation Target**: Clicking or right-clicking any post card on the Browse Grid ([`grid.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/views/grid.md)) transitions directly to the full-page Speed Tagger view with initial focus on the clicked post (`selectedPostId`), starting directly in **Full Media View Mode** (`initialMediaMode = true`).
+- **Top-Aligned Viewport Layout**: Displays top-aligned item preview media (`justify-content: flex-start`), title/filename, interactive inline caret input, and a bottom-anchored queue timeline fitted to the lower viewport edge without triggering page vertical scrollbars.
+- **Click-and-Drag Drag-Scroll Timeline**: The queue timeline supports smooth horizontal click-and-drag panning (`cursor: grab`/`grabbing`), vertical scroll wheel mapping, and automatic active item centering. Dragging > 5px suppresses item click selection to prevent accidental index jumps while scrolling.
 - **Dynamic Category Auto-Coloring & Visual Feedback**:
   - As the user types a tag in the inline input line (e.g. `country:japan` or `location:tokyo`), `Tagger.jsx` checks `getActiveCategories()` in real time.
   - Registered category prefixes instantly tint tag pills and typing line with assigned palette colors.
@@ -22,10 +22,10 @@ The Speed Tagger interface ([`Tagger.jsx`](file:///c:/Users/GGPC/Desktop/my%20at
 
 ## 🎬 Full Media View Mode & Control Pill
 
-Pressing <kbd>Tab</kbd> or clicking the media thumbnail box toggles **Full Media View Mode** (`isFullscreenMedia === true`):
+Entering Tagger initializes in **Full Media View Mode** (`isFullscreenMedia === true` by default). Pressing <kbd>Tab</kbd>, <kbd>Esc</kbd>, <kbd>F</kbd>, or clicking the Close button toggles/exits Full Media View Mode to reveal the Tags View Mode:
 
 - **Seamless Media Navigation**: Allows continuous cycling through queue media assets (<kbd>Q</kbd> = Previous item, <kbd>W</kbd> = Next item) without exiting full view.
-- **Centered Transparent Floating Control Pill**: Displays clean clustered top row (`[ ← 14 / 40 → | ✕ Exit ]`) and bottom row item filename, styled seamlessly with 0% white backdrop bloat.
+- **Centered Transparent Floating Control Pill**: Displays clean clustered top row (`[ ← 14 / 40 → | 🏷 Tags ]`) and bottom row item filename, styled seamlessly with 0% white backdrop bloat.
 - **Native Total Fullscreen**: Images and GIFs include an overlaid `<Maximize2 /> Fullscreen (E)` button in the lower-right corner. Pressing <kbd>E</kbd> or clicking the button launches HTML5 native full-bleed fullscreen (`requestFullscreen()`) on a `#050505` backdrop.
 
 ---
