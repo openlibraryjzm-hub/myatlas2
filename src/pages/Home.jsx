@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './Home.css';
 
+import keysImg from '/aesthetic-value-of-vintage-keys-free-png.webp';
+import amberImg from '/bernstein-261133_1280.png';
+import tvImg from '/pngtree-a-straight-shot-of-a-realistic-eighties-crt-television-set-png-image_19729924.webp';
+import booksImg from '/pngtree-stack-of-books-image-png-image_17810565.png';
+import gameboyImg from '/Game-Boy-FL.png';
+import toolsImg from '/pngtree-work-and-repair-tools-png-image_14699823.png';
+
 // Custom Colored Icons
 function AccountRingIcon({ size = 26, color = "#CC5A01" }) {
   return (
@@ -18,32 +25,32 @@ const FIXED_ATLAS_OPTIONS = [
   {
     id: 'myatlas',
     label: 'myatlas',
-    image: '/aesthetic-value-of-vintage-keys-free-png.webp',
+    image: keysImg,
   },
   {
     id: 'amberatlas',
     label: 'Amber',
-    image: '/bernstein-261133_1280.png',
+    image: amberImg,
   },
   {
     id: 'youtubeatlas',
     label: 'Youtube',
-    image: '/pngtree-a-straight-shot-of-a-realistic-eighties-crt-television-set-png-image_19729924.webp',
+    image: tvImg,
   },
   {
     id: 'wikiatlas',
     label: 'Wiki',
-    image: '/pngtree-stack-of-books-image-png-image_17810565.png',
+    image: booksImg,
   },
   {
     id: 'gamesatlas',
     label: 'Games',
-    image: '/Game-Boy-FL.png',
+    image: gameboyImg,
   },
   {
     id: 'toolsatlas',
     label: 'Tools',
-    image: '/pngtree-work-and-repair-tools-png-image_14699823.png',
+    image: toolsImg,
   }
 ];
 
