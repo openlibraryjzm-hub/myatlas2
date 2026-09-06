@@ -1,51 +1,52 @@
 # Speed Tagger Specifications (`docs/views/tagger.md`)
 
-This document defines the speed tagger keyboard workflow, namespace prefix formatting, real-time category coloring, media queue rendering, and SQLite persistence contracts for the **Speed Tagger** view (`view === 'tagger'`).
+This document defines the speed tagger keyboard workflow, namespace prefix formatting, real-time category coloring, media queue rendering, Full Media View mode, and SQLite persistence contracts for the **Speed Tagger** view (`view === 'tagger'`).
 
 ---
 
 ## ⚡ Speed Tagger Workflow & Queue Dynamics
 
-The Speed Tagger interface ([`Tagger.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/pages/Tagger.jsx) & [`MorphingTaggerPanel.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/components/MorphingTaggerPanel.jsx)) is engineered for rapid keyboard-driven item tagging and metadata classification. It operates both as a dedicated view and as an embedded panel within the **Seamless Morphing Overlay Viewer** ([`viewer_overlay.md`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/views/viewer_overlay.md)).
+The Speed Tagger interface ([`Tagger.jsx`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/src/pages/Tagger.jsx) & [`MorphingTaggerPanel.jsx`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/src/components/MorphingTaggerPanel.jsx)) is engineered for rapid keyboard-driven item tagging and metadata classification.
 
+- **Primary Grid Navigation Target**: Clicking or right-clicking any post card on the Browse Grid ([`grid.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/views/grid.md)) transitions directly to the full-page Speed Tagger view with initial focus on the clicked post (`selectedPostId`).
 - **Centered Viewport Layout**: Displays item preview media surrounded by active tag pills, interactive inline caret input, and bottom queue timeline.
-- **Current Page Queue Boundary & Highlight Positioning**: When launched from the Browse Grid (via the `<Wrench size={16} />` control button), Speed Tagger receives the active page's item array (up to **40 items per page**). If a post card is highlighted (selected in orange/cream on the grid), Speed Tagger automatically starts the queue at that exact post (`selectedPostId`); if no post is highlighted, it defaults to the first item (`index 0`).
+- **Current Page Queue Boundary & Highlight Positioning**: Speed Tagger receives the active page's item array (up to **40 items per page**). When launched from a clicked card, it automatically initializes the queue timeline at that exact post index.
 - **Dynamic Category Auto-Coloring & Visual Feedback**:
   - As the user types a tag in the inline input line (e.g. `country:japan` or `location:tokyo`), `Tagger.jsx` checks `getActiveCategories()` in real time.
-  - If a registered category prefix is matched, the tag pill and typing line **instantly tint with the category's assigned palette color and background tint**, providing 100% immediate confirmation that the tag was recognized as a registered prefix and did not fall back to general tag.
-- **In-Memory Google-Style Autocomplete Suggestions**:
-  - Pre-caches full tag dictionary on Tagger mount and filters matching suggestions 100% in-memory with **0ms disk latency**, capped at 8 items (`.slice(0, 8)`).
-  - Integrates keyboard navigation: `↓` / `↑` highlights suggestions, `TAB` or `ENTER` auto-completes highlighted tag, `ESC` closes popover, and `ENTER` (when no suggestion selected) saves and advances post as normal.
-- **SQLite Tag Saving & Cache Invalidation**:
-  - Pressing `ENTER` invokes `updateItemTags(currentPost.id, isMediaFile, finalTags)`.
-  - Saves updated tags to SQLite (`local_scrapes` or `local_media`) and **invalidates memory cache** (`invalidateItemsCache()`).
-- **Auto-Save on Exit & Unmount Guarantee**:
-  - Exiting Speed Tagger via the `Exit Tagger` button or navigating away (e.g. clicking the top MyAtlas brand logo) automatically commits any unsaved staged tags or active input line text to SQLite and invalidates memory cache via unmount cleanup hooks.
-- **Auto-Refresh Tag Indexing**: Exiting the Tagger automatically triggers a background tag recount (`fetchTags()`), ensuring newly saved tags render in real time across the Browse Grid sidebar Category Index.
+  - Registered category prefixes instantly tint tag pills and typing line with assigned palette colors.
+- **In-Memory Autocomplete Suggestions**: Filters matching tag suggestions 100% in-memory with **0ms disk latency**, capped at 8 items (`.slice(0, 8)`).
+- **SQLite Tag Saving & Cache Invalidation**: `ENTER` invokes `updateItemTags(currentPost.id, finalTags)` and invalidates SQLite memory cache (`invalidateItemsCache()`).
+- **Auto-Save on Exit**: Exiting Speed Tagger via `Exit Tagger` button or brand logo automatically commits staged tags to SQLite.
 
 ---
 
-## 🎬 Video & Image Media Handling in Tagger
+## 🎬 Full Media View Mode & Control Pill
 
-- **Native HTML5 Media Decoding**: Both the main item preview container and bottom queue timeline items render media conditionally:
-  - **Static Thumbnails & Images**: Standard `<img>` tags for images or posts with pre-rendered `thumbnailUrl`.
-  - **Video Formats (`.mp4`, `.webm`, `.mov`, `meta:format:video`)**: HTML5 `<video src={url} muted playsInline loop preload="metadata" />` elements.
-- **Queue Timeline Item Rendering**: Timeline thumbnails display native video frames or static thumbnails cleanly without broken image link icons.
-- **TAB / F Navigation**: Cycles through viewer overlay modes (`Media` → `Tags` → `Edit` → `Media`).
+Pressing <kbd>Tab</kbd> or clicking the media thumbnail box toggles **Full Media View Mode** (`isFullscreenMedia === true`):
+
+- **Seamless Media Navigation**: Allows continuous cycling through queue media assets (<kbd>Q</kbd> = Previous item, <kbd>W</kbd> = Next item) without exiting full view.
+- **Centered Transparent Floating Control Pill**: Displays clean clustered top row (`[ ← 14 / 40 → | ✕ Exit ]`) and bottom row item filename, styled seamlessly with 0% white backdrop bloat.
+- **Native Total Fullscreen**: Images and GIFs include an overlaid `<Maximize2 /> Fullscreen (E)` button in the lower-right corner. Pressing <kbd>E</kbd> or clicking the button launches HTML5 native full-bleed fullscreen (`requestFullscreen()`) on a `#050505` backdrop.
 
 ---
 
-## ⌨️ Keyboard Shortcuts & Modes
+## ⌨️ Keyboard Shortcuts Reference
 
-### 1. Typing Mode (Default)
-- `,` (Comma): Stages current tag buffer.
-- `ENTER`: Saves staged tags to local SQLite database, invalidates memory cache, and advances to the next item in queue.
-- `ESC`: Skips current item without saving.
-- `` ` `` (Backtick): Returns to the previous item in queue.
-- `TAB` / `F`: Cycles through `Media` → `Tags` → `Edit` modes.
-- `CapsLock`: Toggles Command Mode.
+### 1. Typing Mode (Default Tags View)
+- `,` (Comma): Stage current tag buffer.
+- `ENTER`: Save staged tags to local SQLite database and advance to next item.
+- `ESC`: Skip current item.
+- `` ` `` (Backtick): Return to previous item in queue.
+- `TAB`: Toggle Full Media View Mode.
+- `CapsLock`: Toggle Command Mode.
 
-### 2. Command Mode (Toggled via CapsLock)
+### 2. Full Media View Mode (Active when Media overlay is open)
+- `q` / `←`: Previous item in queue.
+- `w` / `→`: Next item in queue.
+- `e`: Toggle Total Native Fullscreen mode.
+- `TAB` / `ESC` / `f`: Return to Tags View Mode.
+
+### 3. Command Mode (Toggled via CapsLock)
 - `q` / `w`: Navigate individual tags in list.
 - `Shift + q` / `Shift + Tab`: Navigate tag categories.
 - `d` / `Backspace` / `Delete`: Delete focused tag or category.

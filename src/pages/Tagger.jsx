@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon } from 'lucide-react';
+import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache, getPaginatedItems } from '../services/localDb';
 import { formatLocalAssetUrl } from '../utils/localFiles';
@@ -73,7 +73,27 @@ export default function Tagger({
 
   const inputRef = useRef(null);
   const timelineRef = useRef(null);
+  const fullscreenImgContainerRef = useRef(null);
   const isInitializedRef = useRef(false);
+
+  const handleTriggerNativeFullscreen = (e) => {
+    if (e) e.stopPropagation();
+    const elem = fullscreenImgContainerRef.current;
+    if (!elem) return;
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+  };
 
   const parseTagsArray = (raw) => {
   if (!raw) return [];
@@ -226,6 +246,16 @@ export default function Tagger({
     }
   }, [currentIndex, posts]);
 
+  // Sync currentIndex when selectedPostId is provided and posts load
+  useEffect(() => {
+    if (selectedPostId && posts.length > 0) {
+      const foundIdx = posts.findIndex(p => p.id === selectedPostId);
+      if (foundIdx !== -1) {
+        setCurrentIndex(foundIdx);
+      }
+    }
+  }, [selectedPostId, posts]);
+
   // Initialize tags when current post changes
   const currentPost = posts[currentIndex];
   useEffect(() => {
@@ -242,7 +272,6 @@ export default function Tagger({
       setCollapsedCategories([]);
       setEditingTag(null);
       setEditValue('');
-      setIsFullscreenMedia(false);
     }
   }, [currentPost]);
 
@@ -387,11 +416,20 @@ export default function Tagger({
         return;
       }
 
-      // If fullscreen media is active, Esc or Tab or F key closes it
+      // If fullscreen media is active, handle media-view-exclusive shortcuts
       if (isFullscreenMedia) {
         if (e.key === 'Escape' || e.key === 'Tab' || e.key === 'f' || e.key === 'F') {
           e.preventDefault();
           setIsFullscreenMedia(false);
+        } else if (e.key === 'e' || e.key === 'E') {
+          e.preventDefault();
+          handleTriggerNativeFullscreen(e);
+        } else if (e.key === 'q' || e.key === 'Q' || e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === '`' || e.code === 'Backquote') {
+          e.preventDefault();
+          regressPrev();
+        } else if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          advanceNext();
         }
         return;
       }
@@ -762,6 +800,19 @@ export default function Tagger({
       url.match(/\.(mp4|webm|mov|ogg)/i) || 
       tags.includes('meta:format:video')
     );
+  };
+
+  // Helper to extract clean filename or title for fullscreen display
+  const getPostFilename = (post) => {
+    if (!post) return '';
+    if (post.fileName) return post.fileName;
+    if (post.filePath) return post.filePath.split(/[\\/]/).pop();
+    if (post.title) return post.title;
+    if (post.url) {
+      const urlFileName = post.url.split('/').pop().split('?')[0];
+      if (urlFileName && urlFileName.includes('.')) return urlFileName;
+    }
+    return `Item #${post.id}`;
   };
 
   // Sort and group tags
@@ -1135,9 +1186,55 @@ export default function Tagger({
       {/* Fullscreen Media Overlay */}
       {isFullscreenMedia && currentPost && (
         <div className="tagger-fullscreen-overlay" onClick={() => setIsFullscreenMedia(false)}>
+          {/* Centered Floating Control Pill */}
+          <div className="tagger-fullscreen-control-pill" onClick={(e) => e.stopPropagation()}>
+            {/* Top Row: Navigation & Exit */}
+            <div className="tagger-fullscreen-pill-top-row">
+              <button 
+                className="tagger-fullscreen-pill-btn"
+                onClick={() => regressPrev()}
+                disabled={currentIndex === 0}
+                title="Previous item (← / Backtick)"
+              >
+                <ChevronLeft size={18} />
+              </button>
+
+              <span className="tagger-fullscreen-pill-counter">
+                {currentIndex + 1} / {posts.length}
+              </span>
+
+              <button 
+                className="tagger-fullscreen-pill-btn"
+                onClick={() => advanceNext()}
+                disabled={currentIndex >= posts.length - 1}
+                title="Next item (→ / Space)"
+              >
+                <ChevronRight size={18} />
+              </button>
+
+              <span className="tagger-fullscreen-pill-divider" />
+
+              <button 
+                className="tagger-fullscreen-pill-close" 
+                onClick={() => setIsFullscreenMedia(false)}
+                title="Close Fullscreen (Esc / F)"
+              >
+                <X size={15} /> Exit
+              </button>
+            </div>
+
+            {/* Bottom Row: Filename */}
+            <div className="tagger-fullscreen-pill-bottom-row" title={getPostFilename(currentPost)}>
+              <span className="tagger-fullscreen-pill-filename">
+                {getPostFilename(currentPost)}
+              </span>
+            </div>
+          </div>
+
           <div className="tagger-fullscreen-content" onClick={(e) => e.stopPropagation()}>
             {isVideoFormat(currentPost.url, currentPost.tags) ? (
               <video 
+                key={currentPost.id || currentPost.url}
                 src={currentPost.id ? `http://127.0.0.1:7171/api/stream/${encodeURIComponent(currentPost.id)}` : formatLocalAssetUrl(currentPost.filePath || currentPost.url)} 
                 className="tagger-fullscreen-media"
                 controls
@@ -1149,14 +1246,26 @@ export default function Tagger({
                 }}
               />
             ) : (
-              <img 
-                src={formatLocalAssetUrl(currentPost.filePath || currentPost.url)} 
-                alt="" 
-                className="tagger-fullscreen-media" 
-                referrerPolicy="no-referrer"
-              />
+              <div 
+                className="tagger-fullscreen-image-wrapper"
+                ref={fullscreenImgContainerRef}
+              >
+                <img 
+                  key={currentPost.id || currentPost.url}
+                  src={formatLocalAssetUrl(currentPost.filePath || currentPost.url)} 
+                  alt="" 
+                  className="tagger-fullscreen-media" 
+                  referrerPolicy="no-referrer"
+                />
+                <button 
+                  className="tagger-total-fullscreen-btn"
+                  onClick={handleTriggerNativeFullscreen}
+                  title="Total Fullscreen Mode (Press E / Click)"
+                >
+                  <Maximize2 size={13} /> Fullscreen (E)
+                </button>
+              </div>
             )}
-            <button className="tagger-fullscreen-close" onClick={() => setIsFullscreenMedia(false)}>✕ Close (F)</button>
           </div>
         </div>
       )}
@@ -1225,8 +1334,18 @@ export default function Tagger({
                         <li><kbd>ENTER</kbd> Save & next post</li>
                         <li><kbd>ESC</kbd> Skip post</li>
                         <li><kbd>`</kbd> Previous post</li>
-                        <li><kbd>TAB</kbd> Toggle Fullscreen</li>
+                        <li><kbd>TAB</kbd> Toggle Media / Tags View</li>
                         <li><kbd>CapsLock</kbd> Toggle Command Mode</li>
+                      </ul>
+                    </div>
+
+                    <div className="tagger-shortcuts-column">
+                      <h5>Full Media View</h5>
+                      <ul className="tagger-shortcuts-list">
+                        <li><kbd>q</kbd> / <kbd>←</kbd> Previous item</li>
+                        <li><kbd>w</kbd> / <kbd>→</kbd> Next item</li>
+                        <li><kbd>e</kbd> Total Fullscreen toggle</li>
+                        <li><kbd>TAB</kbd> / <kbd>ESC</kbd> / <kbd>f</kbd> Return to Tags View</li>
                       </ul>
                     </div>
 
@@ -1241,7 +1360,6 @@ export default function Tagger({
                         <li><kbd>k</kbd> Wikipedia search</li>
                         <li><kbd>o</kbd> Open Reddit thread</li>
                         <li><kbd>`</kbd> Previous post</li>
-                        <li><kbd>TAB</kbd> Toggle Fullscreen</li>
                         <li><kbd>CapsLock</kbd> Toggle Typing Mode</li>
                       </ul>
                     </div>

@@ -195,6 +195,13 @@ export default function App() {
     setCurrentPage(1);
   };
 
+  const [selectedTaggerPostId, setSelectedTaggerPostId] = useState(null);
+
+  const handleNavigateTagger = (postId) => {
+    setSelectedTaggerPostId(postId);
+    setView('tagger');
+  };
+
   return (
     <div className={`app-container theme-${currentAtlas} ${view === 'users' || view === 'posts' ? 'users-view-active' : ''}`}>
       {/* Shared Navbar - Hidden on Home Page */}
@@ -259,6 +266,7 @@ export default function App() {
           currentPage={currentPage}
           onExit={() => setView('posts')}
           isReadOnly={isReadOnly}
+          selectedPostId={selectedTaggerPostId}
         />
       ) : view === 'injector' ? (
         <Injector 
@@ -279,6 +287,7 @@ export default function App() {
           onNavigateHome={() => setView('home')}
           onNavigateUpload={() => setView('upload')}
           onNavigateDeletor={() => setView('deletor')}
+          onNavigateTagger={handleNavigateTagger}
           isReadOnly={isReadOnly}
         />
       )}

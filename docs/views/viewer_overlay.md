@@ -1,6 +1,9 @@
 # Seamless Morphing Overlay Viewer Specifications (`docs/views/viewer_overlay.md`)
 
-This document defines the layout architecture, component boundaries, 3-tab mode mechanics (`Media`, `Tags`, `Edit`), full-bleed native fullscreen scaling, and keyboard controls for the **Seamless Morphing Overlay Viewer** integrated into the Browse Grid ([`Posts.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/pages/Posts.jsx)).
+> [!NOTE]
+> **Grid Navigation Update**: Clicking post cards on the Browse Grid now transitions directly to the full-page **Speed Tagger** view ([`tagger.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/views/tagger.md)), which provides full post media viewing, fast Q/W keyboard navigation, and instant tag editing.
+
+This document defines the layout architecture, component boundaries, 3-tab mode mechanics (`Media`, `Tags`, `Edit`), full-bleed native fullscreen scaling, and keyboard controls for the **Seamless Morphing Overlay Viewer** module.
 
 ---
 

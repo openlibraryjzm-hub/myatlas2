@@ -33,9 +33,9 @@ my atlas 2/
 │   │   ├── sqlite.md       # SQLite schema, dual storage model & reset endpoints
 │   │   └── file_loader.md  # Asset protocol, HTTP 206 range streaming & WebP thumbnail routing
 │   └── views/
-│       ├── grid.md         # Browse Grid specs, Category Index sidebar, 1-click drill-down & priority waterfall
-│       ├── viewer_overlay.md # Seamless Morphing Overlay Viewer specs, Media vs Tags morphing & 40-item queue
-│       ├── tagger.md       # Speed tagging specs, auto-save on exit, queue timeline & category auto-coloring
+│       ├── grid.md         # Browse Grid specs, Category Index sidebar, 1-click drill-down & direct Tagger navigation
+│       ├── viewer_overlay.md # Archived Overlay Viewer specs & 3-tab morphing specs
+│       ├── tagger.md       # Speed Tagger specs, Full Media View mode, Q/W navigation & category auto-coloring
 │       ├── upload.md       # Hard drive folder scanner, local file ingestion & background pre-caching
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning
 │       ├── injector.md     # Bulk Tag Injector specs, dual input match filtering & batch tag injection

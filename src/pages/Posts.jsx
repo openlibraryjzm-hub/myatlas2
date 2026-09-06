@@ -45,7 +45,8 @@ export default function Posts({
   viewMode = 'all',
   savedPostIds = [],
   onToggleSave,
-  currentAtlas = 'redditbooru'
+  currentAtlas = 'redditbooru',
+  onNavigateTagger
 }) {
   const [posts, setPosts] = useState([]);
   const [totalFilteredCount, setTotalFilteredCount] = useState(0);
@@ -791,12 +792,20 @@ export default function Posts({
                   post={post} 
                   index={idx}
                   onPostClick={(selected) => {
-                    setSelectedPost(selected);
-                    setViewerMode('image');
+                    if (onNavigateTagger) {
+                      onNavigateTagger(selected.id);
+                    } else {
+                      setSelectedPost(selected);
+                      setViewerMode('image');
+                    }
                   }}
                   onRightClick={(selected) => {
-                    setSelectedPost(selected);
-                    setViewerMode('image');
+                    if (onNavigateTagger) {
+                      onNavigateTagger(selected.id);
+                    } else {
+                      setSelectedPost(selected);
+                      setViewerMode('image');
+                    }
                   }}
                 />
               ))}
