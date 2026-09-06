@@ -196,9 +196,16 @@ export default function App() {
   };
 
   const [selectedTaggerPostId, setSelectedTaggerPostId] = useState(null);
+  const [selectedTaggerPosts, setSelectedTaggerPosts] = useState(null);
 
-  const handleNavigateTagger = (postId) => {
+  const handleNavigateTagger = (postId, pagePosts, page) => {
     setSelectedTaggerPostId(postId);
+    if (pagePosts) {
+      setSelectedTaggerPosts(pagePosts);
+    }
+    if (page) {
+      setCurrentPage(page);
+    }
     setView('tagger');
   };
 
@@ -260,11 +267,15 @@ export default function App() {
         <Users currentUser={currentUser} />
       ) : view === 'tagger' ? (
         <Tagger 
+          posts={selectedTaggerPosts}
           currentAtlas={currentAtlas} 
           activeFilters={activeFilters}
           searchQuery={searchQuery}
           currentPage={currentPage}
-          onExit={() => setView('posts')}
+          onExit={() => {
+            setSelectedTaggerPosts(null);
+            setView('posts');
+          }}
           isReadOnly={isReadOnly}
           selectedPostId={selectedTaggerPostId}
         />

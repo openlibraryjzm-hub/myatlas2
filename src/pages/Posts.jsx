@@ -46,6 +46,8 @@ export default function Posts({
   savedPostIds = [],
   onToggleSave,
   currentAtlas = 'redditbooru',
+  currentPage: propCurrentPage,
+  setCurrentPage: propSetCurrentPage,
   onNavigateTagger
 }) {
   const [posts, setPosts] = useState([]);
@@ -55,7 +57,20 @@ export default function Posts({
   const [tags, setTags] = useState([]);
   const [loadingTags, setLoadingTags] = useState(true);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPageState] = useState(propCurrentPage || 1);
+
+  const setCurrentPage = (page) => {
+    setCurrentPageState(page);
+    if (propSetCurrentPage) {
+      propSetCurrentPage(page);
+    }
+  };
+
+  useEffect(() => {
+    if (propCurrentPage && propCurrentPage !== currentPage) {
+      setCurrentPageState(propCurrentPage);
+    }
+  }, [propCurrentPage]);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [selectedPost, setSelectedPost] = useState(null);
   const [inspectMode, setInspectMode] = useState(false);
@@ -793,7 +808,7 @@ export default function Posts({
                   index={idx}
                   onPostClick={(selected) => {
                     if (onNavigateTagger) {
-                      onNavigateTagger(selected.id);
+                      onNavigateTagger(selected.id, posts, currentPage);
                     } else {
                       setSelectedPost(selected);
                       setViewerMode('image');
@@ -801,7 +816,7 @@ export default function Posts({
                   }}
                   onRightClick={(selected) => {
                     if (onNavigateTagger) {
-                      onNavigateTagger(selected.id);
+                      onNavigateTagger(selected.id, posts, currentPage);
                     } else {
                       setSelectedPost(selected);
                       setViewerMode('image');
