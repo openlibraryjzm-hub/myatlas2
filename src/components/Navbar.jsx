@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Compass, Upload, Trash2, Wrench, Layers, User } from 'lucide-react';
+import { Search, Compass, Upload, Trash2, Wrench, Layers, User, Folder } from 'lucide-react';
 import { renderDynamicTitle } from '../utils/subAtlasUtils';
 import './Navbar.css';
 
@@ -109,6 +109,16 @@ export default function Navbar({
       </div>
 
       <div className="nav-right-group">
+        <button 
+          className={`nav-icon-btn ${view === 'folders' ? 'active' : ''}`}
+          onClick={() => setView('folders')}
+          onMouseEnter={() => setHoveredLabel('folders & health')}
+          onMouseLeave={() => setHoveredLabel('')}
+          title="Folders & Library Health"
+        >
+          <Folder size={16} />
+        </button>
+
         <button 
           className={`nav-icon-btn ${view === 'upload' ? 'active' : ''}`}
           onClick={() => setView('upload')}

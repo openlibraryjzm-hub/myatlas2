@@ -39,6 +39,7 @@ my atlas 2/
 │       ├── upload.md       # Hard drive folder scanner, local file ingestion & background pre-caching
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning
 │       ├── injector.md     # Bulk Tag Injector specs, dual input match filtering & batch tag injection
+│       ├── folderhealth.md # Folders & Library Health Manager specs, path relocator & manifest sidecars
 │       ├── home.md         # Home View specs, Option A dynamic word-split title logo & transparent PNG quick-links
 │       └── users.md        # Curator Profile specs, avatar, Titan Atlas SVG icon, bio & showcase bars
 └── src/
@@ -59,6 +60,7 @@ my atlas 2/
         ├── Injector.jsx    # Bulk Tag Injector interface for mass tag appending
         ├── Upload.jsx      # Hard drive folder scanner & local file batch ingestion
         ├── Deletor.jsx     # Mass Deletor Studio for batch tag pruning
+        ├── Folders.jsx     # Folders & Library Health Manager with Orteil Nested tree view
         ├── AtlasSwitcher.jsx # Quick switcher modal (Ctrl+K) for myatlas & curated atlases
         └── Users.jsx       # Curator Profile view with avatar, Titan Atlas icon, bio & showcase bars
 ```

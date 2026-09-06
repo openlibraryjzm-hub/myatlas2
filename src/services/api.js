@@ -180,3 +180,72 @@ export async function deleteServerPostsByTag(tag) {
     return null;
   }
 }
+
+/**
+ * Fetch folders summary and health status from C# Backend
+ */
+export async function fetchFoldersSummary() {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/folders`);
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.warn('Failed to fetch folders summary from C# backend:', err.message);
+    return [];
+  }
+}
+
+/**
+ * Relocate / Re-bind folder path in C# Backend SQLite
+ */
+export async function relocateFolder(oldPath, newPath) {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/folders/relocate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oldPath, newPath })
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error('Failed to relocate folder path on C# backend:', err.message);
+    throw err;
+  }
+}
+
+/**
+ * Export .myatlas_manifest.json sidecar to a folder
+ */
+export async function exportFolderManifest(folderPath) {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/folders/manifest/export`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folderPath })
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error('Failed to export folder manifest:', err.message);
+    throw err;
+  }
+}
+
+/**
+ * Import / Reload .myatlas_manifest.json sidecar from a folder
+ */
+export async function importFolderManifest(folderPath) {
+  try {
+    const res = await fetch(`${SERVER_BASE_URL}/api/folders/manifest/import`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folderPath })
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error('Failed to import folder manifest:', err.message);
+    throw err;
+  }
+}
+

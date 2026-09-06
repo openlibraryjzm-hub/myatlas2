@@ -1409,6 +1409,277 @@ app.MapPost("/api/precache", () =>
     return Results.Ok(new { success = true, count = itemsToPreThumbnail.Count, message = "Background thumbnail pre-caching launched." });
 });
 
+// Folders & Library Health Summary Endpoint
+app.MapGet("/api/folders", () =>
+{
+    using var conn = new SqliteConnection(connectionString);
+    conn.Open();
+
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = "SELECT file_path FROM local_items WHERE file_path IS NOT NULL AND file_path != '';";
+    
+    var folderCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+    using (var reader = cmd.ExecuteReader())
+    {
+        while (reader.Read())
+        {
+            var filePath = reader.GetString(0);
+            if (string.IsNullOrWhiteSpace(filePath)) continue;
+            var folder = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(folder))
+            {
+                folderCounts[folder] = folderCounts.GetValueOrDefault(folder, 0) + 1;
+            }
+        }
+    }
+
+    var result = folderCounts.Select(kv =>
+    {
+        bool exists = Directory.Exists(kv.Key);
+        string manifestPath = exists ? Path.Combine(kv.Key, ".myatlas_manifest.json") : "";
+        bool hasManifest = exists && File.Exists(manifestPath);
+        return new
+        {
+            folderPath = kv.Key,
+            folderName = Path.GetFileName(kv.Key) is string name && !string.IsNullOrEmpty(name) ? name : kv.Key,
+            itemCount = kv.Value,
+            exists,
+            hasManifest
+        };
+    }).OrderByDescending(f => f.itemCount).ToList();
+
+    return Results.Ok(result);
+});
+
+// Relocate / Re-bind Folder Path Endpoint
+app.MapPost("/api/folders/relocate", async (HttpRequest request) =>
+{
+    using var reader = new StreamReader(request.Body);
+    var bodyText = await reader.ReadToEndAsync();
+
+    string oldPath = "";
+    string newPath = "";
+    try
+    {
+        using var doc = JsonDocument.Parse(bodyText);
+        if (doc.RootElement.TryGetProperty("oldPath", out var op)) oldPath = op.GetString() ?? "";
+        if (doc.RootElement.TryGetProperty("newPath", out var np)) newPath = np.GetString() ?? "";
+    }
+    catch { }
+
+    if (string.IsNullOrEmpty(oldPath) || string.IsNullOrEmpty(newPath))
+    {
+        return Results.BadRequest(new { error = "Both oldPath and newPath are required." });
+    }
+
+    oldPath = oldPath.TrimEnd('/', '\\');
+    newPath = newPath.TrimEnd('/', '\\');
+
+    using var conn = new SqliteConnection(connectionString);
+    conn.Open();
+
+    int updatedCount = 0;
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT id, file_path, title FROM local_items 
+            WHERE file_path LIKE $prefix OR LOWER(file_path) = LOWER($exact);
+        ";
+        cmd.Parameters.AddWithValue("$prefix", oldPath + "%");
+        cmd.Parameters.AddWithValue("$exact", oldPath);
+
+        var toUpdate = new List<(string id, string oldFile)>();
+        using (var r = cmd.ExecuteReader())
+        {
+            while (r.Read())
+            {
+                toUpdate.Add((r.GetString(0), r.IsDBNull(1) ? "" : r.GetString(1)));
+            }
+        }
+
+        using var tx = conn.BeginTransaction();
+        foreach (var item in toUpdate)
+        {
+            if (item.oldFile.StartsWith(oldPath, StringComparison.OrdinalIgnoreCase))
+            {
+                string rel = item.oldFile.Substring(oldPath.Length);
+                string newFile = newPath + rel;
+                string newTitle = Path.GetFileName(newFile);
+
+                using var updateCmd = conn.CreateCommand();
+                updateCmd.Transaction = tx;
+                updateCmd.CommandText = "UPDATE local_items SET file_path = $newFile, title = $newTitle WHERE id = $id;";
+                updateCmd.Parameters.AddWithValue("$newFile", newFile);
+                updateCmd.Parameters.AddWithValue("$newTitle", newTitle);
+                updateCmd.Parameters.AddWithValue("$id", item.id);
+                updateCmd.ExecuteNonQuery();
+                updatedCount++;
+            }
+        }
+        tx.Commit();
+    }
+
+    return Results.Ok(new { success = true, oldPath, newPath, updatedCount });
+});
+
+// Export On-Demand Sidecar Manifest Endpoint (.myatlas_manifest.json)
+app.MapPost("/api/folders/manifest/export", async (HttpRequest request) =>
+{
+    using var reader = new StreamReader(request.Body);
+    var bodyText = await reader.ReadToEndAsync();
+
+    string targetFolder = "";
+    try
+    {
+        using var doc = JsonDocument.Parse(bodyText);
+        if (doc.RootElement.TryGetProperty("folderPath", out var fp)) targetFolder = fp.GetString() ?? "";
+    }
+    catch { }
+
+    if (string.IsNullOrEmpty(targetFolder) || !Directory.Exists(targetFolder))
+    {
+        return Results.BadRequest(new { error = "Invalid or non-existent folder directory path." });
+    }
+
+    targetFolder = targetFolder.TrimEnd('/', '\\');
+
+    using var conn = new SqliteConnection(connectionString);
+    conn.Open();
+
+    var manifestItems = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = "SELECT file_path, title, format, tags FROM local_items WHERE file_path LIKE $prefix OR LOWER(file_path) = LOWER($exact);";
+        cmd.Parameters.AddWithValue("$prefix", targetFolder + "%");
+        cmd.Parameters.AddWithValue("$exact", targetFolder);
+
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            string fp = r.IsDBNull(0) ? "" : r.GetString(0);
+            string title = r.IsDBNull(1) ? "" : r.GetString(1);
+            string fmt = r.IsDBNull(2) ? "" : r.GetString(2);
+            string rawTags = r.IsDBNull(3) ? "[]" : r.GetString(3);
+
+            List<string> tagsList = new();
+            try { tagsList = JsonSerializer.Deserialize<List<string>>(rawTags) ?? new(); } catch { }
+
+            string fileName = Path.GetFileName(fp);
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                manifestItems[fileName] = new
+                {
+                    title,
+                    format = fmt,
+                    tags = tagsList
+                };
+            }
+        }
+    }
+
+    var manifestObj = new
+    {
+        generator = "MyAtlas",
+        version = "1.0",
+        exported_at = DateTime.UtcNow.ToString("o"),
+        folder = targetFolder,
+        total_items = manifestItems.Count,
+        items = manifestItems
+    };
+
+    string manifestPath = Path.Combine(targetFolder, ".myatlas_manifest.json");
+    string jsonString = JsonSerializer.Serialize(manifestObj, new JsonSerializerOptions { WriteIndented = true });
+    await File.WriteAllTextAsync(manifestPath, jsonString);
+
+    return Results.Ok(new { success = true, folderPath = targetFolder, manifestPath, exportedCount = manifestItems.Count });
+});
+
+// Import / Reload Sidecar Manifest Endpoint (.myatlas_manifest.json)
+app.MapPost("/api/folders/manifest/import", async (HttpRequest request) =>
+{
+    using var reader = new StreamReader(request.Body);
+    var bodyText = await reader.ReadToEndAsync();
+
+    string targetFolder = "";
+    try
+    {
+        using var doc = JsonDocument.Parse(bodyText);
+        if (doc.RootElement.TryGetProperty("folderPath", out var fp)) targetFolder = fp.GetString() ?? "";
+    }
+    catch { }
+
+    if (string.IsNullOrEmpty(targetFolder) || !Directory.Exists(targetFolder))
+    {
+        return Results.BadRequest(new { error = "Invalid or non-existent folder directory path." });
+    }
+
+    string manifestPath = Path.Combine(targetFolder, ".myatlas_manifest.json");
+    if (!File.Exists(manifestPath))
+    {
+        return Results.BadRequest(new { error = "No .myatlas_manifest.json sidecar found in this folder." });
+    }
+
+    int syncedCount = 0;
+    try
+    {
+        string content = await File.ReadAllTextAsync(manifestPath);
+        using var doc = JsonDocument.Parse(content);
+        if (doc.RootElement.TryGetProperty("items", out var itemsElement) && itemsElement.ValueKind == JsonValueKind.Object)
+        {
+            using var conn = new SqliteConnection(connectionString);
+            conn.Open();
+            using var tx = conn.BeginTransaction();
+
+            foreach (var prop in itemsElement.EnumerateObject())
+            {
+                string fileName = prop.Name;
+                if (!prop.Value.TryGetProperty("tags", out var tagsElement)) continue;
+
+                List<string> sidecarTags = new();
+                if (tagsElement.ValueKind == JsonValueKind.Array)
+                {
+                    sidecarTags = tagsElement.EnumerateArray().Select(x => x.GetString() ?? "").Where(x => !string.IsNullOrEmpty(x)).ToList();
+                }
+
+                if (sidecarTags.Count == 0) continue;
+
+                string fullFilePath = Path.Combine(targetFolder, fileName);
+                using var selectCmd = conn.CreateCommand();
+                selectCmd.Transaction = tx;
+                selectCmd.CommandText = "SELECT id, tags FROM local_items WHERE LOWER(file_path) = LOWER($fp) OR LOWER(title) = LOWER($fn) LIMIT 1;";
+                selectCmd.Parameters.AddWithValue("$fp", fullFilePath);
+                selectCmd.Parameters.AddWithValue("$fn", fileName);
+
+                using var r = selectCmd.ExecuteReader();
+                if (r.Read())
+                {
+                    string itemId = r.GetString(0);
+                    string rawTags = r.IsDBNull(1) ? "[]" : r.GetString(1);
+                    List<string> existingTags = new();
+                    try { existingTags = JsonSerializer.Deserialize<List<string>>(rawTags) ?? new(); } catch { }
+
+                    var merged = existingTags.Union(sidecarTags, StringComparer.OrdinalIgnoreCase).ToList();
+                    using var updateCmd = conn.CreateCommand();
+                    updateCmd.Transaction = tx;
+                    updateCmd.CommandText = "UPDATE local_items SET tags = $tags WHERE id = $id;";
+                    updateCmd.Parameters.AddWithValue("$tags", JsonSerializer.Serialize(merged));
+                    updateCmd.Parameters.AddWithValue("$id", itemId);
+                    updateCmd.ExecuteNonQuery();
+                    syncedCount++;
+                }
+            }
+
+            tx.Commit();
+        }
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Failed to process manifest: {ex.Message}");
+    }
+
+    return Results.Ok(new { success = true, folderPath = targetFolder, syncedCount });
+});
+
 // Delete Database Items By Tag Endpoint
 app.MapPost("/api/delete-by-tag", async (HttpRequest request) =>
 {

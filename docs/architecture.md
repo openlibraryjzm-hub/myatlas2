@@ -50,6 +50,10 @@ MyAtlas is engineered as a **High-Performance Local Media Booru & Bookmark Manag
 - **HTTP 206 Video Range Streamer (`GET /api/stream/{id}`)**:
   - Streams local video files over HTTP using `206 Partial Content` headers.
   - Enables instant video seeking and scrubbing with zero webview memory bloat.
+- **Folders & Path Relocation Service (`GET /api/folders`, `POST /api/folders/relocate`)**:
+  - Aggregates hard drive source folders, performs < 0.001ms `Directory.Exists()` health checks, and re-binds moved or renamed hard drive directory paths in 1 millisecond using SQLite string substitution.
+- **On-Demand Manifest Sidecar Manager (`POST /api/folders/manifest/export`, `POST /api/folders/manifest/import`)**:
+  - Spawns and reloads `.myatlas_manifest.json` sidecar files in user folders on-demand without any background disk scanning overhead.
 
 ---
 

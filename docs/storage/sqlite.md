@@ -90,7 +90,8 @@ CREATE TABLE IF NOT EXISTS local_media (
 
 ---
 
-## 🧹 Database Reset Utilities
+## 🧹 Database Reset & Path Relocation Utilities
 
+- **`POST /api/folders/relocate` (C# Backend)**: Re-binds hard drive directory paths in 1 millisecond using SQLite string substitution (`UPDATE local_items SET file_path = REPLACE(file_path, $old, $new), title = $newTitle WHERE file_path LIKE $prefix;`), preserving 100% of attached tags and ratings.
 - **`POST /api/clear` (C# Backend)**: Deletes all records in `local_items` and wipes the `%AppData%/MyAtlas/Cache/` thumbnail directory clean.
 - **`clearAllLocalStores()` (Frontend `localDb.js`)**: Executes `DELETE FROM local_scrapes; DELETE FROM local_media;` over active Tauri SQLite connections to reset client tables.

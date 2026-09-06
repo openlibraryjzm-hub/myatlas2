@@ -8,12 +8,13 @@ import Subreddits from './pages/Subreddits';
 import Users from './pages/Users';
 import Tagger from './pages/Tagger';
 import Injector from './pages/Injector';
+import Folders from './pages/Folders';
 import AtlasSwitcher from './pages/AtlasSwitcher';
 import { fetchServerAtlases } from './services/api';
 import { BUILTIN_ATLASES, DEFAULT_ATLAS } from './utils/subAtlasUtils';
 
 export default function App() {
-  const [view, setView] = useState('posts'); // 'posts' | 'home' | 'upload' | 'deletor' | 'subreddits' | 'users' | 'tagger' | 'injector' | 'switcher'
+  const [view, setView] = useState('posts'); // 'posts' | 'home' | 'folders' | 'upload' | 'deletor' | 'subreddits' | 'users' | 'tagger' | 'injector' | 'switcher'
 
   const currentUser = { id: 'usr_curator', username: 'curator', displayName: 'Curator' };
 
@@ -257,6 +258,8 @@ export default function App() {
           currentAtlas={currentAtlas}
           onSelectAtlas={handleSelectAtlas}
         />
+      ) : view === 'folders' ? (
+        <Folders currentAtlas={currentAtlas} isReadOnly={isReadOnly} />
       ) : view === 'upload' ? (
         <Upload currentAtlas={currentAtlas} isReadOnly={isReadOnly} />
       ) : view === 'deletor' ? (
