@@ -1,7 +1,7 @@
 # Seamless Morphing Overlay Viewer Specifications (`docs/views/viewer_overlay.md`)
 
 > [!NOTE]
-> **Grid Navigation Update**: Clicking post cards on the Browse Grid now transitions directly to the full-page **Speed Tagger** view ([`tagger.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/views/tagger.md)), which provides full post media viewing, fast Q/W keyboard navigation, and instant tag editing.
+> **Grid Navigation Update**: Clicking post cards on the Browse Grid now transitions directly to the full-page **Speed Tagger** view ([`tagger.md`](tagger.md)), which provides full post media viewing, fast Q/W keyboard navigation, and instant tag editing.
 
 This document defines the layout architecture, component boundaries, 3-tab mode mechanics (`Media`, `Tags`, `Edit`), full-bleed native fullscreen scaling, and keyboard controls for the **Seamless Morphing Overlay Viewer** module.
 
@@ -9,9 +9,9 @@ This document defines the layout architecture, component boundaries, 3-tab mode 
 
 ## 🏛️ System Overview & Zero-Unmount Guarantee
 
-The Seamless Morphing Overlay Viewer mounts a single, continuous light-theme overlay directly over the Browse Grid, positioning seamlessly beneath the primary application top header ([`Navbar.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/components/Navbar.jsx)).
+The Seamless Morphing Overlay Viewer mounts a single, continuous light-theme overlay directly over the Browse Grid, positioning seamlessly beneath the primary application top header ([`Navbar.jsx`](../../src/components/Navbar.jsx)).
 
-- **Background Preservation**: The Browse Grid ([`Posts.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/pages/Posts.jsx)) stays 100% mounted in memory behind the overlay. It never loses scroll position, never re-runs data queries, and never tears down DOM card elements.
+- **Background Preservation**: The Browse Grid ([`Posts.jsx`](../../src/pages/Posts.jsx)) stays 100% mounted in memory behind the overlay. It never loses scroll position, never re-runs data queries, and never tears down DOM card elements.
 - **Top Header Integration**: The main application navigation bar (`.nav-header`, `z-index: 10000`) remains visible at the top of the screen when the viewer overlay is open.
 - **Overlay Visual Backdrop**: Fixed container starting below the top header (`position: fixed; top: 52px; bottom: 0; left: 0; right: 0; background-color: var(--bg-primary); z-index: 9999`). 0% see-through for a clean, non-distracting media and speed tagging environment.
 
@@ -50,7 +50,7 @@ The top control bar rests at the upper boundary of the overlay styled with light
 
 ### 3. Mode C: Speed Tagger Edit Mode (`viewerMode === 'edit'`)
 - **Smooth Shrink Transition**: Shares the shrunken thumbnail media stage (`max-height: 180px; max-width: 240px`).
-- **Inline Speed Tagger Panel ([`MorphingTaggerPanel.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/components/MorphingTaggerPanel.jsx))**:
+- **Inline Speed Tagger Panel ([`MorphingTaggerPanel.jsx`](../../src/components/MorphingTaggerPanel.jsx))**:
   - Renders category-tinted tag pills with click-to-delete support.
   - Activates inline caret input prompt (`"add tag..."`) focused and ready for typing.
   - Renders in-memory autocomplete popover (capped at 8 items) and keyboard shortcut hints (`ENTER Save & Next`, `, Stage`, `ESC Skip`, `` ` `` Prev).
@@ -58,7 +58,7 @@ The top control bar rests at the upper boundary of the overlay styled with light
 
 ---
 
-## 🎞️ Integrated Page Queue Timeline ([`QueueTimeline.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/components/QueueTimeline.jsx))
+## 🎞️ Integrated Page Queue Timeline ([`QueueTimeline.jsx`](../../src/components/QueueTimeline.jsx))
 
 Renders along the bottom of the overlay across all modes with a clean transparent background:
 - Shows all item thumbnails from the current active page queue (up to 40 items).

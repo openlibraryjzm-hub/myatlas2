@@ -9,7 +9,7 @@ This document defines specifications for local disk media file scanning, manifes
 The Ingestion Manager supports three primary local hard drive data sources:
 
 1. **Local Batch File Selector**: Select individual media files or batches directly from disk using Tauri file pickers (`selectLocalFiles`).
-2. **Local Directory & Manifest Ingestion**: Select folders containing media files and an optional `manifest.json` metadata sidecar file (see [`docs/ingestion_manifest_workflow.md`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/ingestion_manifest_workflow.md)).
+2. **Local Directory & Manifest Ingestion**: Select folders containing media files and an optional `manifest.json` metadata sidecar file (see [`docs/ingestion_manifest_workflow.md`](../ingestion_manifest_workflow.md)).
 3. **Scraped JSON Archive Ingestion**: Drop or select scraped JSON archives (Reddit saves, Twitter bookmarks) for bulk ingestion.
 
 ---

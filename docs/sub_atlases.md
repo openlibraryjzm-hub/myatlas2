@@ -80,7 +80,7 @@ CREATE INDEX IF NOT EXISTS idx_local_items_atlas ON local_items(atlas_id);
 ---
 
 ## 📄 Related Documentation
-- [Big Picture Vision](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/big_picture_dream.md)
-- [System Architecture](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/architecture.md)
-- [Browse Grid Specifications](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/views/grid.md)
-- [Home View Specifications](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/views/home.md)
+- [Big Picture Vision](big_picture_dream.md)
+- [System Architecture](architecture.md)
+- [Browse Grid Specifications](views/grid.md)
+- [Home View Specifications](views/home.md)

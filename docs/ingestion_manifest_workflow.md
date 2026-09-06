@@ -131,16 +131,18 @@ Enricher scripts output a flat JSON array of item objects inside `./<target>_dow
 
 ## 📥 Application Ingestion Engine (`Upload.jsx`)
 
-When an end-user selects local files in the **Upload** view ([`Upload.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/pages/Upload.jsx)):
+## 📥 Application Ingestion Engine (`Upload.jsx`)
+
+When an end-user selects local files in the **Upload** view ([`Upload.jsx`](../src/pages/Upload.jsx)):
 
 1. **Manifest Auto-Detection**: The frontend scanner checks the selected folder for `manifest.json`.
 2. **Basename Matching**: Matches file names (e.g. `Creeper.png` or `Creeper`) to manifest entries.
-3. **Auto-Category Registration**: The app invokes `ensureTagCategoriesExist(tags)` ([`mockData.js`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/data/mockData.js)), registering any newly encountered namespaces into `localStorage` (`myatlas_tag_categories`) with auto-assigned palette colors (`PALETTE_COLORS`).
-4. **Sidebar Accordion Integration**: On the **Browse Grid** ([`Posts.jsx`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/src/pages/Posts.jsx)), new categories illuminate as sovereign expandable accordions in the left sidebar with 1-click drill-down filtering and 250ms inspect-hover illumination.
+3. **Auto-Category Registration**: The app invokes `ensureTagCategoriesExist(tags)` ([`mockData.js`](../src/data/mockData.js)), registering any newly encountered namespaces into `localStorage` (`myatlas_tag_categories`) with auto-assigned palette colors (`PALETTE_COLORS`).
+4. **Sidebar Accordion Integration**: On the **Browse Grid** ([`Posts.jsx`](../src/pages/Posts.jsx)), new categories illuminate as sovereign expandable accordions in the left sidebar with 1-click drill-down filtering and 250ms inspect-hover illumination.
 
 ---
 
-## 🎖️ World War II Ingestion Progress & Session Handover Roadmap (Updated 2026-08-30)
+## 🎖️ World War II Ingestion Architecture & Domain Reference
 
 ### Target Sub-Atlas Strategy: `ww2`
 This project ingests historical World War II equipment, vehicles, small arms, naval craft, and field photography into a dedicated offline Sub-Atlas using **Wikimedia Commons API** (`commons.wikimedia.org/w/api.php`) and **Wikidata SPARQL API** (`query.wikidata.org/sparql`).
@@ -161,7 +163,7 @@ This project ingests historical World War II equipment, vehicles, small arms, na
 
 ---
 
-### 🛑 Filtering Traps & Warnings for New Session
+### 🛑 Filtering Traps & Guidelines
 1. **Modern Reenactments & Airshows**: Exclude modern airshow photos, reenactor portraits in uniform, and Living History events.
 2. **Scale Models & Die-Cast Toys**: Exclude plastic model kits, RC models, die-cast toys, and box art illustrations.
 3. **Memorial Monuments & Statues**: Exclude modern town square monuments, commemorative plaques, and museum exhibit signs.
@@ -170,7 +172,7 @@ This project ingests historical World War II equipment, vehicles, small arms, na
 
 ---
 
-### WWII Planned Media Splits (Roadmap)
+### WWII Planned Media Splits
 1. **`ww2_downloads/tanks/`**: Armored Fighting Vehicles & Self-Propelled Guns (Panzer, T-34, M4 Sherman, Tiger I, Churchill, KV-1).
 2. **`ww2_downloads/aircraft/`**: Fighter, Bomber & Reconnaissance Aircraft (Spitfire, Bf 109, P-51 Mustang, B-17 Flying Fortress, A6M Zero, Il-2 Sturmovik).
 3. **`ww2_downloads/warships/`**: Naval Warfare, Submarines & Aircraft Carriers (U-boats, USS Enterprise, Yamato, HMS Hood, Bismarck, Fletcher-class).
@@ -179,8 +181,8 @@ This project ingests historical World War II equipment, vehicles, small arms, na
 
 ---
 
-### Handover Instructions for New Session:
-- Refer to [`docs/ingestion_manifest_workflow.md`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/ingestion_manifest_workflow.md).
+### Implementation Workflow & Guidelines:
+- Refer to [`ingestion_manifest_workflow.md`](ingestion_manifest_workflow.md).
 - Target Sub-Atlas: **`ww2`**.
 - Downloader (`download_ww2_<split>.js`) & enricher (`enrich_ww2_<split>.js`) scripts follow the standard 3-phase workflow.
 - **Rule**: Omit `folder:` anchor tag as per user preference (keep `copyright:ww2_history` & `license:public_domain`).

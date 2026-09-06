@@ -19,7 +19,7 @@ Engineered for 100% offline hard drive media curation, speed tagging, instant We
 
 ## 📂 Project Architecture & Documentation Layout
 
-Documentation is maintained in the [`docs/`](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/) directory:
+Documentation is maintained in the [`docs/`](docs/) directory:
 
 ```
 my atlas 2/
@@ -41,7 +41,7 @@ my atlas 2/
 │       ├── injector.md     # Bulk Tag Injector specs, dual input match filtering & batch tag injection
 │       ├── folderhealth.md # Folders & Library Health Manager specs, path relocator & manifest sidecars
 │       ├── home.md         # Home View specs, Option A dynamic word-split title logo & transparent PNG quick-links
-│       └── users.md        # Curator Profile specs, avatar, Titan Atlas SVG icon, bio & showcase bars
+│       └── users.md        # Curator Profile specs, cardless Twitter/X profile card, Gelbooru link stack & 5-tab JEI grid
 └── src/
     ├── main.jsx            # Application entry mount
     ├── index.css           # Claude visual tokens and design system metrics

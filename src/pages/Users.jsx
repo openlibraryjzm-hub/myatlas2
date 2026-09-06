@@ -1,17 +1,35 @@
 import React from 'react';
-import { FileText, Heart, Settings, ShoppingBag, LogOut, Globe, Award, Sparkles, Users as UsersIcon, UserPlus } from 'lucide-react';
+import { FileText, Heart, Settings, ShoppingBag, LogOut, Globe, Award, Sparkles, Users as UsersIcon, UserPlus, Bookmark, SlidersHorizontal, BookOpen, MessageSquare, UserCheck, Calendar } from 'lucide-react';
 import './Users.css';
 
 export default function Users({ currentUser }) {
   const user = currentUser || { username: 'curator', displayName: 'Curator' };
 
   const [activeMode, setActiveMode] = React.useState('atlases');
-  const [selectedItem, setSelectedItem] = React.useState(null);
+  const [hoveredItem, setHoveredItem] = React.useState(null);
+  const [tooltipPos, setTooltipPos] = React.useState({ x: 0, y: 0 });
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [bioText, setBioText] = React.useState(
+    `Welcome to my local MyAtlas archive! I am a passionate media curator, hard drive archivist, and tech enthusiast.\n\nSpecializing in high-density booru tagging, CRT video aesthetics, technical schematics, and custom Valve hardware accessories.`
+  );
 
   const handleModeChange = (mode) => {
     setActiveMode(mode);
     setCurrentPage(1);
+    setHoveredItem(null);
+  };
+
+  const handleSlotMouseEnter = (item, e) => {
+    setHoveredItem(item);
+    setTooltipPos({ x: e.clientX + 14, y: e.clientY + 14 });
+  };
+
+  const handleSlotMouseMove = (e) => {
+    setTooltipPos({ x: e.clientX + 14, y: e.clientY + 14 });
+  };
+
+  const handleSlotMouseLeave = () => {
+    setHoveredItem(null);
   };
 
   // Generates 1000 rich placeholders for Atlases mode (5 full pages of 200 items each)
@@ -229,14 +247,93 @@ export default function Users({ currentUser }) {
     return items;
   }, []);
 
+  // Generates 1000 rich placeholders for Forums mode
+  const forumsItems = React.useMemo(() => {
+    const threadTemplates = [
+      { name: 'Booru Classification Matrix', icon: '💬', desc: 'Discussion on tagging taxonomy and namespace conventions.' },
+      { name: 'STA Video Extractor Specs', icon: '🎞️', desc: 'Windows Shell P/Invoke STA thread frame caching benchmarks.' },
+      { name: 'Gelbooru Sync & Import', icon: '📡', desc: 'Strategies for zero-latency JSON metadata scraping.' },
+      { name: 'CRT Shader & Aesthetic Rices', icon: '📺', desc: 'Custom CSS themes, Lora typography & amber accents.' },
+      { name: 'SQLite Storage Optimizations', icon: '💾', desc: 'WAL mode, indexed tag queries, and dual db syncing.' },
+      { name: 'WebP Thumbnail Disk Cache', icon: '🖼️', desc: 'Sub-millisecond 300px WebP image proxy throughput.' },
+      { name: 'Valve Hardware Accessories', icon: '⚙️', desc: 'Custom 3D printed additions and hardware mods.' },
+      { name: 'Offline Booru Purism', icon: '🔒', desc: 'Zero remote telemetry data transmission guidelines.' },
+      { name: 'Tauri v2 Desktop Container', icon: '🚀', desc: 'Native Rust Tauri app bindings and IPC commands.' },
+      { name: 'Dotnet Minimal WebAPI Engine', icon: '⚡', desc: 'C# backend micro-server performance at port 7171.' },
+    ];
+    const pagePalettes = [
+      ['#CC5A01', '#EAB308', '#D97706', '#EA580C'],
+      ['#0284C7', '#3B82F6', '#2563EB', '#1D4ED8'],
+      ['#059669', '#10B981', '#047857', '#15803D'],
+      ['#9333EA', '#8B5CF6', '#7C3AED', '#6D28D9'],
+      ['#DC2626', '#EF4444', '#B91C1C', '#991B1B']
+    ];
+    const items = [];
+    for (let i = 0; i < 1000; i++) {
+      const pageIndex = Math.floor(i / 200);
+      const palette = pagePalettes[pageIndex % pagePalettes.length];
+      const base = threadTemplates[i % threadTemplates.length];
+      items.push({
+        id: `forum-${i}`,
+        name: i < threadTemplates.length ? base.name : `${base.name} Thread #${Math.floor(i / threadTemplates.length) + 1}`,
+        icon: base.icon,
+        color: palette[i % palette.length],
+        category: `Forum Thread (Page ${pageIndex + 1})`,
+        desc: base.desc,
+        count: `${(i + 1) * 12 + 5} replies`
+      });
+    }
+    return items;
+  }, []);
+
+  // Generates 1000 rich placeholders for Oomfs mode (Mutual Followers)
+  const oomfsItems = React.useMemo(() => {
+    const handles = [
+      'mutual_archivist', 'synth_friend', 'booru_pal', 'pixel_buddy', 'retro_companion',
+      'tauri_ally', 'dotnet_peer', 'sqlite_mate', 'sharp_partner', 'design_sidekick',
+      'tagger_cohort', 'media_comrade', 'offline_fellow', 'claude_friend', 'vintage_ally',
+      'lofi_pal', 'cyber_chum', 'vector_buddy', 'macro_peer', 'astro_mate'
+    ];
+    const pagePalettes = [
+      ['#CC5A01', '#059669', '#2563EB', '#7C3AED', '#D97706', '#EC4899'],
+      ['#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6', '#D946EF', '#F43F5E'],
+      ['#10B981', '#14B8A6', '#047857', '#15803D', '#65A30D', '#CA8A04'],
+      ['#9333EA', '#C084FC', '#E879F9', '#F472B6', '#FB7185', '#FDA4AF'],
+      ['#EA580C', '#F97316', '#F59E0B', '#EAB308', '#84CC16', '#10B981']
+    ];
+    const items = [];
+    for (let i = 0; i < 1000; i++) {
+      const pageIndex = Math.floor(i / 200);
+      const palette = pagePalettes[pageIndex % pagePalettes.length];
+      const handle = handles[i % handles.length] + (i >= handles.length ? `_${i}` : '');
+      const initial = handle.charAt(0).toUpperCase();
+      items.push({
+        id: `oomf-${i}`,
+        name: `@${handle}`,
+        initial: initial,
+        category: `Mutual Oomf (Page ${pageIndex + 1})`,
+        status: 'Mutual Follower 🤝',
+        desc: `Mutual curator oomf #${i + 1} sharing booru indexes.`,
+        color: palette[i % palette.length]
+      });
+    }
+    return items;
+  }, []);
+
   const getModeDetails = () => {
     switch (activeMode) {
       case 'atlases':
         return { title: 'Atlases', count: atlasesItems.length, items: atlasesItems };
+      case 'about':
+        return { title: 'About Me', count: 0, items: [] };
+      case 'forums':
+        return { title: 'Forum Threads', count: forumsItems.length, items: forumsItems };
       case 'badges':
         return { title: 'Badges', count: badgesItems.length, items: badgesItems };
       case 'stickers':
         return { title: 'Stickers', count: stickersItems.length, items: stickersItems };
+      case 'oomfs':
+        return { title: 'Oomfs', count: oomfsItems.length, items: oomfsItems };
       case 'followers':
         return { title: 'Followers', count: followersItems.length, items: followersItems };
       case 'following':
@@ -255,87 +352,94 @@ export default function Users({ currentUser }) {
   return (
     <div className="user-profile-page">
       <div className="user-profile-container">
-        {/* Left Side: Avatar, Icon Options, and Bio Box */}
+        {/* Left Side: Twitter/X Style Profile Card and Gelbooru Vertical Link Stack */}
         <aside className="user-profile-left">
-          {/* Large Square Profile Picture Placeholder */}
-          <div className="user-avatar-square-placeholder">
-            {currentUser?.avatarUrl ? (
-              <img src={currentUser.avatarUrl} alt={currentUser.username} className="avatar-img-full" />
-            ) : (
-              <div className="avatar-blank-inner">
-                <span className="avatar-initial-badge">{(currentUser?.displayName || 'C').charAt(0).toUpperCase()}</span>
-                <span className="avatar-handle-badge">@{currentUser?.username || 'curator'}</span>
+          {/* Twitter / X Style Curator Profile Card (320px sidebar width) */}
+          <div className="twitter-profile-card">
+            <div className="twitter-card-banner"></div>
+            <div className="twitter-card-body">
+              <div className="twitter-avatar-row">
+                <div className="twitter-avatar-circle">
+                  {currentUser?.avatarUrl ? (
+                    <img src={currentUser.avatarUrl} alt={currentUser.username} className="twitter-avatar-img" />
+                  ) : (
+                    <span className="twitter-avatar-initial">{(currentUser?.displayName || 'C').charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
               </div>
-            )}
+
+              <div className="twitter-user-identity">
+                <h3 className="twitter-display-name">{currentUser?.displayName || 'Curator'}</h3>
+                <span className="twitter-user-handle">@{currentUser?.username || 'curator'}</span>
+              </div>
+
+              <p className="twitter-card-bio">
+                Curating local hard drive archives, high-density booru taxonomy, and custom Valve hardware accessories.
+              </p>
+
+              <div className="twitter-meta-row">
+                <span className="twitter-meta-item">
+                  <Calendar size={13} className="meta-icon" /> Joined Sep 2026
+                </span>
+                <span className="twitter-stat-item-inline">
+                  <strong>1,000</strong> <span className="stat-label">Friends</span>
+                </span>
+              </div>
+            </div>
           </div>
 
-          {/* Horizontally Aligned Action Icons Bar */}
-          <div className="user-action-icons-bar">
-            <button className="user-action-icon-btn" title="Posts / Submitted" onClick={(e) => e.preventDefault()}>
-              <FileText size={20} />
-            </button>
-            <button className="user-action-icon-btn" title="Favorites" onClick={(e) => e.preventDefault()}>
-              <Heart size={20} />
-            </button>
-            <button className="user-action-icon-btn" title="Settings" onClick={(e) => e.preventDefault()}>
-              <Settings size={20} />
-            </button>
-            <button className="user-action-icon-btn" title="Shop" onClick={(e) => e.preventDefault()}>
-              <ShoppingBag size={20} />
-            </button>
-            <button className="user-action-icon-btn logout-btn" title="Logout" onClick={(e) => e.preventDefault()}>
-              <LogOut size={20} />
-            </button>
-          </div>
-
-          {/* Dynamic Curator Bio Text Box */}
-          <div className="user-bio-giant-textbox">
-            {selectedItem ? (
-              <div className="user-bio-content selected-item-bio">
-                <div className="selected-header-bar">
-                  <span 
-                    className="selected-icon-badge" 
-                    style={{ backgroundColor: `${selectedItem.color}15`, color: selectedItem.color, borderColor: `${selectedItem.color}30` }}
-                  >
-                    {selectedItem.icon || selectedItem.initial}
-                  </span>
-                  <button className="clear-selection-btn" title="Clear selection" onClick={() => setSelectedItem(null)}>
-                    ✕
-                  </button>
-                </div>
-                <h3 className="selected-item-name">{selectedItem.name}</h3>
-                <div 
-                  className="selected-category-badge" 
-                  style={{ color: selectedItem.color, borderColor: `${selectedItem.color}40`, backgroundColor: `${selectedItem.color}12` }}
-                >
-                  {selectedItem.rarity || selectedItem.category}
-                </div>
-                <p className="selected-item-description">{selectedItem.desc}</p>
-                {selectedItem.count && <div className="selected-footer-meta">Stats: <strong>{selectedItem.count}</strong></div>}
-                {selectedItem.status && <div className="selected-footer-meta">Status: <strong>{selectedItem.status}</strong></div>}
-              </div>
-            ) : (
-              <div className="user-bio-content default-bio">
-                <h3 className="user-display-name">{currentUser?.displayName || 'Curator'}</h3>
-                <p className="user-handle-sub">@{currentUser?.username || 'curator'}</p>
-                <div className="user-role-badge">Local Curator</div>
-                <p className="user-bio-hint">Select any item in the JEI matrix to inspect details...</p>
-              </div>
-            )}
+          {/* Vertically Stacked Gelbooru My Account Style Links & Descriptions */}
+          <div className="user-action-vertical-stack">
+            <div className="gelbooru-link-item">
+              <a href="#posts" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
+                <FileText size={14} className="link-icon" /> Posts / Submitted
+              </a>
+              <span className="gelbooru-link-desc">View your uploaded local media, scrapes, and tagged posts across your hard drive archive.</span>
+            </div>
+            <div className="gelbooru-link-item">
+              <a href="#favorites" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
+                <Heart size={14} className="link-icon" /> My Favorites
+              </a>
+              <span className="gelbooru-link-desc">View a condensed list of all your favorited photos and videos on your local atlas.</span>
+            </div>
+            <div className="gelbooru-link-item">
+              <a href="#shop" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
+                <ShoppingBag size={14} className="link-icon" /> Curator Shop
+              </a>
+              <span className="gelbooru-link-desc">Browse Valve hardware, custom 3D printed accessories, and handmade add-ons crafted by yours truly.</span>
+            </div>
+            <div className="gelbooru-link-item">
+              <a href="#searches" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
+                <Bookmark size={14} className="link-icon" /> Saved Searches
+              </a>
+              <span className="gelbooru-link-desc">All of the tag searches you have bookmarked on your atlas in a single area.</span>
+            </div>
+            <div className="gelbooru-link-item">
+              <a href="#options" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
+                <SlidersHorizontal size={14} className="link-icon" /> Options & Blacklists
+              </a>
+              <span className="gelbooru-link-desc">Account options such as tag blacklists, auto-tagging rules, and SQLite cache preferences.</span>
+            </div>
+            <div className="gelbooru-link-item">
+              <a href="#logout" className="gelbooru-title-link logout-link" onClick={(e) => e.preventDefault()}>
+                <LogOut size={14} className="link-icon" /> Logout
+              </a>
+              <span className="gelbooru-link-desc">End your active curator session and clear authentication cookies for this account.</span>
+            </div>
           </div>
         </aside>
 
-        {/* Right Side: JEI / NEI Style High-Density Item Grid + 5-Segment Mode Switcher */}
+        {/* Right Side: JEI / NEI Style High-Density Item Grid + 5-Segment Single-Row Mode Switcher */}
         <main className="user-profile-right">
           <div className="jei-card-container">
-            {/* Mode Switcher: Icon-Only Tabs with Centered Line Divider Count */}
+            {/* Mode Switcher: 5 Icon-Only Tabs in 1 Row with Centered Line Divider Count */}
             <div className="jei-mode-switcher-bar">
               {[
-                { id: 'atlases', label: 'Atlases', icon: <Globe size={26} className="tab-icon-svg" />, count: atlasesItems.length },
-                { id: 'badges', label: 'Badges', icon: <Award size={26} className="tab-icon-svg" />, count: badgesItems.length },
-                { id: 'stickers', label: 'Stickers', icon: <Sparkles size={26} className="tab-icon-svg" />, count: stickersItems.length },
-                { id: 'followers', label: 'Followers', icon: <UsersIcon size={26} className="tab-icon-svg" />, count: followersItems.length },
-                { id: 'following', label: 'Following', icon: <UserPlus size={26} className="tab-icon-svg" />, count: followingItems.length }
+                { id: 'atlases', label: 'Atlases', icon: <Globe size={26} className="tab-icon-svg" />, countLabel: 'ATLAS' },
+                { id: 'forums', label: 'Forums', icon: <MessageSquare size={26} className="tab-icon-svg" />, countLabel: 'FORUMS' },
+                { id: 'badges', label: 'Badges', icon: <Award size={26} className="tab-icon-svg" />, countLabel: 'BADGES' },
+                { id: 'stickers', label: 'Stickers', icon: <Sparkles size={26} className="tab-icon-svg" />, countLabel: 'LINKS' },
+                { id: 'followers', label: 'Friends & Network', icon: <UsersIcon size={26} className="tab-icon-svg" />, countLabel: 'FRIENDS' }
               ].map((mode) => (
                 <button 
                   key={mode.id}
@@ -346,7 +450,7 @@ export default function Users({ currentUser }) {
                   <span className="segment-icon-wrapper">{mode.icon}</span>
                   <div className="tab-divider-line">
                     <span className="line-fill left"></span>
-                    <span className="segment-count-badge">{mode.count.toLocaleString()}</span>
+                    <span className="segment-count-badge">{mode.countLabel}</span>
                     <span className="line-fill right"></span>
                   </div>
                 </button>
@@ -359,9 +463,11 @@ export default function Users({ currentUser }) {
                 {paginatedItems.map((item) => (
                   <div
                     key={item.id}
-                    className={`jei-slot ${selectedItem?.id === item.id ? 'selected' : ''}`}
+                    className="jei-slot"
                     style={{ '--slot-accent': item.color }}
-                    onClick={() => setSelectedItem(selectedItem?.id === item.id ? null : item)}
+                    onMouseEnter={(e) => handleSlotMouseEnter(item, e)}
+                    onMouseMove={(e) => handleSlotMouseMove(e)}
+                    onMouseLeave={handleSlotMouseLeave}
                   >
                     <div className="jei-slot-inner">
                       {item.icon ? (
@@ -405,6 +511,38 @@ export default function Users({ currentUser }) {
           </div>
         </main>
       </div>
+
+      {/* Floating Minecraft JEI Style Rich Tooltip */}
+      {hoveredItem && (
+        <div 
+          className="jei-hover-tooltip"
+          style={{
+            left: `${Math.min(tooltipPos.x, window.innerWidth - 260)}px`,
+            top: `${Math.min(tooltipPos.y, window.innerHeight - 160)}px`
+          }}
+        >
+          <div className="tooltip-header">
+            <span 
+              className="tooltip-icon-badge"
+              style={{ backgroundColor: `${hoveredItem.color}18`, color: hoveredItem.color, borderColor: `${hoveredItem.color}35` }}
+            >
+              {hoveredItem.icon || hoveredItem.initial}
+            </span>
+            <div className="tooltip-title-group">
+              <h4 className="tooltip-item-name">{hoveredItem.name}</h4>
+              <span 
+                className="tooltip-category-pill"
+                style={{ color: hoveredItem.color, borderColor: `${hoveredItem.color}40`, backgroundColor: `${hoveredItem.color}15` }}
+              >
+                {hoveredItem.rarity || hoveredItem.category}
+              </span>
+            </div>
+          </div>
+          {hoveredItem.desc && <p className="tooltip-desc">{hoveredItem.desc}</p>}
+          {hoveredItem.count && <div className="tooltip-meta">Stats: <strong>{hoveredItem.count}</strong></div>}
+          {hoveredItem.status && <div className="tooltip-meta">Status: <strong>{hoveredItem.status}</strong></div>}
+        </div>
+      )}
     </div>
   );
 }

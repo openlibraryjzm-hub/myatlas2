@@ -6,9 +6,9 @@ This document defines the speed tagger keyboard workflow, namespace prefix forma
 
 ## ⚡ Speed Tagger Workflow & Queue Dynamics
 
-The Speed Tagger interface ([`Tagger.jsx`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/src/pages/Tagger.jsx) & [`MorphingTaggerPanel.jsx`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/src/components/MorphingTaggerPanel.jsx)) is engineered for rapid keyboard-driven item tagging and metadata classification.
+The Speed Tagger interface ([`Tagger.jsx`](../../src/pages/Tagger.jsx) & [`MorphingTaggerPanel.jsx`](../../src/components/MorphingTaggerPanel.jsx)) is engineered for rapid keyboard-driven item tagging and metadata classification.
 
-- **Primary Grid Navigation Target**: Clicking or right-clicking any post card on the Browse Grid ([`grid.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/views/grid.md)) transitions directly to the full-page Speed Tagger view with initial focus on the clicked post (`selectedPostId`), starting directly in **Full Media View Mode** (`initialMediaMode = true`).
+- **Primary Grid Navigation Target**: Clicking or right-clicking any post card on the Browse Grid ([`grid.md`](grid.md)) transitions directly to the full-page Speed Tagger view with initial focus on the clicked post (`selectedPostId`), starting directly in **Full Media View Mode** (`initialMediaMode = true`).
 - **Top-Aligned Viewport Layout**: Displays top-aligned item preview media (`justify-content: flex-start`), title/filename, interactive inline caret input, and a bottom-anchored queue timeline fitted to the lower viewport edge without triggering page vertical scrollbars.
 - **Click-and-Drag Drag-Scroll Timeline**: The queue timeline supports smooth horizontal click-and-drag panning (`cursor: grab`/`grabbing`), vertical scroll wheel mapping, and automatic active item centering. Dragging > 5px suppresses item click selection to prevent accidental index jumps while scrolling.
 - **Dynamic Category Auto-Coloring & Visual Feedback**:

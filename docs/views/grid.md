@@ -38,7 +38,7 @@ This document defines the layout architecture, visual design system, left sideba
 - **Zero Artificial Delay**: Grid navigation, filtering, and tagger exits load instantly with 0ms artificial skeleton delay.
 - **Instant Cache Detection**: `PostCard.jsx` checks `imgRef.current.complete` on mount. If an image is already in memory or disk cache, it renders immediately with `opacity: 1`, bypassing 0.25s fade delays.
 - **Video Card Mechanics**: Grid video cards render lightweight 300px static WebP thumbnail images with a `VIDEO` play badge overlay when idle for 0ms load overhead and 60 FPS buttery-smooth grid scrolling. Hovering over any video card triggers a muted video preview loop (`<video src={assetUrl} muted autoPlay loop />`).
-- **Direct Speed Tagger View Navigation**: Right-clicking or clicking any post card on the Browse Grid transitions directly to the full-page **Speed Tagger** view ([`tagger.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/views/tagger.md)) with initial focus on that post, enabling seamless high-density tag display, full post media mode, and rapid keyboard tagging.
+- **Direct Speed Tagger View Navigation**: Right-clicking or clicking any post card on the Browse Grid transitions directly to the full-page **Speed Tagger** view ([`tagger.md`](tagger.md)) with initial focus on that post, enabling seamless high-density tag display, full post media mode, and rapid keyboard tagging.
 - **Priority Image Waterfall**:
   - **Rows 1 & 2 (Cards 0–15)**: Assigned `fetchPriority="high"` and `loading="eager"` for immediate top-of-fold rendering.
   - **Rows 3+ (Cards 16+)**: Assigned `fetchPriority="low"` and `loading="lazy"` to defer off-screen network requests.

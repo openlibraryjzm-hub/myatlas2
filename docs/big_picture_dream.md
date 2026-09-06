@@ -79,6 +79,6 @@ A common concern when planning a media booru at scale is whether relational data
 ---
 
 ## 📄 Related Documentation
-- [Sub-Atlas System Architecture](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/sub_atlases.md)
-- [System Architecture](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/architecture.md)
-- [Tagging & Category Taxonomy](file:///c:/Users/jodyn/Desktop/my%20atlas%202/docs/taxonomy.md)
+- [Sub-Atlas System Architecture](sub_atlases.md)
+- [System Architecture](architecture.md)
+- [Tagging & Category Taxonomy](taxonomy.md)
