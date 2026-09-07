@@ -457,6 +457,21 @@ export const parseTagsList = (rawTags) => {
 };
 
 export async function getPaginatedItems({ page = 1, limit = 40, tags = [], search = '', atlas = '' } = {}) {
+  // If requesting a non-myatlas sub-atlas, try querying Supabase Cloud first!
+  if (atlas && atlas !== 'myatlas') {
+    try {
+      const { fetchSupabasePosts, isSupabaseConfigured } = await import('./supabaseClient');
+      if (isSupabaseConfigured()) {
+        const cloudRes = await fetchSupabasePosts({ atlasId: atlas, page, limit, search, tags });
+        if (cloudRes && Array.isArray(cloudRes.posts) && cloudRes.posts.length > 0) {
+          return cloudRes;
+        }
+      }
+    } catch (e) {
+      console.warn(`Supabase cloud fetch notice for atlas '${atlas}':`, e);
+    }
+  }
+
   let allItems = await getAllItems();
 
   if (atlas) {

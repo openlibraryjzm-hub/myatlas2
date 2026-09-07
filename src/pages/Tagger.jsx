@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj } from '../data/mockData';
+import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj, getSourceUrl } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache, getPaginatedItems } from '../services/localDb';
-import { formatLocalAssetUrl } from '../utils/localFiles';
+import { formatLocalAssetUrl, openExternalUrl } from '../utils/localFiles';
 import QueueTimeline from '../components/QueueTimeline';
 import './Tagger.css';
 
@@ -282,6 +282,11 @@ export default function Tagger({
     }
   }, [currentPost]);
 
+  // Extract active source URL from current item tags (existing + staged)
+  const activeSourceUrl = useMemo(() => {
+    return getSourceUrl([...existingTags, ...stagedTags]);
+  }, [existingTags, stagedTags]);
+
   // Scroll active timeline item into view
   useEffect(() => {
     if (timelineRef.current) {
@@ -385,6 +390,9 @@ export default function Tagger({
     if (colonIndex !== -1) {
       const pref = clean.substring(0, colonIndex + 1);
       const name = clean.substring(colonIndex + 1);
+      if (pref === 'source:' || pref === 'copyright:' || pref === 'meta:source:' || pref === 'meta:copyright:') {
+        return pref + name.trim().replace(/\s+/g, '_');
+      }
       return pref + name.replace(/\s+/g, '_').replace(/[^\w\-]/g, '');
     } else if (slashIndex !== -1 && clean.startsWith('r/')) {
       const pref = 'r/';
@@ -1109,7 +1117,22 @@ export default function Tagger({
                 <span className="tagger-post-subreddit-centered" style={{ color: 'var(--color-subreddit)' }}>
                   {currentPost.subreddit && currentPost.subreddit !== 'localatlas' ? (currentPost.subreddit.startsWith('r/') ? currentPost.subreddit : `r/${currentPost.subreddit}`) : 'Local File'}
                 </span>
-                <h3 className="tagger-post-title-centered">{currentPost.title}</h3>
+                {activeSourceUrl ? (
+                  <h3 className="tagger-post-title-centered">
+                    <a 
+                      href={activeSourceUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="tagger-source-link"
+                      title={`Source: ${activeSourceUrl} (Click to open)`}
+                      onClick={(e) => openExternalUrl(activeSourceUrl, e)}
+                    >
+                      {currentPost.title || getPostFilename(currentPost)} <ExternalLink size={14} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }} />
+                    </a>
+                  </h3>
+                ) : (
+                  <h3 className="tagger-post-title-centered">{currentPost.title || getPostFilename(currentPost)}</h3>
+                )}
               </div>
             </div>
 
@@ -1288,10 +1311,22 @@ export default function Tagger({
             </div>
 
             {/* Bottom Row: Filename */}
-            <div className="tagger-fullscreen-pill-bottom-row" title={getPostFilename(currentPost)}>
-              <span className="tagger-fullscreen-pill-filename">
-                {getPostFilename(currentPost)}
-              </span>
+            <div className="tagger-fullscreen-pill-bottom-row" title={activeSourceUrl ? `Source: ${activeSourceUrl} (Click to open)` : getPostFilename(currentPost)}>
+              {activeSourceUrl ? (
+                <a 
+                  href={activeSourceUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="tagger-fullscreen-pill-source-link"
+                  onClick={(e) => openExternalUrl(activeSourceUrl, e)}
+                >
+                  {getPostFilename(currentPost)} <ExternalLink size={12} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '3px' }} />
+                </a>
+              ) : (
+                <span className="tagger-fullscreen-pill-filename">
+                  {getPostFilename(currentPost)}
+                </span>
+              )}
             </div>
           </div>
 

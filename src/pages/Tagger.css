@@ -170,6 +170,21 @@
   word-break: break-word;
 }
 
+.tagger-source-link {
+  color: var(--color-source, #7c3aed);
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: var(--transition-smooth);
+}
+
+.tagger-source-link:hover {
+  color: #6d28d9;
+  text-decoration: underline;
+}
+
 /* Inline Comma Separated Tags Flow Container */
 .tagger-inline-flow-container {
   font-family: var(--font-sans);
@@ -763,6 +778,29 @@
   white-space: nowrap;
   text-align: center;
   user-select: text;
+}
+
+.tagger-fullscreen-pill-source-link {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-source, #7c3aed);
+  max-width: 450px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  user-select: text;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: var(--transition-smooth);
+}
+
+.tagger-fullscreen-pill-source-link:hover {
+  color: #6d28d9;
+  text-decoration: underline;
 }
 
 .tagger-fullscreen-pill-close {

@@ -315,3 +315,23 @@ export async function generateVideoWebpThumbnail(videoUrl, maxWidth = 300) {
     video.src = targetUrl;
   });
 }
+
+/**
+ * Open an external URL in the system browser or new window safely
+ */
+export function openExternalUrl(url, event) {
+  if (event) {
+    if (typeof event.preventDefault === 'function') event.preventDefault();
+    if (typeof event.stopPropagation === 'function') event.stopPropagation();
+  }
+  if (!url || typeof url !== 'string') return;
+  let target = url.trim();
+  if (!target.match(/^https?:\/\//i)) {
+    target = 'https://' + target;
+  }
+  try {
+    window.open(target, '_blank', 'noopener,noreferrer');
+  } catch (err) {
+    console.warn('Error opening URL via window.open:', err);
+  }
+}

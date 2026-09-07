@@ -110,3 +110,29 @@ export const getCategoryObj = (tagOrKey) => {
 };
 
 export const getActiveCategories = getTagCategories;
+
+// Helper: Extract source URL from an array of tags
+export const getSourceUrl = (rawTags) => {
+  const tags = parseTagsArray(rawTags);
+  for (const tag of tags) {
+    if (getTagCategory(tag) === 'source') {
+      let val = tag.trim();
+      // Strip source category prefixes
+      if (val.toLowerCase().startsWith('meta:source:')) val = val.substring(12);
+      else if (val.toLowerCase().startsWith('meta:copyright:')) val = val.substring(15);
+      else if (val.toLowerCase().startsWith('source:')) val = val.substring(7);
+      else if (val.toLowerCase().startsWith('copyright:')) val = val.substring(10);
+
+      val = val.trim();
+      if (!val) continue;
+
+      let urlCandidate = val;
+      // Prepend https:// if missing http:// or https://
+      if (!urlCandidate.match(/^https?:\/\//i)) {
+        urlCandidate = 'https://' + urlCandidate;
+      }
+      return urlCandidate;
+    }
+  }
+  return null;
+};

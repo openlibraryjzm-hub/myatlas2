@@ -14,9 +14,15 @@ The Speed Tagger interface ([`Tagger.jsx`](../../src/pages/Tagger.jsx) & [`Morph
 - **Dynamic Category Auto-Coloring & Visual Feedback**:
   - As the user types a tag in the inline input line (e.g. `country:japan` or `location:tokyo`), `Tagger.jsx` checks `getActiveCategories()` in real time.
   - Registered category prefixes instantly tint tag pills and typing line with assigned palette colors.
+- **Interactive `source:` Category Hyperlinks**:
+  - If a post contains a `source:http...` tag (e.g. `source:https://store.steampowered.com/app/440/Team_Fortress_2/`), `getSourceUrl(tags)` extracts the URL link.
+  - The item title in the Tagger header and filename overlay in the Full Media control pill illuminate in vibrant purple (`#7c3aed`) with an external link icon (`<ExternalLink />`).
+  - Clicking the title or control pill filename triggers `openExternalUrl(url, event)`, launching the link directly in the user's default external browser while suppressing webview navigation resets.
+  - Tag pills matching `source:*` render with sovereign purple styling (`.tag-pill-source`, `.tagger-source-link`).
 - **In-Memory Autocomplete Suggestions**: Filters matching tag suggestions 100% in-memory with **0ms disk latency**, capped at 8 items (`.slice(0, 8)`).
 - **SQLite Tag Saving & Cache Invalidation**: `ENTER` invokes `updateItemTags(currentPost.id, finalTags)` and invalidates SQLite memory cache (`invalidateItemsCache()`).
 - **Auto-Save on Exit**: Exiting Speed Tagger via `Exit Tagger` button or brand logo automatically commits staged tags to SQLite.
+
 
 ---
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Check, RefreshCw, AlertCircle, Pencil, Eye } from 'lucide-react';
-import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj, parseTagsArray } from '../data/mockData';
+import { Check, RefreshCw, AlertCircle, Pencil, Eye, ExternalLink } from 'lucide-react';
+import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj, parseTagsArray, getSourceUrl } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache } from '../services/localDb';
+import { openExternalUrl } from '../utils/localFiles';
 
 export default function MorphingTaggerPanel({
   currentPost,
@@ -272,6 +273,10 @@ export default function MorphingTaggerPanel({
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [inputValue, suggestions, selectedSuggestionIndex, currentPost]);
 
+  const activeSourceUrl = useMemo(() => {
+    return getSourceUrl([...existingTags, ...stagedTags]);
+  }, [existingTags, stagedTags]);
+
   if (!currentPost) return null;
 
   const currentCatObj = getCategoryObj(inputValue);
@@ -284,9 +289,24 @@ export default function MorphingTaggerPanel({
         <span style={{ color: 'var(--accent-color)', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
           {currentPost.subreddit && currentPost.subreddit !== 'localatlas' ? (currentPost.subreddit.startsWith('r/') ? currentPost.subreddit : `r/${currentPost.subreddit}`) : 'Local File'}
         </span>
-        <h3 style={{ color: '#ffffff', fontSize: '1.05rem', fontWeight: 600, margin: '2px 0 0 0' }}>
-          {currentPost.title || currentPost.fileName || 'Untitled Item'}
-        </h3>
+        {activeSourceUrl ? (
+          <h3 style={{ fontSize: '1.05rem', fontWeight: 600, margin: '2px 0 0 0' }}>
+            <a 
+              href={activeSourceUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              style={{ color: 'var(--color-source, #7c3aed)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              title={`Source: ${activeSourceUrl}`}
+              onClick={(e) => openExternalUrl(activeSourceUrl, e)}
+            >
+              {currentPost.title || currentPost.fileName || 'Untitled Item'} <ExternalLink size={14} />
+            </a>
+          </h3>
+        ) : (
+          <h3 style={{ color: '#ffffff', fontSize: '1.05rem', fontWeight: 600, margin: '2px 0 0 0' }}>
+            {currentPost.title || currentPost.fileName || 'Untitled Item'}
+          </h3>
+        )}
       </div>
 
       {/* Comma Separated Tags Line & Caret Input */}

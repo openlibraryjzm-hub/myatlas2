@@ -79,8 +79,40 @@ CREATE INDEX IF NOT EXISTS idx_local_items_atlas ON local_items(atlas_id);
 
 ---
 
+## ☁️ Hybrid Cloud Hosting Architecture (Supabase Engine)
+
+While **`myatlas`** functions strictly as a 100% offline local workspace, curated domain Sub-Atlases (such as **`gamesatlas`**) are powered by a zero-maintenance **Supabase Cloud Infrastructure** layer:
+
+```
+                          ┌───────────────────────────┐
+                          │   MyAtlas UI Application  │
+                          └─────────────┬─────────────┘
+                                        │
+           ┌────────────────────────────┴────────────────────────────┐
+           ▼                                                         ▼
+┌─────────────────────────────┐                           ┌─────────────────────────────┐
+│    Personal Workspace       │                           │   Curated Sub-Atlases       │
+│        (`myatlas`)          │                           │      (`gamesatlas`)         │
+├─────────────────────────────┤                           ├─────────────────────────────┤
+│ • Local C# Sidecar Engine   │                           │ • Supabase Postgres DB      │
+│ • Local SQLite Store        │                           │   (`posts` & `atlases`)     │
+│ • Local Disk File Assets    │                           │ • Supabase Storage Bucket   │
+│ • 100% Offline Integrity    │                           │   (`atlas-media` bucket)    │
+└─────────────────────────────┘                           └─────────────────────────────┘
+```
+
+### Key Capabilities of Cloud Sub-Atlases:
+1. **Cloud CDN Image Streaming**: Non-`myatlas` media assets are hosted in Supabase Storage (`atlas-media` bucket) and served globally via high-speed public CDN URLs (`https://<project-ref>.supabase.co/storage/v1/object/public/atlas-media/...`).
+2. **Direct Cloud DB Fetching (`localDb.js`)**: `getPaginatedItems({ atlas_id })` detects non-`myatlas` targets and queries the cloud database directly with tag filters and pagination.
+3. **No Overwrite Safety (`Posts.jsx`)**: Background C# server checks verify `if (serverResult?.posts?.length > 0)` before applying local results, preventing empty local responses from wiping or overwriting remote cloud posts.
+4. **Direct Cloud Ingestion (`Upload.jsx`)**: Selecting any non-`myatlas` target in the Upload manager routes media binary uploads directly to Supabase Storage and inserts records into the cloud `posts` database table.
+
+---
+
 ## 📄 Related Documentation
 - [Big Picture Vision](big_picture_dream.md)
 - [System Architecture](architecture.md)
+- [Ingestion & Manifest Workflow](ingestion_manifest_workflow.md)
 - [Browse Grid Specifications](views/grid.md)
 - [Home View Specifications](views/home.md)
+

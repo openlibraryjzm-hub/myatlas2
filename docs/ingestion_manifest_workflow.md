@@ -181,10 +181,32 @@ This project ingests historical World War II equipment, vehicles, small arms, na
 
 ---
 
-### Implementation Workflow & Guidelines:
-- Refer to [`ingestion_manifest_workflow.md`](ingestion_manifest_workflow.md).
-- Target Sub-Atlas: **`ww2`**.
-- Downloader (`download_ww2_<split>.js`) & enricher (`enrich_ww2_<split>.js`) scripts follow the standard 3-phase workflow.
-- **Rule**: Omit `folder:` anchor tag as per user preference (keep `copyright:ww2_history` & `license:public_domain`).
-- **Rule**: Limit downloads to 100 items per split, then STOP to review and get greenlight for Phase 2!
+## 🎮 Steam Store Archiver & Supabase Cloud Seeding Architecture (`gamesatlas`)
+
+### Target Sub-Atlas Strategy: `gamesatlas`
+This workflow automates the scraping of iconic PC game vertical box art covers (`library_600x900_2x.jpg`), metadata extraction via the Steam Store API, deterministic tag taxonomy generation, and automatic cloud seeding to Supabase.
+
+### 1. Steam Store Downloader & Manifest Generator (`download_games_steam.js`)
+- **API Target**: `https://store.steampowered.com/api/appdetails?appids=<appid>`
+- **Asset URL**: `https://cdn.akamai.steamstatic.com/steam/apps/<appid>/library_600x900_2x.jpg`
+- **Downloaded Directory**: `./games_downloads/`
+- **Output Manifest**: `./games_downloads/manifest.json`
+- **Automated Taxonomy Rules**:
+  - `game` (Base anchor tag)
+  - `platform:pc`
+  - `developer:<dev_name_slug>`
+  - `publisher:<pub_name_slug>`
+  - `genre:<genre_slug>` (e.g. `genre:action`, `genre:rpg`, `genre:strategy`, `genre:open_world`)
+  - `release_year:<YYYY>`
+  - `source:https://store.steampowered.com/app/<appid>/`
+
+### 2. Supabase Cloud Seeding Script (`seed_gamesatlas_supabase.js`)
+- **Target Bucket**: `atlas-media` (Supabase Storage)
+- **Target Table**: `posts` (Supabase Database with `atlas_id = 'gamesatlas'`)
+- **Seeding Execution**:
+  1. Uploads high-res box art images to Supabase Storage with clean key basenames.
+  2. Obtains public CDN HTTPS media URLs.
+  3. Prepares post records containing `name`, `tagline`, `website` (media CDN URL), `secondary_url` (Steam Store URL), `visual_color`, `tags` (JSON array of taxonomy tags), and `atlas_id: 'gamesatlas'`.
+  4. Inserts records into the Supabase Postgres `posts` table for immediate cloud availability across all clients.
+
 

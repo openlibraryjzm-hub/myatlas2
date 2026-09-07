@@ -414,7 +414,7 @@ export default function Posts({
 
       if (localResult && localResult.posts) {
         setPosts(localResult.posts);
-        setTotalFilteredCount(localResult.total);
+        setTotalFilteredCount(localResult.total ?? localResult.totalCount ?? localResult.posts.length);
       } else {
         setPosts([]);
         setTotalFilteredCount(0);
@@ -431,9 +431,9 @@ export default function Posts({
           tags: activeFilters,
           atlas: currentAtlas || 'myatlas'
         });
-        if (serverResult && Array.isArray(serverResult.posts)) {
+        if (serverResult && Array.isArray(serverResult.posts) && serverResult.posts.length > 0) {
           setPosts(serverResult.posts);
-          setTotalFilteredCount(serverResult.total);
+          setTotalFilteredCount(serverResult.total ?? serverResult.totalCount ?? serverResult.posts.length);
         }
       }).catch(() => {});
     } catch (err) {

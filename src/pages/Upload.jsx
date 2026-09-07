@@ -4,6 +4,7 @@ import { isDesktopApp, selectLocalFiles, selectLocalDirectory, formatLocalAssetU
 import { importScrapedJsonArray, addLocalMediaFile, clearAllLocalStores } from '../services/localDb';
 import { fetchServerAtlases } from '../services/api';
 import { ensureTagCategoriesExist } from '../data/mockData';
+import { commitPostsToSupabase, uploadMediaToSupabaseStorage, isSupabaseConfigured } from '../services/supabaseClient';
 import './Upload.css';
 
 // Deterministic pastel themes based on string hashes
@@ -674,6 +675,37 @@ export default function Upload({ currentAtlas = 'myatlas', isReadOnly = false })
     setStatus('uploading');
     try {
       const activeAtlasId = selectedAtlasSlug || currentAtlas || 'myatlas';
+
+      // Non-myatlas destination: upload directly to Supabase Cloud Storage & Database
+      if (activeAtlasId !== 'myatlas' && isSupabaseConfigured()) {
+        const cloudPosts = [];
+        setMessage(`Uploading media to Supabase Cloud Storage for atlas "${activeAtlasId}"...`);
+
+        for (let i = 0; i < posts.length; i++) {
+          const post = posts[i];
+          let cloudUrl = post.mediaUrl || post.url;
+          if (post.filePath || (post.url && !post.url.startsWith('http'))) {
+            try {
+              cloudUrl = await uploadMediaToSupabaseStorage(activeAtlasId, post.filePath || post.url, post.title);
+            } catch (e) {
+              console.warn('Storage upload error:', e);
+            }
+          }
+          cloudPosts.push({
+            ...post,
+            mediaUrl: cloudUrl,
+            url: cloudUrl,
+            thumbnail: cloudUrl
+          });
+        }
+
+        setMessage(`Saving records to Supabase Cloud Database...`);
+        await commitPostsToSupabase(activeAtlasId, cloudPosts);
+        setStatus('success');
+        setMessage(`Successfully uploaded ${cloudPosts.length} items to Supabase Cloud Atlas: "${activeAtlasId}"!`);
+        return;
+      }
+
       if (targetAtlas === 'myatlas' || uploadType === 'scraped_json') {
         const { importScrapedJsonArray } = await import('../services/localDb');
         const res = await importScrapedJsonArray(posts, activeAtlasId);

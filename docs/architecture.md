@@ -64,6 +64,7 @@ MyAtlas is engineered as a **High-Performance Local Media Booru & Bookmark Manag
 | **C# Backend Store** | `%AppData%/MyAtlas/myatlas_server.db` | Primary SQLite index (`local_items`) for high-speed pagination, tag matrices, and WebP thumbnail routing. |
 | **Tauri SQLite Store** | `%AppData%/Roaming/com.tauri.dev/myatlas_local.db` | Local client tables (`local_scrapes`, `local_media`). |
 | **Thumbnail Disk Cache** | `%AppData%/MyAtlas/Cache/*.webp` | Pre-generated 300px WebP thumbnail images for photos and videos. |
+| **Supabase Cloud Store** | Postgres DB (`posts` table) & `atlas-media` bucket | Global cloud database and CDN media storage for curated Sub-Atlases (`gamesatlas`). |
 
 ### 🛑 SQLite Memory Cache Invalidation Rule
 To prevent stale in-memory items from overwriting newly saved tags or metadata:
@@ -74,18 +75,30 @@ To prevent stale in-memory items from overwriting newly saved tags or metadata:
 
 ## 🖼️ Media Protocols & Priority Waterfall
 
-1. **Pre-Generated WebP Data URLs**: Local media items (photos and videos) uploaded with generated 300px WebP base64 thumbnails (`data:image/webp;base64,...` generated via offscreen HTML5 `<canvas>` in Chromium) render **instantly on frame 1** with 0ms latency, zero server requests, and 0 video decoder CPU overhead.
-2. **Local WebP Proxy Protocol**: Scraped web post thumbnails route through `http://127.0.0.1:7171/api/thumbnail/{id}` when the C# backend is online, fetching 15KB WebP images in **< 1ms** from disk cache.
-3. **Native Webview Asset Protocol**: Local hard drive files use `formatLocalAssetUrl(filePath)` (`asset://localhost/C:/...`) for native desktop media rendering.
-4. **HTTP 206 Video Streamer Protocol**: Local video files (`.mp4`, `.webm`, `.mov`) stream in the Fullscreen Viewer via `/api/stream/{id}` with `206 Partial Content` headers for instant scrub-seeking.
-5. **Priority Image Waterfall**:
+1. **Cloud CDN Streaming Protocol**: Non-`myatlas` assets stored in Supabase Storage (`atlas-media` bucket) serve directly via public HTTPS CDN URLs (`https://<project-ref>.supabase.co/storage/v1/object/public/atlas-media/...`).
+2. **Pre-Generated WebP Data URLs**: Local media items (photos and videos) uploaded with generated 300px WebP base64 thumbnails (`data:image/webp;base64,...` generated via offscreen HTML5 `<canvas>` in Chromium) render **instantly on frame 1** with 0ms latency, zero server requests, and 0 video decoder CPU overhead.
+3. **Local WebP Proxy Protocol**: Scraped web post thumbnails route through `http://127.0.0.1:7171/api/thumbnail/{id}` when the C# backend is online, fetching 15KB WebP images in **< 1ms** from disk cache.
+4. **Native Webview Asset Protocol**: Local hard drive files use `formatLocalAssetUrl(filePath)` (`asset://localhost/C:/...`) for native desktop media rendering.
+5. **HTTP 206 Video Streamer Protocol**: Local video files (`.mp4`, `.webm`, `.mov`) stream in the Fullscreen Viewer via `/api/stream/{id}` with `206 Partial Content` headers for instant scrub-seeking.
+6. **Priority Image Waterfall**:
    - **Rows 1 & 2 (Cards 0–15)**: Assigned `fetchPriority="high"` and `loading="eager"` for immediate top-of-fold rendering.
    - **Rows 3+ (Cards 16+)**: Assigned `fetchPriority="low"` and `loading="lazy"` to defer off-screen network requests.
-6. **Instant Image Cache Detection**: `PostCard.jsx` checks `imgRef.current.complete` on mount. If an image is already in browser memory or disk cache, `isImgLoaded` sets to `true` synchronously, removing artificial fade delays and staggered pop-ins.
+7. **Instant Image Cache Detection**: `PostCard.jsx` checks `imgRef.current.complete` on mount. If an image is already in browser memory or disk cache, `isImgLoaded` sets to `true` synchronously, removing artificial fade delays and staggered pop-ins.
+
+---
+
+## 🌐 External Navigation Helper (`openExternalUrl`)
+
+To bypass Tauri/Chromium webview URL navigation blocks when clicking external links (e.g. `source:` Steam Store pages):
+- **`openExternalUrl(url, event)`** ([`localFiles.js`](../src/utils/localFiles.js)):
+  - Calls `event?.preventDefault()` and `event?.stopPropagation()` to prevent webview navigation traps.
+  - Spawns external URLs via `window.open(url, '_blank', 'noopener,noreferrer')`, launching the user's default system browser.
 
 ---
 
 ## 🔒 Privacy & Offline Guarantees
 
-1. **100% Offline Capability**: All database indexing, search, tagging, thumbnail extraction, and media streaming operate locally without internet connectivity.
-2. **Zero Remote Data Leaks**: Personal archives, hard drive paths, and bookmarks are never transmitted to external cloud servers.
+1. **100% Offline Capability for `myatlas`**: Personal archives, hard drive indexing, search, tagging, thumbnail extraction, and local media streaming operate completely offline without internet connectivity.
+2. **Zero Remote Data Leaks for `myatlas`**: Personal archives, local hard drive paths, and private bookmarks are strictly isolated locally and never uploaded to cloud servers.
+3. **Opt-In Cloud Distribution for Curated Atlases**: Non-`myatlas` curated Sub-Atlases leverage Supabase Cloud Storage and Database for shared global accessibility.
+
