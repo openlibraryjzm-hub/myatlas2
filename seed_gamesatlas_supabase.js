@@ -75,7 +75,13 @@ async function run() {
 
   await ensureBucketAndAtlasExist();
 
+  if (process.argv.includes('--wipe')) {
+    console.log(`🧹 Cleaning wipe: Removing existing "gamesatlas" records from Supabase 'posts' table...`);
+    await supabase.from('posts').delete().eq('atlas_id', 'gamesatlas');
+  }
+
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf-8'));
+
   console.log(`📄 Loaded ${manifest.length} items from manifest.json\n`);
 
   let uploadedCount = 0;
@@ -132,28 +138,30 @@ async function run() {
     });
   }
 
-  // Batch insert into 'posts' table in Supabase
-  console.log(`💾 Inserting ${recordsToInsert.length} records into Supabase 'posts' table...`);
+  // Batch insert into 'posts' table in Supabase using upsert in chunks of 50
+  console.log(`💾 Upserting ${recordsToInsert.length} records into Supabase 'posts' table (chunk size: 50)...`);
 
-  // Delete existing gamesatlas items first to clean stale test records
-  await supabase.from('posts').delete().eq('atlas_id', 'gamesatlas');
+  const CHUNK_SIZE = 50;
+  for (let i = 0; i < recordsToInsert.length; i += CHUNK_SIZE) {
+    const chunk = recordsToInsert.slice(i, i + CHUNK_SIZE);
+    const { data: insertData, error: insertError } = await supabase
+      .from('posts')
+      .upsert(chunk, { onConflict: 'id' })
+      .select();
 
-  const { data: insertData, error: insertError } = await supabase
-    .from('posts')
-    .insert(recordsToInsert)
-    .select();
-
-  if (insertError) {
-    console.error(`❌ Database insert error on 'posts' table:`, insertError.message);
-  } else {
-    dbCount = Array.isArray(insertData) ? insertData.length : recordsToInsert.length;
-    console.log(`✅ Successfully inserted ${dbCount} records into Supabase table 'posts'!`);
+    if (insertError) {
+      console.error(`  ❌ Error upserting batch ${Math.floor(i / CHUNK_SIZE) + 1} (${chunk.length} items):`, insertError.message);
+    } else {
+      const added = Array.isArray(insertData) ? insertData.length : chunk.length;
+      dbCount += added;
+      console.log(`  ✅ Upserted batch ${Math.floor(i / CHUNK_SIZE) + 1}/${Math.ceil(recordsToInsert.length / CHUNK_SIZE)} (${added} records)`);
+    }
   }
 
   console.log(`\n==================================================`);
   console.log(`🎉 COMPLETED Supabase Cloud Seeding for gamesatlas!`);
   console.log(`Images Uploaded to Storage: ${uploadedCount}`);
-  console.log(`Records Inserted to DB:     ${dbCount}`);
+  console.log(`Total Records Upserted DB:  ${dbCount}`);
   console.log(`==================================================\n`);
 }
 
@@ -161,3 +169,4 @@ run().catch(err => {
   console.error('Fatal execution error:', err);
   process.exit(1);
 });
+

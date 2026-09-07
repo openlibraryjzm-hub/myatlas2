@@ -23,6 +23,8 @@ export function isSupabaseConfigured() {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 }
 
+import { formatLocalAssetUrl } from '../utils/localFiles';
+
 /**
  * Upload a binary file or blob to Supabase Storage bucket ('atlas-media')
  */
@@ -32,19 +34,46 @@ export async function uploadMediaToSupabaseStorage(atlasId, fileOrBlob, fileName
 
   const sanitizeKey = (str) => str.replace(/[^\w.-]/g, '_').toLowerCase();
   const cleanAtlasId = sanitizeKey(atlasId || 'curated');
-  const cleanFileName = sanitizeKey(fileName || `media_${Date.now()}`);
+
+  // Extract extension from fileName or fileOrBlob
+  let ext = 'jpg';
+  const match = (fileName || fileOrBlob || '').match(/\.([a-z0-9]+)(?:[\?#]|$)/i);
+  if (match) {
+    ext = match[1].toLowerCase();
+  }
+
+  let cleanBaseName = sanitizeKey((fileName || `media_${Date.now()}`).replace(/\.[^/.]+$/, ''));
+  const cleanFileName = `${cleanBaseName}.${ext}`;
   const storagePath = `${cleanAtlasId}/${cleanFileName}`;
 
   let blob = fileOrBlob;
-  if (typeof fileOrBlob === 'string' && fileOrBlob.startsWith('data:')) {
-    const res = await fetch(fileOrBlob);
-    blob = await res.blob();
+  if (typeof fileOrBlob === 'string') {
+    const targetUrl = formatLocalAssetUrl(fileOrBlob);
+    try {
+      const res = await fetch(targetUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      blob = await res.blob();
+    } catch (fetchErr) {
+      console.warn(`Failed to fetch binary for ${fileOrBlob}:`, fetchErr.message);
+      // Fallback: If it's already an HTTP URL, return it directly
+      if (fileOrBlob.startsWith('http://') || fileOrBlob.startsWith('https://')) {
+        return fileOrBlob;
+      }
+      throw new Error(`Cannot upload missing or unreadable file: ${fileName || fileOrBlob}`);
+    }
   }
+
+  let contentType = 'image/jpeg';
+  if (ext === 'png') contentType = 'image/png';
+  else if (ext === 'webp') contentType = 'image/webp';
+  else if (ext === 'gif') contentType = 'image/gif';
+  else if (ext === 'mp4') contentType = 'video/mp4';
 
   const { data, error } = await supabase.storage
     .from('atlas-media')
     .upload(storagePath, blob, {
-      upsert: true
+      upsert: true,
+      contentType
     });
 
   if (error) {
@@ -55,8 +84,9 @@ export async function uploadMediaToSupabaseStorage(atlasId, fileOrBlob, fileName
     .from('atlas-media')
     .getPublicUrl(storagePath);
 
-  return publicUrlData?.publicUrl || '';
+  return publicUrlData?.publicUrl || (typeof fileOrBlob === 'string' ? fileOrBlob : '');
 }
+
 
 /**
  * Commit posts directly to Supabase Cloud Database ('posts' table)

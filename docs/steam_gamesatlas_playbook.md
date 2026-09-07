@@ -37,44 +37,36 @@ This playbook provides a self-contained guide for AI agents and developers to ex
 
 ---
 
-## ⚡ 2-Step Expansion Execution Guide
+## ⚡ Multi-Batch Expansion & Playbook Execution
 
-### Step 1: Add AppIDs & Run Downloader (`download_games_steam.js`)
+### Step 1: Run Downloader with Batch Subfolders (`download_games_steam.js`)
 
-1. Open [`download_games_steam.js`](../download_games_steam.js).
-2. Append target games to the `GAMES_SEED` array with their official Steam `appid` and title:
+The downloader automatically outputs items into isolated subfolders under `games_downloads/` (`batch 1/`, `batch 2/`, etc.) with dedicated `manifest.json` sidecars to prevent memory bloat and simplify manual uploads:
 
-```javascript
-const GAMES_SEED = [
-  // Existing initial 50 games...
-  { appid: 1245620, title: "Elden Ring" },
-  // Add new AppIDs here:
-  { appid: 1151640, title: "Horizon Zero Dawn" },
-  { appid: 976310,  title: "Mortal Kombat 11" },
-  // ...
-];
-```
-
-> 💡 **Finding Steam AppIDs**: Search any game on `store.steampowered.com`. The URL contains the AppID: `https://store.steampowered.com/app/1091500/Cyberpunk_2077/` $\rightarrow$ `1091500`.
-
-3. Execute the downloader in terminal:
 ```bash
-node download_games_steam.js
+# Extract Batch 2 (up to 250 vertical portrait covers) into games_downloads/batch 2/
+node download_games_steam.js --batch=2 --limit=250
+
+# Extract Batch 3 into games_downloads/batch 3/
+node download_games_steam.js --batch=3 --limit=250
 ```
 
-### Step 2: Seed to Supabase Cloud (`seed_gamesatlas_supabase.js`)
+> 💡 **Strict 2:3 Portrait Filtering & De-duplication**:
+> - Only downloads official 2:3 vertical Steam library box art (`600x900`). Rejects landscape header images (`460x215`) and non-game DLCs/placeholders.
+> - Automatically cross-checks previous batch subfolders to prevent downloading duplicate games across batches.
 
-1. Ensure `.env` is configured with credentials:
-```env
-SUPABASE_URL=https://<your-project-ref>.supabase.co
-SUPABASE_ANON_KEY=sb_publishable_...
-SUPABASE_SERVICE_ROLE_KEY=sb_secret_...
-```
+### Step 2: Seed to Supabase Cloud (`seed_gamesatlas_supabase.js` or UI Upload)
 
-2. Execute the seeder script in terminal:
-```bash
-node seed_gamesatlas_supabase.js
-```
+1. **Option A: Command Line Seeder**:
+   Execute seeder script in terminal (uses non-destructive `.upsert()` in chunks of 50):
+   ```bash
+   node seed_gamesatlas_supabase.js
+   ```
+   *(Optional wipe flag: `node seed_gamesatlas_supabase.js --wipe` or `node scripts/wipe_gamesatlas_supabase.js`)*
+
+2. **Option B: Manual UI Upload**:
+   Open **Upload Manager** in app UI, select target atlas `gamesatlas`, pick any batch folder (`games_downloads/batch 2/`), and click **Commit & Index Items**.
+
 
 ---
 

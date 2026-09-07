@@ -31,5 +31,6 @@ The Ingestion Manager supports three primary local hard drive data sources:
 - **Interactive Exclusion**: Renders preview cards with an `×` remove button to discard unwanted items prior to database commit.
 - **Dual Destination Commit Engine**:
   - **Local Workspace (`myatlas`)**: Ingests items directly into `local_media` or `local_scrapes` with `atlas_id` scoping in `myatlas_local.db` and syncs with local C# backend.
-  - **Cloud Sub-Atlases (non-`myatlas`)**: Binary media files upload directly to Supabase Storage bucket (`atlas-media`), receiving public CDN URLs. Metadata and tags insert into the Supabase Postgres database `posts` table via `supabaseClient.js`.
+  - **Cloud Sub-Atlases (non-`myatlas`)**: Binary media files upload directly to Supabase Storage bucket (`atlas-media`) via `uploadMediaToSupabaseStorage`. Local Windows paths and asset URLs are converted to binary `Blob` objects via `formatLocalAssetUrl()` and uploaded with explicit `Content-Type: image/jpeg` headers, returning public CDN URLs (`https://<project-ref>.supabase.co/storage/v1/object/public/atlas-media/gamesatlas/<name>.jpg`). Metadata and tags insert into the Supabase Postgres database `posts` table via `commitPostsToSupabase`.
+
 

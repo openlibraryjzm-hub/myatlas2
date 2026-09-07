@@ -683,21 +683,25 @@ export default function Upload({ currentAtlas = 'myatlas', isReadOnly = false })
 
         for (let i = 0; i < posts.length; i++) {
           const post = posts[i];
-          let cloudUrl = post.mediaUrl || post.url;
-          if (post.filePath || (post.url && !post.url.startsWith('http'))) {
+          const mediaSource = post.filePath || post.mediaUrl || post.url || post.file;
+          let cloudUrl = post.mediaUrl || post.url || '';
+
+          if (mediaSource) {
             try {
-              cloudUrl = await uploadMediaToSupabaseStorage(activeAtlasId, post.filePath || post.url, post.title);
+              cloudUrl = await uploadMediaToSupabaseStorage(activeAtlasId, mediaSource, post.title || post.file);
             } catch (e) {
-              console.warn('Storage upload error:', e);
+              console.warn('Storage upload notice for item:', post.title, e.message);
             }
           }
+
           cloudPosts.push({
             ...post,
-            mediaUrl: cloudUrl,
-            url: cloudUrl,
-            thumbnail: cloudUrl
+            mediaUrl: cloudUrl || post.mediaUrl || post.url,
+            url: cloudUrl || post.url || post.mediaUrl,
+            thumbnail: cloudUrl || post.thumbnail || post.mediaUrl
           });
         }
+
 
         setMessage(`Saving records to Supabase Cloud Database...`);
         await commitPostsToSupabase(activeAtlasId, cloudPosts);
