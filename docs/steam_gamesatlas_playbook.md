@@ -1,101 +1,124 @@
-# Steam API Games Atlas Expansion Playbook (`docs/steam_gamesatlas_playbook.md`)
+# Curated Sub-Atlases Ingestion Playbook: GamesAtlas & WikiAtlas (`docs/steam_gamesatlas_playbook.md`)
 
-This playbook provides a self-contained guide for AI agents and developers to expand **`gamesatlas`** (the video games box art archive in MyAtlas) from 50 games to hundreds or thousands of titles using the **Steam Store API** and **Supabase Cloud Infrastructure**.
+This playbook provides a comprehensive reference and step-by-step operational guide for expanding curated sub-atlases in MyAtlas (**`gamesatlas`** and **`wikiatlas`**) using external APIs, automated taxonomy enrichment, batch subfolder partitioning, and Supabase Cloud seeding.
 
 ---
 
-## 🏛️ System & Workflow Overview
+## 🏛️ System & Architecture Overview
 
-`gamesatlas` uses a hybrid cloud architecture:
-1. **Local Media Extractor (`download_games_steam.js`)**: Queries Steam Store APIs for game metadata and high-res vertical cover art (`library_600x900_2x.jpg`), outputting media to `./games_downloads/` and structured booru tags to `./games_downloads/manifest.json`.
-2. **Cloud Seeder Engine (`seed_gamesatlas_supabase.js`)**: Uploads local cover art to Supabase Cloud Storage bucket (`atlas-media`) and inserts metadata records into the Supabase Postgres `posts` database table.
+Curated Sub-Atlases leverage a hybrid cloud architecture (Supabase Storage + Postgres Database) powered by local extraction scripts and the in-app Upload manager (`Upload.jsx`):
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 1. Steam AppID List → download_games_steam.js              │
-│    • Calls https://store.steampowered.com/api/appdetails  │
-│    • Downloads library_600x900_2x.jpg to ./games_downloads/│
-│    • Generates taxonomy tags in ./games_downloads/manifest.json│
+│ Phase 1: Local Extraction & Taxonomy Enrichment             │
+│ • Steam API (download_games_steam.js)                       │
+│ • Wikidata SPARQL API (download_wikiatlas_wonders.js)       │
+│ • Outputs local image renders & sidecar manifest.json       │
 └──────────────────────────────┬──────────────────────────────┘
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ 2. Cloud Seeding → seed_gamesatlas_supabase.js              │
-│    • Reads .env (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)   │
-│    • Uploads covers to Supabase Storage bucket 'atlas-media'│
-│    • Inserts posts into Supabase DB ('posts' table)         │
+│ Phase 2: Safe Subfolder Partitioning (split_batch.js)       │
+│ • Partitions large batches into ~225-item subfolders         │
+│ • Generates self-contained manifest.json per subfolder       │
+│ • Prevents webview browser memory bloat & upload crashes    │
 └──────────────────────────────┬──────────────────────────────┘
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ 3. Live UI Verification                                     │
-│    • Switch Atlas to `gamesatlas` in MyAtlas App UI         │
-│    • Grid fetches live from Supabase CDN with interactive   │
-│      purple (#7c3aed) Steam Store hyperlinks                 │
+│ Phase 3: In-App Cloud Ingestion (Upload.jsx)                │
+│ • Select target atlas (gamesatlas / wikiatlas) in UI        │
+│ • Select files in part subfolder (Ctrl+A)                   │
+│ • App uploads media to Supabase Storage ('atlas-media')     │
+│ • App commits records to Supabase Postgres DB ('posts')     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ⚡ Multi-Batch Expansion & Playbook Execution
+## 🎮 1. GamesAtlas Workflow (`download_games_steam.js`)
 
-### Step 1: Run Downloader with Batch Subfolders (`download_games_steam.js`)
+`gamesatlas` automates box art scraping from the **Steam Store API** for iconic PC video games:
 
-The downloader automatically outputs items into isolated subfolders under `games_downloads/` (`batch 1/`, `batch 2/`, etc.) with dedicated `manifest.json` sidecars to prevent memory bloat and simplify manual uploads:
-
-```bash
-# Extract Batch 2 (up to 250 vertical portrait covers) into games_downloads/batch 2/
-node download_games_steam.js --batch=2 --limit=250
-
-# Extract Batch 3 into games_downloads/batch 3/
-node download_games_steam.js --batch=3 --limit=250
-```
-
-> 💡 **Strict 2:3 Portrait Filtering & De-duplication**:
-> - Only downloads official 2:3 vertical Steam library box art (`600x900`). Rejects landscape header images (`460x215`) and non-game DLCs/placeholders.
-> - Automatically cross-checks previous batch subfolders to prevent downloading duplicate games across batches.
-
-### Step 2: Seed to Supabase Cloud (`seed_gamesatlas_supabase.js` or UI Upload)
-
-1. **Option A: Command Line Seeder**:
-   Execute seeder script in terminal (uses non-destructive `.upsert()` in chunks of 50):
+1. **Downloader Execution**:
    ```bash
-   node seed_gamesatlas_supabase.js
+   # Extract Batch 2 into games_downloads/batch 2/
+   node download_games_steam.js --batch=2 --limit=250
    ```
-   *(Optional wipe flag: `node seed_gamesatlas_supabase.js --wipe` or `node scripts/wipe_gamesatlas_supabase.js`)*
-
-2. **Option B: Manual UI Upload**:
-   Open **Upload Manager** in app UI, select target atlas `gamesatlas`, pick any batch folder (`games_downloads/batch 2/`), and click **Commit & Index Items**.
-
-
----
-
-## 🏷️ Standard Tag Taxonomy Rules for Games
-
-When `download_games_steam.js` runs, it automatically maps API metadata to MyAtlas standard booru tags:
-
-| Taxonomy Category | Prefix / Format | Example Output Tags |
-| :--- | :--- | :--- |
-| **Source URL** | `source:<steam_url>` | `source:https://store.steampowered.com/app/440/` |
-| **Copyright Anchor** | `copyright:<brand>` | `copyright:steam` |
-| **Game Title** | `work:<game_title_slug>` | `work:team_fortress_2`, `work:elden_ring` |
-| **Creators / Developers** | `creator:<name_slug>` | `creator:valve`, `creator:fromsoftware` |
-| **Genres** | `<genre_slug>` | `action`, `rpg`, `strategy`, `open_world` |
-| **Release Date** | `year:<YYYY>`, `decade:<decade>s` | `year:2022`, `decade:2020s` |
-| **System Scoping** | `meta:atlas:<slug>` | `meta:atlas:gamesatlas`, `meta:format:image` |
+2. **Filtering Rules**:
+   - Only downloads official 2:3 vertical portrait covers (`600x900`). Rejects landscape headers (`460x215`) and non-game DLC placeholders.
+   - Deduplicates items across previous batch subfolders.
+3. **Games Taxonomy Schema**:
+   - `work:<game_slug>` (e.g. `work:elden_ring`)
+   - `creator:<dev_slug>` (e.g. `creator:fromsoftware`)
+   - `<genre_slug>` (e.g. `action`, `rpg`, `open_world`)
+   - `year:<YYYY>`, `decade:<decade>s`
+   - `source:https://store.steampowered.com/app/<appid>/`
+   - `meta:atlas:gamesatlas`, `meta:format:image`
 
 ---
 
-## 🤖 Context Instructions for New AI Agents
+## 🏛️ 2. WikiAtlas Workflow (`download_wikiatlas_wonders.js`)
+
+`wikiatlas` extracts structured entities and open high-res media from **Wikidata** and **Wikimedia Commons**:
+
+### 🎯 Key Engineering & Rate-Limit Solutions:
+
+1. **Sitelink Saliency Filter**:
+   Enforces `FILTER(?sitelinks >= 10)` in Wikidata SPARQL to keep only globally recognized artworks, landmarks, and monuments.
+
+2. **Direct Wikimedia CDN Calculation (Bypassing 403 / 429 Redirects)**:
+   Dynamic `Special:FilePath` redirects trigger heavy rate-limiting. Instead, `download_wikiatlas_wonders.js` computes the direct 1280px web-optimized CDN URL via MD5 hashing:
+   ```javascript
+   // MD5 Hash direct CDN calculator
+   const hash = crypto.createHash('md5').update(Buffer.from(wikiName, 'utf-8')).digest('hex');
+   const directUrl = `https://upload.wikimedia.org/wikipedia/commons/thumb/${hash[0]}/${hash.slice(0, 2)}/${encodedName}/1280px-${encodedName}`;
+   ```
+
+3. **Browser Header Simulation & Backoff**:
+   - Sends standard Chrome `User-Agent` and `Accept: image/*` headers to prevent HTTP 403 Forbidden.
+   - Enforces a 1.5s inter-item delay + automatic 12s backoff on HTTP 429 rate limit responses.
+
+4. **Fixed 7-Category Wiki Taxonomy Schema**:
+   - **`work`**: `work:<item_slug>` (e.g., `work:stonehenge`)
+   - **`general`**: `<entity_type>` (e.g. `castle`, `palace`, `monument`), `location_<country>` (e.g. `location_france`), `year_<YYYY>` (e.g. `year_1661`)
+   - **`creator`**: `creator:<architect_or_author>` (e.g. `creator:antoni_gaudi`)
+   - **`source`**: Wikidata QID URL + `copyright:public_domain`
+   - **`meta`**: `meta:atlas:wikiatlas`, `meta:qid:Q...`, `meta:license:public_domain`, `meta:format:image`
+   - **`subreddit`**: `r/wikiatlas`
+
+---
+
+## 📦 3. Subfolder Chunking & In-App Upload (`split_batch.js`)
+
+To upload large batches (~1,300+ items) without risking browser memory bloat or manual file selection errors:
+
+1. **Run Splitter Utility**:
+   ```bash
+   node split_batch.js
+   ```
+   *Splits `./wiki_downloads/batch_wonders/` into self-contained subfolders (`batch_wonders_part1/`, `batch_wonders_part2/`, etc.) with ~225 images and a matching dedicated `manifest.json` per folder.*
+
+2. **In-App Ingestion (`Upload.jsx`)**:
+   - Open MyAtlas app -> Navigate to **Upload** manager.
+   - Select target atlas (`gamesatlas` or `wikiatlas`).
+   - Click **Select Local Media Files**, open `batch_wonders_part1`, press `Ctrl+A`, and click **Commit to Database**.
+   - Repeat for remaining part subfolders.
+
+---
+
+## 🤖 Context Instructions for New AI Agent Sessions
 
 If starting a new chat session with a fresh AI agent, prompt them with:
 
-> *"Please read [`docs/steam_gamesatlas_playbook.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/steam_gamesatlas_playbook.md) and [`docs/sub_atlases.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/sub_atlases.md). I want to expand `gamesatlas` by adding [N] new games using `download_games_steam.js` and seeding them to Supabase via `seed_gamesatlas_supabase.js`."*
+> *"Please read [`docs/steam_gamesatlas_playbook.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/steam_gamesatlas_playbook.md), [`docs/wikiatlas_expansion_plan.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/wikiatlas_expansion_plan.md), and [`docs/sub_atlases.md`](file:///c:/Users/GGPC/Desktop/my%20atlas%202/docs/sub_atlases.md). I am working on adding new curated batches to `gamesatlas` / `wikiatlas` using our Node extraction scripts, `split_batch.js` partitioner, and in-app Upload view."*
 
 ---
 
-## 📄 Related Files & References
+## 📄 Related Scripts & References
 - Script: [`download_games_steam.js`](../download_games_steam.js)
-- Script: [`seed_gamesatlas_supabase.js`](../seed_gamesatlas_supabase.js)
+- Script: [`download_wikiatlas_wonders.js`](../download_wikiatlas_wonders.js)
+- Script: [`split_batch.js`](../split_batch.js)
+- Documentation: [`docs/wikiatlas_expansion_plan.md`](wikiatlas_expansion_plan.md)
 - Documentation: [`docs/sub_atlases.md`](sub_atlases.md)
 - Documentation: [`docs/ingestion_manifest_workflow.md`](ingestion_manifest_workflow.md)
