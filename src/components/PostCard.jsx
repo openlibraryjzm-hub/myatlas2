@@ -32,7 +32,16 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
                   (filePath && Boolean(filePath.match(/\.(mp4|webm|mov|mkv|avi)$/i))) || 
                   (url && Boolean(url.match(/\.(mp4|webm|mov|mkv|avi)$/i)));
 
-  const isToolAtlas = subreddit === 'toolatlas' || allTags.includes('meta:atlas:toolatlas') || allTags.some(t => String(t).startsWith('meta:atlas:toolatlas'));
+  const isToolAtlas = subreddit === 'toolatlas' || 
+                      subreddit === 'toolsatlas' || 
+                      post.atlas_id === 'toolsatlas' || 
+                      post.atlas_id === 'toolatlas' || 
+                      post.atlas === 'toolsatlas' || 
+                      post.atlas === 'toolatlas' || 
+                      allTags.includes('meta:atlas:toolsatlas') || 
+                      allTags.includes('meta:atlas:toolatlas') || 
+                      allTags.includes('general:category:developer_tools') || 
+                      allTags.some(t => String(t).startsWith('meta:atlas:tool'));
   
   const [imgError, setImgError] = useState(false);
   const [isImgLoaded, setIsImgLoaded] = useState(false);
@@ -43,6 +52,10 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
   const targetDiskPath = filePath || post.file_path || (url && !url.startsWith('http://') && !url.startsWith('https://') ? url : null);
   const rawTarget = targetDiskPath || url || mediaUrl || thumbnail;
   const assetUrl = formatLocalAssetUrl(rawTarget);
+
+  const isSvg = allTags.includes('meta:extension:svg') || 
+                (filePath && Boolean(filePath.match(/\.svg$/i))) || 
+                (url && Boolean(url.match(/\.svg$/i)));
 
   const isBase64Thumb = thumbnail && (thumbnail.startsWith('data:image/webp') || thumbnail.startsWith('blob:'));
 
@@ -93,7 +106,7 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
       className={`post-card-minimal ${isToolAtlas ? 'toolatlas-card' : ''} ${isGif ? 'gif-card' : ''} ${isVideo ? 'video-card' : ''}`}
       data-post-id={id}
       data-tags={tagsAttribute}
-      style={isToolAtlas ? {} : { backgroundColor: safeTheme.bg }}
+      style={isToolAtlas ? { backgroundColor: 'transparent' } : { backgroundColor: safeTheme.bg }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onPostClick && onPostClick(post)}
@@ -187,7 +200,7 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
         </div>
       ) : (
         <>
-          <div className="post-card-preview-pattern" />
+          {!isToolAtlas && <div className="post-card-preview-pattern" />}
           
           {/* Fallback Icon */}
           <div className="post-card-icon-minimal" style={{ color: safeTheme.accent }}>

@@ -1,0 +1,1190 @@
+{
+  "batch_name": "batch1_dev_tools",
+  "category_label": "Developer Tools & IDEs",
+  "tools": [
+    {
+      "query": "Neovim",
+      "slug": "neovim",
+      "creator": "neovim_team",
+      "type": "editor",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Vim",
+      "slug": "vim",
+      "creator": "bram_moolenaar",
+      "type": "editor",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "VSCodium",
+      "slug": "vscodium",
+      "creator": "vscodium_community",
+      "type": "editor",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "IntelliJ IDEA",
+      "slug": "intellijidea",
+      "creator": "jetbrains",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "freemium"
+    },
+    {
+      "query": "PyCharm",
+      "slug": "pycharm",
+      "creator": "jetbrains",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "freemium"
+    },
+    {
+      "query": "WebStorm",
+      "slug": "webstorm",
+      "creator": "jetbrains",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "paid"
+    },
+    {
+      "query": "CLion",
+      "slug": "clion",
+      "creator": "jetbrains",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "paid"
+    },
+    {
+      "query": "GoLand",
+      "slug": "goland",
+      "creator": "jetbrains",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "paid"
+    },
+    {
+      "query": "Rider",
+      "slug": "rider",
+      "creator": "jetbrains",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "paid"
+    },
+    {
+      "query": "PhpStorm",
+      "slug": "phpstorm",
+      "creator": "jetbrains",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "paid"
+    },
+    {
+      "query": "RubyMine",
+      "slug": "rubymine",
+      "creator": "jetbrains",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "paid"
+    },
+    {
+      "query": "Sublime Text",
+      "slug": "sublimetext",
+      "creator": "sublime_hq",
+      "type": "editor",
+      "platform": "desktop",
+      "license": "freemium"
+    },
+    {
+      "query": "Xcode",
+      "slug": "xcode",
+      "creator": "apple",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "proprietary"
+    },
+    {
+      "query": "Android Studio",
+      "slug": "androidstudio",
+      "creator": "google",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "Eclipse IDE",
+      "slug": "eclipseide",
+      "creator": "eclipse_foundation",
+      "type": "ide",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "GNU Emacs",
+      "slug": "gnuemacs",
+      "creator": "fsf",
+      "type": "editor",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Zed Industries",
+      "slug": "zedindustries",
+      "creator": "zed_industries",
+      "type": "editor",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "Replit",
+      "slug": "replit",
+      "creator": "replit_inc",
+      "type": "online_ide",
+      "platform": "web",
+      "license": "freemium"
+    },
+    {
+      "query": "CodeSandbox",
+      "slug": "codesandbox",
+      "creator": "codesandbox_bv",
+      "type": "online_ide",
+      "platform": "web",
+      "license": "freemium"
+    },
+    {
+      "query": "CodePen",
+      "slug": "codepen",
+      "creator": "codepen_inc",
+      "type": "online_ide",
+      "platform": "web",
+      "license": "freemium"
+    },
+    {
+      "query": "StackBlitz",
+      "slug": "stackblitz",
+      "creator": "stackblitz_inc",
+      "type": "online_ide",
+      "platform": "web",
+      "license": "freemium"
+    },
+    {
+      "query": "GitKraken",
+      "slug": "gitkraken",
+      "creator": "axosoft",
+      "type": "git_gui",
+      "platform": "desktop",
+      "license": "freemium"
+    },
+    {
+      "query": "Beekeeper Studio",
+      "slug": "beekeeperstudio",
+      "creator": "beekeeper_studio_team",
+      "type": "db_gui",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "DBeaver",
+      "slug": "dbeaver",
+      "creator": "dbeaver_corporation",
+      "type": "db_gui",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "Git",
+      "slug": "git",
+      "creator": "linus_torvalds",
+      "type": "version_control",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "GitHub",
+      "slug": "github",
+      "creator": "microsoft",
+      "type": "code_hosting",
+      "platform": "web",
+      "license": "freemium"
+    },
+    {
+      "query": "GitLab",
+      "slug": "gitlab",
+      "creator": "gitlab_inc",
+      "type": "code_hosting",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Bitbucket",
+      "slug": "bitbucket",
+      "creator": "atlassian",
+      "type": "code_hosting",
+      "platform": "web",
+      "license": "freemium"
+    },
+    {
+      "query": "Docker",
+      "slug": "docker",
+      "creator": "docker_inc",
+      "type": "containerization",
+      "platform": "desktop",
+      "license": "freemium"
+    },
+    {
+      "query": "Podman",
+      "slug": "podman",
+      "creator": "red_hat",
+      "type": "containerization",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Postman",
+      "slug": "postman",
+      "creator": "postman_inc",
+      "type": "api_client",
+      "platform": "desktop",
+      "license": "freemium"
+    },
+    {
+      "query": "Insomnia",
+      "slug": "insomnia",
+      "creator": "kong",
+      "type": "api_client",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "Swagger",
+      "slug": "swagger",
+      "creator": "smartbear",
+      "type": "api_docs",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Wireshark",
+      "slug": "wireshark",
+      "creator": "wireshark_foundation",
+      "type": "network_analyzer",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "Homebrew",
+      "slug": "homebrew",
+      "creator": "max_howell",
+      "type": "package_manager",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "pnpm",
+      "slug": "pnpm",
+      "creator": "zkochan",
+      "type": "package_manager",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "npm",
+      "slug": "npm",
+      "creator": "github",
+      "type": "package_manager",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Yarn",
+      "slug": "yarn",
+      "creator": "yarn_core_team",
+      "type": "package_manager",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Bun",
+      "slug": "bun",
+      "creator": "oven",
+      "type": "javascript_runtime",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Node.js",
+      "slug": "nodejs",
+      "creator": "openjs_foundation",
+      "type": "javascript_runtime",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Deno",
+      "slug": "deno",
+      "creator": "deno_land",
+      "type": "javascript_runtime",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "cURL",
+      "slug": "curl",
+      "creator": "daniel_stenberg",
+      "type": "http_client",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "GNU Bash",
+      "slug": "gnubash",
+      "creator": "fsf",
+      "type": "shell",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Zsh",
+      "slug": "zsh",
+      "creator": "paul_falstad",
+      "type": "shell",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "tmux",
+      "slug": "tmux",
+      "creator": "nicholas_marriott",
+      "type": "terminal_multiplexer",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Alacritty",
+      "slug": "alacritty",
+      "creator": "jwilm",
+      "type": "terminal_emulator",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "WezTerm",
+      "slug": "wezterm",
+      "creator": "wez_furlong",
+      "type": "terminal_emulator",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "Python",
+      "slug": "python",
+      "creator": "python_software_foundation",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Rust",
+      "slug": "rust",
+      "creator": "rust_foundation",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Go",
+      "slug": "go",
+      "creator": "google",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "C",
+      "slug": "c",
+      "creator": "dennis_ritchie",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "C++",
+      "slug": "c",
+      "creator": "bjarne_stroustrup",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "TypeScript",
+      "slug": "typescript",
+      "creator": "microsoft",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "JavaScript",
+      "slug": "javascript",
+      "creator": "brendan_eich",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Ruby",
+      "slug": "ruby",
+      "creator": "yukihiro_matsumoto",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "PHP",
+      "slug": "php",
+      "creator": "rasmus_lerdorf",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Scala",
+      "slug": "scala",
+      "creator": "martin_odersky",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Haskell",
+      "slug": "haskell",
+      "creator": "haskell_committee",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Elixir",
+      "slug": "elixir",
+      "creator": "jose_valim",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Clojure",
+      "slug": "clojure",
+      "creator": "rich_hickey",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Lua",
+      "slug": "lua",
+      "creator": "puc_rio",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Zig",
+      "slug": "zig",
+      "creator": "andrew_kelley",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Nim",
+      "slug": "nim",
+      "creator": "andreas_rumpf",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "OCaml",
+      "slug": "ocaml",
+      "creator": "inria",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Julia",
+      "slug": "julia",
+      "creator": "julia_computing",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Dart",
+      "slug": "dart",
+      "creator": "google",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "R",
+      "slug": "r",
+      "creator": "r_foundation",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Perl",
+      "slug": "perl",
+      "creator": "larry_wall",
+      "type": "programming_language",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "AssemblyScript",
+      "slug": "assemblyscript",
+      "creator": "dmitry_soshnikov",
+      "type": "compiler",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "HTML5",
+      "slug": "html5",
+      "creator": "w3c",
+      "type": "markup_language",
+      "platform": "web",
+      "license": "open_standard"
+    },
+    {
+      "query": "CSS3",
+      "slug": "css3",
+      "creator": "w3c",
+      "type": "style_language",
+      "platform": "web",
+      "license": "open_standard"
+    },
+    {
+      "query": "Sass",
+      "slug": "sass",
+      "creator": "hampton_catlin",
+      "type": "css_preprocessor",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "WebAssembly",
+      "slug": "webassembly",
+      "creator": "w3c",
+      "type": "bytecode_format",
+      "platform": "web",
+      "license": "open_standard"
+    },
+    {
+      "query": "React",
+      "slug": "react",
+      "creator": "meta",
+      "type": "ui_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Vue.js",
+      "slug": "vuejs",
+      "creator": "evan_you",
+      "type": "ui_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Svelte",
+      "slug": "svelte",
+      "creator": "rich_harris",
+      "type": "ui_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Angular",
+      "slug": "angular",
+      "creator": "google",
+      "type": "ui_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Next.js",
+      "slug": "nextjs",
+      "creator": "vercel",
+      "type": "fullstack_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Nuxt.js",
+      "slug": "nuxtjs",
+      "creator": "nuxt_team",
+      "type": "fullstack_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Astro",
+      "slug": "astro",
+      "creator": "fred_k_schott",
+      "type": "web_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Gatsby",
+      "slug": "gatsby",
+      "creator": "gatsby_inc",
+      "type": "web_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Tailwind CSS",
+      "slug": "tailwindcss",
+      "creator": "adam_wathan",
+      "type": "css_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Bootstrap",
+      "slug": "bootstrap",
+      "creator": "twitter",
+      "type": "css_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Vite",
+      "slug": "vite",
+      "creator": "evan_you",
+      "type": "build_tool",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Webpack",
+      "slug": "webpack",
+      "creator": "tobias_koppers",
+      "type": "bundler",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "rollup.js",
+      "slug": "rollupjs",
+      "creator": "rich_harris",
+      "type": "bundler",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "esbuild",
+      "slug": "esbuild",
+      "creator": "evan_wallace",
+      "type": "bundler",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Babel",
+      "slug": "babel",
+      "creator": "sebmck",
+      "type": "transpiler",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "SWC",
+      "slug": "swc",
+      "creator": "kydyn",
+      "type": "transpiler",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "ESLint",
+      "slug": "eslint",
+      "creator": "nicholas_c_zakas",
+      "type": "linter",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Prettier",
+      "slug": "prettier",
+      "creator": "jlongster",
+      "type": "formatter",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Biome",
+      "slug": "biome",
+      "creator": "biome_team",
+      "type": "formatter_linter",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Jest",
+      "slug": "jest",
+      "creator": "meta",
+      "type": "test_runner",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Vitest",
+      "slug": "vitest",
+      "creator": "vite_team",
+      "type": "test_runner",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Cypress",
+      "slug": "cypress",
+      "creator": "cypress_io",
+      "type": "e2e_testing",
+      "platform": "desktop",
+      "license": "open_source"
+    },
+    {
+      "query": "Selenium",
+      "slug": "selenium",
+      "creator": "selenium_hq",
+      "type": "browser_automation",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Puppeteer",
+      "slug": "puppeteer",
+      "creator": "google",
+      "type": "browser_automation",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Storybook",
+      "slug": "storybook",
+      "creator": "chromatic",
+      "type": "ui_workshop",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Flutter",
+      "slug": "flutter",
+      "creator": "google",
+      "type": "cross_platform_ui",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "React Query",
+      "slug": "reactquery",
+      "creator": "tanner_linsley",
+      "type": "state_management",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Redux",
+      "slug": "redux",
+      "creator": "dan_abramov",
+      "type": "state_management",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "tRPC",
+      "slug": "trpc",
+      "creator": "alex_johansson",
+      "type": "api_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "GraphQL",
+      "slug": "graphql",
+      "creator": "graphql_foundation",
+      "type": "query_language",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Apollo GraphQL",
+      "slug": "apollographql",
+      "creator": "meteor",
+      "type": "api_client",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Express",
+      "slug": "express",
+      "creator": "tj_holowaychuk",
+      "type": "backend_framework",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "PostgreSQL",
+      "slug": "postgresql",
+      "creator": "postgresql_global_development_group",
+      "type": "relational_db",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "MySQL",
+      "slug": "mysql",
+      "creator": "oracle",
+      "type": "relational_db",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "SQLite",
+      "slug": "sqlite",
+      "creator": "richard_hipp",
+      "type": "embedded_db",
+      "platform": "cross_platform",
+      "license": "public_domain"
+    },
+    {
+      "query": "MariaDB",
+      "slug": "mariadb",
+      "creator": "mariadb_foundation",
+      "type": "relational_db",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "MongoDB",
+      "slug": "mongodb",
+      "creator": "mongodb_inc",
+      "type": "nosql_db",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Redis",
+      "slug": "redis",
+      "creator": "redis_ltd",
+      "type": "in_memory_db",
+      "platform": "cross_platform",
+      "license": "source_available"
+    },
+    {
+      "query": "Supabase",
+      "slug": "supabase",
+      "creator": "supabase_inc",
+      "type": "baas_database",
+      "platform": "cloud",
+      "license": "open_source"
+    },
+    {
+      "query": "Firebase",
+      "slug": "firebase",
+      "creator": "google",
+      "type": "baas_database",
+      "platform": "cloud",
+      "license": "proprietary"
+    },
+    {
+      "query": "PocketBase",
+      "slug": "pocketbase",
+      "creator": "gaboesquivel",
+      "type": "baas_database",
+      "platform": "self_hosted",
+      "license": "open_source"
+    },
+    {
+      "query": "Appwrite",
+      "slug": "appwrite",
+      "creator": "appwrite_team",
+      "type": "baas_database",
+      "platform": "self_hosted",
+      "license": "open_source"
+    },
+    {
+      "query": "SurrealDB",
+      "slug": "surrealdb",
+      "creator": "surrealdb_ltd",
+      "type": "multi_model_db",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Cockroach Labs",
+      "slug": "cockroachlabs",
+      "creator": "cockroach_labs",
+      "type": "distributed_db",
+      "platform": "cloud",
+      "license": "open_source"
+    },
+    {
+      "query": "PlanetScale",
+      "slug": "planetscale",
+      "creator": "planetscale_inc",
+      "type": "serverless_db",
+      "platform": "cloud",
+      "license": "proprietary"
+    },
+    {
+      "query": "Elasticsearch",
+      "slug": "elasticsearch",
+      "creator": "elastic",
+      "type": "search_engine_db",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "OpenSearch",
+      "slug": "opensearch",
+      "creator": "aws",
+      "type": "search_engine_db",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Algolia",
+      "slug": "algolia",
+      "creator": "algolia_inc",
+      "type": "search_api",
+      "platform": "cloud",
+      "license": "proprietary"
+    },
+    {
+      "query": "Meilisearch",
+      "slug": "meilisearch",
+      "creator": "meilisearch_team",
+      "type": "search_engine_db",
+      "platform": "self_hosted",
+      "license": "open_source"
+    },
+    {
+      "query": "Neo4j",
+      "slug": "neo4j",
+      "creator": "neo4j_inc",
+      "type": "graph_db",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "ClickHouse",
+      "slug": "clickhouse",
+      "creator": "clickhouse_inc",
+      "type": "columnar_db",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "DuckDB",
+      "slug": "duckdb",
+      "creator": "duckdb_foundation",
+      "type": "analytical_db",
+      "platform": "embedded",
+      "license": "open_source"
+    },
+    {
+      "query": "Prisma",
+      "slug": "prisma",
+      "creator": "prisma_data",
+      "type": "orm",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Drizzle",
+      "slug": "drizzle",
+      "creator": "drizzle_team",
+      "type": "orm",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "SQLAlchemy",
+      "slug": "sqlalchemy",
+      "creator": "mike_bayer",
+      "type": "orm",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Kubernetes",
+      "slug": "kubernetes",
+      "creator": "cncf",
+      "type": "orchestration",
+      "platform": "cloud",
+      "license": "open_source"
+    },
+    {
+      "query": "Helm",
+      "slug": "helm",
+      "creator": "cncf",
+      "type": "package_manager",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Terraform",
+      "slug": "terraform",
+      "creator": "hashicorp",
+      "type": "infrastructure_as_code",
+      "platform": "cli",
+      "license": "source_available"
+    },
+    {
+      "query": "OpenTofu",
+      "slug": "opentofu",
+      "creator": "linux_foundation",
+      "type": "infrastructure_as_code",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Ansible",
+      "slug": "ansible",
+      "creator": "red_hat",
+      "type": "automation",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Pulumi",
+      "slug": "pulumi",
+      "creator": "pulumi_corporation",
+      "type": "infrastructure_as_code",
+      "platform": "cli",
+      "license": "open_source"
+    },
+    {
+      "query": "Vagrant",
+      "slug": "vagrant",
+      "creator": "hashicorp",
+      "type": "vm_environment",
+      "platform": "cli",
+      "license": "source_available"
+    },
+    {
+      "query": "Cloudflare",
+      "slug": "cloudflare",
+      "creator": "cloudflare_inc",
+      "type": "cdn_edge",
+      "platform": "cloud",
+      "license": "freemium"
+    },
+    {
+      "query": "Google Cloud",
+      "slug": "googlecloud",
+      "creator": "google",
+      "type": "cloud_provider",
+      "platform": "cloud",
+      "license": "proprietary"
+    },
+    {
+      "query": "Vercel",
+      "slug": "vercel",
+      "creator": "vercel_inc",
+      "type": "deployment_platform",
+      "platform": "cloud",
+      "license": "freemium"
+    },
+    {
+      "query": "Netlify",
+      "slug": "netlify",
+      "creator": "netlify_inc",
+      "type": "deployment_platform",
+      "platform": "cloud",
+      "license": "freemium"
+    },
+    {
+      "query": "Render",
+      "slug": "render",
+      "creator": "render_services",
+      "type": "deployment_platform",
+      "platform": "cloud",
+      "license": "freemium"
+    },
+    {
+      "query": "Railway",
+      "slug": "railway",
+      "creator": "railway_app",
+      "type": "deployment_platform",
+      "platform": "cloud",
+      "license": "freemium"
+    },
+    {
+      "query": "Heroku",
+      "slug": "heroku",
+      "creator": "salesforce",
+      "type": "paas_platform",
+      "platform": "cloud",
+      "license": "paid"
+    },
+    {
+      "query": "DigitalOcean",
+      "slug": "digitalocean",
+      "creator": "digitalocean_inc",
+      "type": "cloud_provider",
+      "platform": "cloud",
+      "license": "paid"
+    },
+    {
+      "query": "Hetzner",
+      "slug": "hetzner",
+      "creator": "hetzner_online",
+      "type": "cloud_provider",
+      "platform": "cloud",
+      "license": "paid"
+    },
+    {
+      "query": "Grafana",
+      "slug": "grafana",
+      "creator": "grafana_labs",
+      "type": "monitoring_dashboard",
+      "platform": "web",
+      "license": "open_source"
+    },
+    {
+      "query": "Prometheus",
+      "slug": "prometheus",
+      "creator": "cncf",
+      "type": "metrics_server",
+      "platform": "cross_platform",
+      "license": "open_source"
+    },
+    {
+      "query": "Sentry",
+      "slug": "sentry",
+      "creator": "functional_software",
+      "type": "error_tracking",
+      "platform": "cloud",
+      "license": "freemium"
+    },
+    {
+      "query": "Datadog",
+      "slug": "datadog",
+      "creator": "datadog_inc",
+      "type": "observability",
+      "platform": "cloud",
+      "license": "paid"
+    }
+  ]
+}

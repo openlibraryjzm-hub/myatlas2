@@ -5,9 +5,6 @@ import './Home.css';
 import keysImg from '/aesthetic-value-of-vintage-keys-free-png.webp';
 import amberImg from '/bernstein-261133_1280.png';
 import tvImg from '/pngtree-a-straight-shot-of-a-realistic-eighties-crt-television-set-png-image_19729924.webp';
-import booksImg from '/pngtree-stack-of-books-image-png-image_17810565.png';
-import gameboyImg from '/Game-Boy-FL.png';
-import toolsImg from '/pngtree-work-and-repair-tools-png-image_14699823.png';
 
 // Custom Colored Icons
 function AccountRingIcon({ size = 26, color = "#CC5A01" }) {
@@ -20,7 +17,30 @@ function AccountRingIcon({ size = 26, color = "#CC5A01" }) {
   );
 }
 
-// 6 Fixed Sub-Atlas Options
+function ShopIcon({ size = 34, color = "#8B5CF6" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" fill={`${color}15`} stroke={color} />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 01-8 0" />
+    </svg>
+  );
+}
+
+function SupportIcon({ size = 34, color = "#10B981" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" fill={`${color}15`} stroke={color} />
+      <circle cx="12" cy="12" r="3" fill={`${color}25`} stroke={color} />
+      <line x1="12" y1="3" x2="12" y2="9" />
+      <line x1="12" y1="15" x2="12" y2="21" />
+      <line x1="3" y1="12" x2="9" y2="12" />
+      <line x1="15" y1="12" x2="21" y2="12" />
+    </svg>
+  );
+}
+
+// 5 Fixed Sub-Atlas Options
 const FIXED_ATLAS_OPTIONS = [
   {
     id: 'myatlas',
@@ -38,19 +58,14 @@ const FIXED_ATLAS_OPTIONS = [
     image: tvImg,
   },
   {
-    id: 'wikiatlas',
-    label: 'Wiki',
-    image: booksImg,
+    id: 'shopatlas',
+    label: 'Shop',
+    icon: <ShopIcon size={34} color="#8B5CF6" />,
   },
   {
-    id: 'gamesatlas',
-    label: 'Games',
-    image: gameboyImg,
-  },
-  {
-    id: 'toolsatlas',
-    label: 'Tools',
-    image: toolsImg,
+    id: 'supportatlas',
+    label: 'Support',
+    icon: <SupportIcon size={34} color="#10B981" />,
   }
 ];
 
@@ -119,7 +134,7 @@ export default function Home({
         </div>
       </form>
 
-      {/* Fixed 6 Sub-Atlas Options Row */}
+      {/* Fixed 5 Sub-Atlas Options Row */}
       <div className="home-options-container">
         {FIXED_ATLAS_OPTIONS.map((opt) => {
           const isCurrentlyActive = activeSlug === opt.id.toLowerCase();
@@ -128,15 +143,27 @@ export default function Home({
             <div 
               key={opt.id} 
               className={`home-option-item ${isCurrentlyActive ? 'active-atlas-item' : ''}`}
-              onClick={() => onSelectAtlas && onSelectAtlas(opt.id)}
-              title={`Switch to ${opt.label} Atlas`}
+              onClick={() => {
+                if (opt.id === 'shopatlas') {
+                  setView('shop');
+                } else if (opt.id === 'supportatlas') {
+                  setView('support');
+                } else if (onSelectAtlas) {
+                  onSelectAtlas(opt.id);
+                }
+              }}
+              title={opt.id === 'shopatlas' ? 'Open Curator Shop' : opt.id === 'supportatlas' ? 'Open Support Center' : `Switch to ${opt.label} Atlas`}
             >
               <div className="home-option-icon">
-                <img 
-                  src={opt.image} 
-                  alt={opt.label} 
-                  style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
-                />
+                {opt.icon ? (
+                  opt.icon
+                ) : (
+                  <img 
+                    src={opt.image} 
+                    alt={opt.label} 
+                    style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
+                  />
+                )}
               </div>
               <span 
                 className="home-option-link"

@@ -41,6 +41,8 @@ my atlas 2/
 │       ├── injector.md     # Bulk Tag Injector specs, dual input match filtering & batch tag injection
 │       ├── folderhealth.md # Folders & Library Health Manager specs, path relocator & manifest sidecars
 │       ├── home.md         # Home View specs, Option A dynamic word-split title logo & transparent PNG quick-links
+│       ├── shop.md         # Curator Shop specs, full-width top navigation tabs & Minecraft FREE splash badges
+│       ├── support.md      # Support Center specs, Amberlyn portrait video player & social/dono/code link stacks
 │       └── users.md        # Curator Profile specs, cardless Twitter/X profile card, Gelbooru link stack & 5-tab JEI grid
 └── src/
     ├── main.jsx            # Application entry mount
@@ -56,6 +58,8 @@ my atlas 2/
     └── pages/
         ├── Home.jsx        # Minimalist home view with search input & tactile PNG quick-links
         ├── Posts.jsx       # Browse Grid view with scale slider (4c-10c) & 3-col tag matrix
+        ├── Shop.jsx        # Curator Shop page with top navigation tabs & blank viewport
+        ├── Support.jsx     # Support & Community page with Amberlyn video player & social link stacks
         ├── Tagger.jsx      # Speed tagging interface with category slots
         ├── Injector.jsx    # Bulk Tag Injector interface for mass tag appending
         ├── Upload.jsx      # Hard drive folder scanner & local file batch ingestion

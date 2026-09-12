@@ -60,8 +60,11 @@ export async function getLocalFileAsBlobUrl(filePath) {
       const bytes = await readFile(filePath);
       const ext = filePath.split('.').pop().toLowerCase();
       let mimeType = 'image/jpeg';
-      if (['png', 'webp', 'gif', 'svg'].includes(ext)) mimeType = `image/${ext}`;
-      else if (['mp4', 'webm', 'mov'].includes(ext)) mimeType = `video/${ext}`;
+      if (['png', 'webp', 'gif', 'svg'].includes(ext)) {
+        mimeType = ext === 'svg' ? 'image/svg+xml' : `image/${ext}`;
+      } else if (['mp4', 'webm', 'mov'].includes(ext)) {
+        mimeType = `video/${ext}`;
+      }
       
       const blob = new Blob([bytes], { type: mimeType });
       return URL.createObjectURL(blob);
@@ -196,7 +199,7 @@ export function getOptimizedThumbnailUrl(url, targetSize = 'small') {
  */
 export async function generateWebpThumbnail(fileOrBlobUrl, maxWidth = 300) {
   if (!fileOrBlobUrl || typeof fileOrBlobUrl !== 'string') return '';
-  if (fileOrBlobUrl.startsWith('data:image/webp')) return fileOrBlobUrl; // Already a WebP thumbnail
+  if (fileOrBlobUrl.startsWith('data:image/webp') || fileOrBlobUrl.toLowerCase().endsWith('.svg') || fileOrBlobUrl.includes('image/svg+xml')) return fileOrBlobUrl; // SVG or WebP thumbnail
 
   return new Promise((resolve) => {
     const img = new window.Image();

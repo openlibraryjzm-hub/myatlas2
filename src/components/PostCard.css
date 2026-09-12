@@ -154,23 +154,31 @@
   overflow: hidden;
 }
 
-/* Tool Atlas Exclusive Floating Vector Icon Styling */
+/* Tool Atlas Exclusive Floating Vector Icon Styling (Windows File Explorer Style) */
 .post-card-minimal.toolatlas-card,
 .theme-toolatlas .post-card-minimal,
 .theme-toolatlas .gallery-grid-dense .post-card-minimal {
   background: transparent !important;
   background-color: transparent !important;
-  border: none !important;
-  border-color: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 6px;
   outline: none !important;
   box-shadow: none !important;
-  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.18s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .post-card-minimal.toolatlas-card:hover,
 .theme-toolatlas .post-card-minimal:hover,
 .theme-toolatlas .gallery-grid-dense .post-card-minimal:hover {
-  background-color: var(--bg-secondary) !important;
+  background-color: var(--bg-secondary, rgba(0, 0, 0, 0.04)) !important;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.15)) !important;
+  border-radius: 6px;
+  transform: scale(1.02);
+}
+
+.post-card-minimal.toolatlas-card.selected,
+.theme-toolatlas .post-card-minimal.selected {
+  background-color: var(--accent-focus, rgba(79, 70, 229, 0.12)) !important;
   border: 1px solid var(--accent-color) !important;
   border-radius: 6px;
 }
@@ -182,6 +190,12 @@
   padding: 14px !important;
   width: 100% !important;
   height: 100% !important;
+}
+
+.theme-toolatlas .post-card-skeleton,
+.theme-toolatlas .gallery-grid-dense .post-card-skeleton {
+  background-color: transparent !important;
+  border: 1px dashed var(--border-color, rgba(0, 0, 0, 0.1)) !important;
 }
 
 

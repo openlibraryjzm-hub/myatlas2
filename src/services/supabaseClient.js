@@ -64,7 +64,7 @@ export async function uploadMediaToSupabaseStorage(atlasId, fileOrBlob, fileName
   }
 
   let contentType = 'image/jpeg';
-  if (ext === 'png') contentType = 'image/png';
+  if (ext === 'png' || ext === 'svg') contentType = 'image/png';
   else if (ext === 'webp') contentType = 'image/webp';
   else if (ext === 'gif') contentType = 'image/gif';
   else if (ext === 'mp4') contentType = 'video/mp4';

@@ -50,7 +50,18 @@ const getMediaUrl = (url, thumbnail) => {
 function PreviewCard({ post, onRemove }) {
   const isGif = post.tags?.includes('meta:extension:gif') || post.url?.toLowerCase().endsWith('.gif') || post.derivedTags?.includes('meta:extension:gif');
   const isVideo = post.tags?.includes('meta:format:video') || post.derivedTags?.includes('meta:format:video') || post.mediaUrl?.toLowerCase().endsWith('.mp4');
-  const isToolAtlas = post.subreddit === 'toolatlas' || post.tags?.includes('meta:atlas:toolatlas') || post.derivedTags?.includes('meta:atlas:toolatlas');
+  const isToolAtlas = post.subreddit === 'toolatlas' || 
+                      post.subreddit === 'toolsatlas' || 
+                      post.atlas_id === 'toolsatlas' || 
+                      post.atlas_id === 'toolatlas' || 
+                      post.atlas === 'toolsatlas' || 
+                      post.atlas === 'toolatlas' || 
+                      post.tags?.includes('meta:atlas:toolsatlas') || 
+                      post.tags?.includes('meta:atlas:toolatlas') || 
+                      post.derivedTags?.includes('meta:atlas:toolsatlas') || 
+                      post.derivedTags?.includes('meta:atlas:toolatlas') || 
+                      post.tags?.includes('general:category:developer_tools') || 
+                      post.derivedTags?.includes('general:category:developer_tools');
   
   const displayThumb = formatLocalAssetUrl(post.mediaUrl || post.url || post.thumbnail || post.filePath);
   const [imgSrc, setImgSrc] = React.useState(isGif ? (displayThumb || null) : displayThumb);
@@ -76,7 +87,7 @@ function PreviewCard({ post, onRemove }) {
   return (
     <div 
       className={`post-card-minimal ${isToolAtlas ? 'toolatlas-card' : ''} ${isGif ? 'gif-card' : ''} ${isVideo ? 'video-card' : ''} ${isBroken ? 'broken-preview-card' : ''}`}
-      style={isToolAtlas ? { position: 'relative' } : { backgroundColor: post.colorTheme?.bg, position: 'relative' }}
+      style={isToolAtlas ? { backgroundColor: 'transparent', position: 'relative' } : { backgroundColor: post.colorTheme?.bg, position: 'relative' }}
     >
       <button 
         type="button"
@@ -643,6 +654,7 @@ export default function Upload({ currentAtlas = 'myatlas', isReadOnly = false })
                   mediaUrl: dataUrl,
                   thumbnail: dataUrl,
                   filePath: file.name,
+                  file: file,
                   derivedTags: [
                     `meta:extension:${ext}`,
                     `meta:format:${file.type.startsWith('video') ? 'video' : 'image'}`,
@@ -683,7 +695,7 @@ export default function Upload({ currentAtlas = 'myatlas', isReadOnly = false })
 
         for (let i = 0; i < posts.length; i++) {
           const post = posts[i];
-          const mediaSource = post.filePath || post.mediaUrl || post.url || post.file;
+          const mediaSource = post.file || post.mediaUrl || post.url || post.filePath;
           let cloudUrl = post.mediaUrl || post.url || '';
 
           if (mediaSource) {

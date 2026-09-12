@@ -26,23 +26,26 @@ This document defines the specifications, layout metrics, interactive state mach
 
 ---
 
-## 🏛️ Fixed 6 Sub-Atlas Options Row
+## 🏛️ Fixed 5 Sub-Atlas Options Row
 
-Centered below the search input, a spatially fixed row of 6 tactile sub-atlas switcher links renders high-resolution transparent PNG/WebP graphics stacked above monospace text labels (`34px × 34px`):
+Centered below the search input, a spatially fixed row of 5 tactile sub-atlas switcher links renders high-resolution transparent PNG/WebP graphics or custom vector icons stacked above monospace text labels (`34px × 34px`):
 
 1. **myatlas** (`myatlas`): `/aesthetic-value-of-vintage-keys-free-png.webp` — Accent: `#CC5A01`
 2. **Amber** (`amberatlas`): `/bernstein-261133_1280.png` — Accent: `#D97706`
 3. **Youtube** (`youtubeatlas`): `/pngtree-a-straight-shot-of-a-realistic-eighties-crt-television-set-png-image_19729924.webp` — Accent: `#EF4444`
-4. **Wiki** (`wikiatlas`): `/pngtree-stack-of-books-image-png-image_17810565.png` — Accent: `#4F46E5`
-5. **Games** (`gamesatlas`): `/Game-Boy-FL.png` — Accent: `#2563EB`
-6. **Tools** (`toolsatlas`): `/pngtree-work-and-repair-tools-png-image_14699823.png` — Accent: `#16A34A`
+4. **Shop** (`shopatlas`): Generic Shop Bag vector SVG — Accent: `#8B5CF6`
+5. **Support** (`supportatlas`): Generic Support Lifebuoy vector SVG — Accent: `#10B981`
 
-* Clicking any atlas switcher link transitions `currentAtlas` in-place, reskinning the homepage title, accent colors, post counter, and active text highlight without shifting button positions.
+### Navigation Behavior:
+- **Atlas Archives (`myatlas`, `amberatlas`, `youtubeatlas`)**: Clicking reskins the active atlas in-place (`currentAtlas`), updating the homepage title, accent colors, post counter, and active text highlight without shifting button positions.
+- **Dedicated Standalone Pages (`Shop`, `Support`)**:
+  - **Shop**: Clicking navigates directly to the dedicated Shop view (`view = 'shop'`).
+  - **Support**: Clicking navigates directly to the dedicated Support view (`view = 'support'`).
 
 ---
 
 ## 👤 Bottom Centered Account Button
 
-- Positioned centered below the 6 sub-atlas option links.
+- Positioned centered below the 5 sub-atlas option links.
 - Displays `AccountRingIcon` (`26px`) + `"Account"` text label.
 - Clicking transitions to the Curator Profile view (`view === 'users'`).

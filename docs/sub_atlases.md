@@ -27,9 +27,8 @@ An **Atlas** is a booru archive focused on a specific domain (`myatlas`, `ambera
 1. **`myatlas`**: Personal Workspace (`#CC5A01`) — Title: *"my atlas"*
 2. **`amberatlas`**: Amber Archive (`#D97706`) — Title: *"amber atlas"*
 3. **`youtubeatlas`**: YouTube Video Collection (`#EF4444`) — Title: *"youtube atlas"*
-4. **`wikiatlas`**: Wiki Document Archive (`#4F46E5`) — Title: *"wiki atlas"*
-5. **`gamesatlas`**: Games & ROM Archive (`#2563EB`) — Title: *"games atlas"*
-6. **`toolsatlas`**: Tools & Software Directory (`#16A34A`) — Title: *"tools atlas"*
+4. **`shopatlas`**: Shop & Hardware Archive (`#8B5CF6`) — Title: *"shop atlas"*
+5. **`supportatlas`**: Support & Community Archive (`#10B981`) — Title: *"support atlas"*
 
 ### Core Scoping Rules:
 1. **Personal Workspace (`myatlas`)**: Default editable user archive.
@@ -115,4 +114,6 @@ While **`myatlas`** functions strictly as a 100% offline local workspace, curate
 - [Ingestion & Manifest Workflow](ingestion_manifest_workflow.md)
 - [Browse Grid Specifications](views/grid.md)
 - [Home View Specifications](views/home.md)
+- [Curator Shop Specifications](views/shop.md)
+- [Support View Specifications](views/support.md)
 

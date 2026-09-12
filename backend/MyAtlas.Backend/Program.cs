@@ -932,6 +932,7 @@ app.MapGet("/api/stream/{id}", (string id) =>
         "jpg" or "jpeg" => "image/jpeg",
         "gif" => "image/gif",
         "webp" => "image/webp",
+        "svg" => "image/svg+xml",
         _ => "application/octet-stream"
     };
 
@@ -1006,6 +1007,10 @@ app.MapGet("/api/thumbnail/{**id}", async (HttpContext context, string id) =>
                     return Results.File(cachedWebpPath, "image/webp");
                 }
                 return Results.NotFound();
+            }
+            else if (ext is ".svg")
+            {
+                return Results.File(targetUrl, "image/svg+xml");
             }
             else
             {

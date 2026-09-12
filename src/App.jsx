@@ -10,6 +10,8 @@ import Tagger from './pages/Tagger';
 import Injector from './pages/Injector';
 import Folders from './pages/Folders';
 import AtlasSwitcher from './pages/AtlasSwitcher';
+import Shop from './pages/Shop';
+import Support from './pages/Support';
 import { fetchServerAtlases } from './services/api';
 import { BUILTIN_ATLASES, DEFAULT_ATLAS } from './utils/subAtlasUtils';
 
@@ -282,6 +284,10 @@ export default function App() {
           isReadOnly={isReadOnly}
           selectedPostId={selectedTaggerPostId}
         />
+      ) : view === 'shop' ? (
+        <Shop setView={setView} />
+      ) : view === 'support' ? (
+        <Support setView={setView} />
       ) : view === 'injector' ? (
         <Injector 
           isReadOnly={isReadOnly}

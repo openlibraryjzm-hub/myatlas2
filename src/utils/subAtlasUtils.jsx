@@ -23,22 +23,16 @@ export const BUILTIN_ATLASES = [
     accentColor: '#EF4444'
   },
   {
-    id: 'wikiatlas',
-    title: 'wiki atlas',
-    description: 'Wiki document archive',
-    accentColor: '#4F46E5'
+    id: 'shopatlas',
+    title: 'shop atlas',
+    description: 'Hardware, accessories & custom merchandise',
+    accentColor: '#8B5CF6'
   },
   {
-    id: 'gamesatlas',
-    title: 'games atlas',
-    description: 'Games & interactive media archive',
-    accentColor: '#2563EB'
-  },
-  {
-    id: 'toolsatlas',
-    title: 'tools atlas',
-    description: 'Tools & web software directory',
-    accentColor: '#16A34A'
+    id: 'supportatlas',
+    title: 'support atlas',
+    description: 'Help, documentation & community support',
+    accentColor: '#10B981'
   }
 ];
 
