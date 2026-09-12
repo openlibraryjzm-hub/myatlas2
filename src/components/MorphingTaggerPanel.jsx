@@ -274,8 +274,8 @@ export default function MorphingTaggerPanel({
   }, [inputValue, suggestions, selectedSuggestionIndex, currentPost]);
 
   const activeSourceUrl = useMemo(() => {
-    return getSourceUrl([...existingTags, ...stagedTags]);
-  }, [existingTags, stagedTags]);
+    return getSourceUrl([...existingTags, ...stagedTags]) || currentPost?.permalink || (currentPost?.source && String(currentPost.source).startsWith('http') ? currentPost.source : null);
+  }, [existingTags, stagedTags, currentPost]);
 
   if (!currentPost) return null;
 

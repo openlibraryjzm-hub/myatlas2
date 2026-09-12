@@ -80,7 +80,7 @@ CREATE INDEX IF NOT EXISTS idx_local_items_atlas ON local_items(atlas_id);
 
 ## ☁️ Hybrid Cloud Hosting Architecture (Supabase Engine)
 
-While **`myatlas`** functions strictly as a 100% offline local workspace, curated domain Sub-Atlases (such as **`gamesatlas`**) are powered by a zero-maintenance **Supabase Cloud Infrastructure** layer:
+While **`myatlas`** functions strictly as a 100% offline local workspace, curated domain Sub-Atlases (such as **`youtubeatlas`**) are powered by a zero-maintenance **Supabase Cloud Infrastructure** layer:
 
 ```
                           ┌───────────────────────────┐
@@ -91,7 +91,7 @@ While **`myatlas`** functions strictly as a 100% offline local workspace, curate
            ▼                                                         ▼
 ┌─────────────────────────────┐                           ┌─────────────────────────────┐
 │    Personal Workspace       │                           │   Curated Sub-Atlases       │
-│        (`myatlas`)          │                           │      (`gamesatlas`)         │
+│        (`myatlas`)          │                           │      (`youtubeatlas`)       │
 ├─────────────────────────────┤                           ├─────────────────────────────┤
 │ • Local C# Sidecar Engine   │                           │ • Supabase Postgres DB      │
 │ • Local SQLite Store        │                           │   (`posts` & `atlases`)     │
@@ -110,6 +110,7 @@ While **`myatlas`** functions strictly as a 100% offline local workspace, curate
 
 ## 📄 Related Documentation
 - [Big Picture Vision](big_picture_dream.md)
+- [YouTube Atlas Specifications](youtubeatlas.md)
 - [System Architecture](architecture.md)
 - [Ingestion & Manifest Workflow](ingestion_manifest_workflow.md)
 - [Browse Grid Specifications](views/grid.md)

@@ -27,6 +27,7 @@ my atlas 2/
 ├── docs/
 │   ├── big_picture_dream.md # Strategic vision: offline desktop app & booru platform roadmap
 │   ├── sub_atlases.md      # Atlas architecture: personal myatlas workspace & curated read-only Atlases
+│   ├── youtubeatlas.md     # YouTube Atlas architecture, API ingestion, taxonomy & Supabase cloud pipeline
 │   ├── architecture.md     # Desktop app runtime, C# sidecar engine, WebP proxy & STA video frame extractor
 │   ├── taxonomy.md         # Tag categories, boolean namespaces & expandable slot config
 │   ├── storage/

@@ -282,10 +282,10 @@ export default function Tagger({
     }
   }, [currentPost]);
 
-  // Extract active source URL from current item tags (existing + staged)
+  // Extract active source URL from current item tags (existing + staged) or post metadata
   const activeSourceUrl = useMemo(() => {
-    return getSourceUrl([...existingTags, ...stagedTags]);
-  }, [existingTags, stagedTags]);
+    return getSourceUrl([...existingTags, ...stagedTags]) || currentPost?.permalink || (currentPost?.source && String(currentPost.source).startsWith('http') ? currentPost.source : null);
+  }, [existingTags, stagedTags, currentPost]);
 
   // Scroll active timeline item into view
   useEffect(() => {
@@ -864,6 +864,9 @@ export default function Tagger({
   const isVideoFormat = (url, tagsInput = []) => {
     if (!url) return false;
     const tags = parseTagsArray(tagsInput);
+    if (tags.includes('meta:youtube') || tags.includes('source:youtube') || tags.some(t => String(t).startsWith('source:https://www.youtube.com'))) {
+      return false;
+    }
     // Skip image previews and direct image extensions immediately (they cannot be played inside a <video> element)
     if (url.includes('external-preview.redd.it') || url.match(/\.(png|jpg|jpeg|gif|webp)/i)) {
       return false;

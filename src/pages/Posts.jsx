@@ -868,12 +868,14 @@ export default function Posts({
               {/* Morphing Media Element */}
               {(() => {
                 const allTags = Array.isArray(selectedPost.tags) ? selectedPost.tags : [];
-                const isVideo = allTags.includes('meta:format:video') || 
+                const isYoutube = selectedPost.atlas_id === 'youtubeatlas' || selectedPost.subreddit === 'youtube' || allTags.includes('meta:youtube') || allTags.includes('source:youtube');
+                const isVideo = !isYoutube && (
+                                allTags.includes('meta:format:video') || 
                                 allTags.includes('meta:extension:mp4') || 
                                 allTags.includes('meta:extension:webm') || 
                                 allTags.includes('meta:extension:mov') || 
                                 (selectedPost.filePath && selectedPost.filePath.match(/\.(mp4|webm|mov|mkv|avi)$/i)) || 
-                                (selectedPost.url && selectedPost.url.match(/\.(mp4|webm|mov|mkv|avi)$/i));
+                                (selectedPost.url && selectedPost.url.match(/\.(mp4|webm|mov|mkv|avi)$/i)));
 
                 const isTagger = viewerMode === 'tagger' || viewerMode === 'edit';
                 const mediaStyle = {

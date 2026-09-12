@@ -1,11 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Upload as UploadIcon, Database, CheckCircle, AlertTriangle, FileJson, Folder, HardDrive, X, RefreshCw, Trash2, Tag, Compass, Check } from 'lucide-react';
+import { Upload as UploadIcon, Database, CheckCircle, AlertTriangle, FileJson, Folder, HardDrive, X, RefreshCw, Trash2, Tag, Compass, Check, Play, Key } from 'lucide-react';
 import { isDesktopApp, selectLocalFiles, selectLocalDirectory, formatLocalAssetUrl, getLocalFileAsBlobUrl, getOptimizedThumbnailUrl, generateWebpThumbnail, generateVideoWebpThumbnail } from '../utils/localFiles';
 import { importScrapedJsonArray, addLocalMediaFile, clearAllLocalStores } from '../services/localDb';
 import { fetchServerAtlases } from '../services/api';
 import { ensureTagCategoriesExist } from '../data/mockData';
 import { commitPostsToSupabase, uploadMediaToSupabaseStorage, isSupabaseConfigured } from '../services/supabaseClient';
+import { getYoutubeApiKey, setYoutubeApiKey, parseMultipleYoutubeLinks, fetchYoutubeMetadataBatch, buildYoutubeTaxonomyTags } from '../services/youtubeApi';
 import './Upload.css';
+
+function YoutubeIcon({ size = 16, color = "currentColor", style, ...props }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill={color} 
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+    </svg>
+  );
+}
 
 // Deterministic pastel themes based on string hashes
 const PASTEL_PALETTES = [
@@ -162,6 +179,84 @@ export default function Upload({ currentAtlas = 'myatlas', isReadOnly = false })
   const [isClearing, setIsClearing] = useState(false);
   const [atlasTagInput, setAtlasTagInput] = useState('atlas:');
   const [customBatchTagsInput, setCustomBatchTagsInput] = useState('');
+
+  const [apiKeyInput, setApiKeyInput] = useState(() => getYoutubeApiKey());
+  const [apiKeySavedMsg, setApiKeySavedMsg] = useState(false);
+  const [youtubeLinksInput, setYoutubeLinksInput] = useState('');
+  const [fetchingYoutube, setFetchingYoutube] = useState(false);
+
+  const handleSaveApiKey = () => {
+    setYoutubeApiKey(apiKeyInput);
+    setApiKeySavedMsg(true);
+    setTimeout(() => setApiKeySavedMsg(false), 2500);
+  };
+
+  const parsedYoutubeLinks = React.useMemo(() => {
+    return parseMultipleYoutubeLinks(youtubeLinksInput);
+  }, [youtubeLinksInput]);
+
+  const handleFetchYoutubeVideos = async () => {
+    if (!parsedYoutubeLinks.valid || parsedYoutubeLinks.valid.length === 0) {
+      setStatus('error');
+      setMessage('No valid YouTube URLs or Video IDs found in the input box.');
+      return;
+    }
+
+    setFetchingYoutube(true);
+    setStatus('parsing');
+    setMessage(`Fetching video details from YouTube for ${parsedYoutubeLinks.valid.length} video(s)...`);
+
+    try {
+      const videoIds = parsedYoutubeLinks.valid.map(v => v.id);
+      const metadataBatch = await fetchYoutubeMetadataBatch(videoIds);
+
+      const now = new Date();
+      const pad = (num) => String(num).padStart(2, '0');
+      const batchTimestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+
+      const parsed = metadataBatch.map((meta, idx) => {
+        const derivedTags = buildYoutubeTaxonomyTags(meta);
+        derivedTags.push(`meta:upload:${batchTimestamp}`);
+
+        activeBatchUserTags.forEach(bt => {
+          if (!derivedTags.includes(bt)) derivedTags.push(bt);
+        });
+
+        const palette = getPalette(meta.title || meta.channelTitle || String(idx));
+
+        return {
+          _tempId: `yt_${meta.id}_${Date.now()}_${idx}`,
+          id: meta.id,
+          title: meta.title,
+          author: meta.channelTitle,
+          subreddit: 'youtube',
+          format: 'jpg',
+          url: meta.thumbnailUrl,
+          mediaUrl: meta.thumbnailUrl,
+          thumbnail: meta.thumbnailUrl,
+          permalink: meta.url,
+          source: meta.url,
+          created_at: meta.publishedAt || new Date().toISOString(),
+          derivedTags: Array.from(new Set(derivedTags)),
+          atlas_id: 'youtubeatlas',
+          colorTheme: { bg: palette.bg, text: palette.text, accent: '#EF4444', description: palette.desc }
+        };
+      });
+
+      parsed.forEach(item => ensureTagCategoriesExist(item.derivedTags));
+
+      setSelectedAtlasSlug('youtubeatlas');
+      setPosts(parsed);
+      setStatus('loaded');
+      setMessage(`Successfully fetched ${parsed.length} YouTube video(s)! Review preview cards below and click "Import into youtubeatlas".`);
+    } catch (err) {
+      console.error('Error fetching YouTube metadata:', err);
+      setStatus('error');
+      setMessage(`Failed to fetch YouTube metadata: ${err.message}`);
+    } finally {
+      setFetchingYoutube(false);
+    }
+  };
 
   useEffect(() => {
     if (currentAtlas) {
@@ -882,7 +977,7 @@ export default function Upload({ currentAtlas = 'myatlas', isReadOnly = false })
           {/* 1. Upload Source Method */}
           <div>
             <label style={{ fontSize: '12px', fontWeight: 700, display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Select Local Source Type
+              Select Source Ingestion Mode
             </label>
             <div style={{ display: 'flex', gap: '12px' }}>
               <button
@@ -905,6 +1000,50 @@ export default function Upload({ currentAtlas = 'myatlas', isReadOnly = false })
                 }}
               >
                 <HardDrive size={16} /> Select Local Media Files
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setUploadType('youtube'); setSelectedAtlasSlug('youtubeatlas'); setTargetAtlas('youtubeatlas'); handleClear(); }}
+                style={{
+                  flex: 1,
+                  padding: '10px 14px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  border: uploadType === 'youtube' ? '2px solid #EF4444' : '1px solid var(--border-color)',
+                  background: uploadType === 'youtube' ? 'rgba(239, 68, 68, 0.08)' : 'var(--bg-primary)',
+                  color: uploadType === 'youtube' ? '#EF4444' : 'var(--text-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                <YoutubeIcon size={16} /> Import YouTube Videos
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setUploadType('json'); setTargetAtlas('myatlas'); handleClear(); }}
+                style={{
+                  flex: 1,
+                  padding: '10px 14px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  border: uploadType === 'json' ? '2px solid var(--accent-color)' : '1px solid var(--border-color)',
+                  background: uploadType === 'json' ? 'var(--accent-light)' : 'var(--bg-primary)',
+                  color: uploadType === 'json' ? 'var(--accent-color)' : 'var(--text-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                <FileJson size={16} /> Import Scraped JSON
               </button>
             </div>
           </div>
@@ -1005,6 +1144,137 @@ export default function Upload({ currentAtlas = 'myatlas', isReadOnly = false })
           )}
         </div>
       </div>
+
+      {/* Mode C: YouTube Links Ingestion */}
+      {posts.length === 0 && uploadType === 'youtube' && (
+        <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* API Key Configuration Card */}
+          <div style={{ background: 'var(--bg-secondary)', padding: '16px 20px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <label style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Key size={15} style={{ color: '#EF4444' }} />
+                YouTube Data API Key Settings (Optional)
+              </label>
+              <span style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '4px', backgroundColor: apiKeyInput ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)', color: apiKeyInput ? '#15803d' : '#b91c1c' }}>
+                {apiKeyInput ? '🔑 YouTube Data API Active (Full Tags)' : '🌐 oEmbed Fallback Active (Basic Info)'}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <input
+                type="password"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                placeholder="Paste YouTube Data API v3 key here..."
+                style={{
+                  flex: 1,
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-primary)',
+                  fontFamily: 'monospace',
+                  fontSize: '12px'
+                }}
+              />
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleSaveApiKey}
+                style={{ fontSize: '12px', padding: '8px 14px', whiteSpace: 'nowrap' }}
+              >
+                {apiKeySavedMsg ? 'Saved!' : 'Save Key'}
+              </button>
+            </div>
+            <p style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px', margin: 0 }}>
+              Entering an API key enables creator video tags, publish dates, and video duration extraction. If left blank, public oEmbed is used automatically.
+            </p>
+          </div>
+
+          {/* Multi-Link Textarea Input */}
+          <div style={{ background: 'var(--bg-secondary)', padding: '20px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <YoutubeIcon size={16} style={{ color: '#EF4444' }} />
+                Paste YouTube Video Links or IDs (One per line)
+              </label>
+              {parsedYoutubeLinks.total > 0 && (
+                <span style={{ fontSize: '12px', fontWeight: 600, color: parsedYoutubeLinks.valid.length > 0 ? '#15803d' : '#b91c1c' }}>
+                  {parsedYoutubeLinks.valid.length} valid video link(s) detected
+                  {parsedYoutubeLinks.invalid.length > 0 && ` (${parsedYoutubeLinks.invalid.length} invalid)`}
+                </span>
+              )}
+            </div>
+
+            <textarea
+              rows={8}
+              value={youtubeLinksInput}
+              onChange={(e) => setYoutubeLinksInput(e.target.value)}
+              placeholder={`Paste YouTube URLs or Video IDs here (one per line)...\n\nExamples:\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\nhttps://youtu.be/dQw4w9WgXcQ\nhttps://www.youtube.com/shorts/dQw4w9WgXcQ\ndQw4w9WgXcQ`}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color)',
+                background: 'var(--bg-primary)',
+                fontFamily: 'monospace',
+                fontSize: '13px',
+                lineHeight: 1.5,
+                resize: 'vertical',
+                color: 'var(--text-primary)'
+              }}
+            />
+
+            {/* Link Preview Badges */}
+            {parsedYoutubeLinks.valid.length > 0 && (
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '10px' }}>
+                {parsedYoutubeLinks.valid.map((v) => (
+                  <span
+                    key={v.id}
+                    style={{
+                      fontSize: '11px',
+                      fontFamily: 'monospace',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      color: '#dc2626',
+                      border: '1px solid rgba(239, 68, 68, 0.2)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <Play size={10} fill="currentColor" />
+                    {v.id}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Submit Action Button */}
+            <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleFetchYoutubeVideos}
+                disabled={fetchingYoutube || parsedYoutubeLinks.valid.length === 0}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#EF4444',
+                  borderColor: '#dc2626',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontWeight: 600
+                }}
+              >
+                <YoutubeIcon size={16} />
+                {fetchingYoutube ? 'Fetching Video Details...' : `Fetch & Preview ${parsedYoutubeLinks.valid.length} YouTube Video(s)`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mode A: Dropzone for JSON Files */}
       {posts.length === 0 && uploadType === 'json' && (

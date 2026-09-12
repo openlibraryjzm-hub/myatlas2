@@ -1,7 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Image, Play } from 'lucide-react';
-import { formatLocalAssetUrl } from '../utils/localFiles';
+import { formatLocalAssetUrl, openExternalUrl } from '../utils/localFiles';
 import './PostCard.css';
+
+function YoutubeIcon({ size = 16, color = "currentColor", style, ...props }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill={color} 
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+    </svg>
+  );
+}
 
 const parseTagsArray = (raw) => {
   if (!raw) return [];
@@ -32,6 +48,13 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
                   (filePath && Boolean(filePath.match(/\.(mp4|webm|mov|mkv|avi)$/i))) || 
                   (url && Boolean(url.match(/\.(mp4|webm|mov|mkv|avi)$/i)));
 
+  const isYoutubePost = post.atlas_id === 'youtubeatlas' || 
+                        post.atlas === 'youtubeatlas' || 
+                        subreddit === 'youtube' || 
+                        allTags.includes('meta:youtube') || 
+                        allTags.includes('source:youtube') || 
+                        allTags.some(t => String(t).startsWith('source:https://www.youtube.com'));
+
   const isToolAtlas = subreddit === 'toolatlas' || 
                       subreddit === 'toolsatlas' || 
                       post.atlas_id === 'toolsatlas' || 
@@ -58,11 +81,16 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
                 (url && Boolean(url.match(/\.svg$/i)));
 
   const isBase64Thumb = thumbnail && (thumbnail.startsWith('data:image/webp') || thumbnail.startsWith('blob:'));
+  const isRemoteAsset = (thumbnail && (thumbnail.startsWith('http://') || thumbnail.startsWith('https://')) && !thumbnail.includes('127.0.0.1:7171')) ||
+                        (url && (url.startsWith('http://') || url.startsWith('https://')) && !url.includes('127.0.0.1:7171')) ||
+                        (mediaUrl && (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://')) && !mediaUrl.includes('127.0.0.1:7171'));
 
   let imageSrc = null;
   if (!imgError) {
     if (isBase64Thumb) {
       imageSrc = thumbnail;
+    } else if (isYoutubePost || isRemoteAsset) {
+      imageSrc = thumbnail || url || mediaUrl || assetUrl;
     } else if (thumbnail && thumbnail.includes('/api/thumbnail/')) {
       imageSrc = thumbnail;
     } else if (id || filePath) {
@@ -96,6 +124,12 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
     setIsImgLoaded(true);
   };
 
+  const isLocalVideo = isVideo && !isYoutubePost;
+
+  const handleCardClick = (e) => {
+    if (onPostClick) onPostClick(post);
+  };
+
   // Space-separated list of tags for DOM-based selection
   const tagsAttribute = allTags.join(' ');
 
@@ -103,19 +137,19 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
 
   return (
     <article 
-      className={`post-card-minimal ${isToolAtlas ? 'toolatlas-card' : ''} ${isGif ? 'gif-card' : ''} ${isVideo ? 'video-card' : ''}`}
+      className={`post-card-minimal ${isToolAtlas ? 'toolatlas-card' : ''} ${isGif ? 'gif-card' : ''} ${isLocalVideo ? 'video-card' : ''} ${isYoutubePost ? 'youtube-card' : ''}`}
       data-post-id={id}
       data-tags={tagsAttribute}
       style={isToolAtlas ? { backgroundColor: 'transparent' } : { backgroundColor: safeTheme.bg }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onPostClick && onPostClick(post)}
+      onClick={handleCardClick}
       onContextMenu={(e) => {
         e.preventDefault();
         if (onRightClick) onRightClick(post);
       }}
     >
-      {isVideo && (isHovered || imgError || !imageSrc) ? (
+      {isLocalVideo && (isHovered || imgError || !imageSrc) ? (
         <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
           <video 
             src={assetUrl} 
@@ -172,7 +206,31 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
               height: '100%'
             }}
           />
-          {isVideo && (
+          {isYoutubePost ? (
+            <div 
+              className="post-card-youtube-badge"
+              style={{
+                position: 'absolute',
+                bottom: '8px',
+                right: '8px',
+                backgroundColor: 'rgba(239, 68, 68, 0.9)',
+                color: '#fff',
+                padding: '3px 6px',
+                borderRadius: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                pointerEvents: 'none',
+                backdropFilter: 'blur(4px)',
+                letterSpacing: '0.04em'
+              }}
+            >
+              <YoutubeIcon size={11} color="#fff" />
+              <span>YOUTUBE</span>
+            </div>
+          ) : isVideo && (
             <div 
               className="post-card-video-badge"
               style={{
