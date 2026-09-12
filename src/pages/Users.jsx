@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileText, Heart, Settings, ShoppingBag, LogOut, Globe, Award, Sparkles, Users as UsersIcon, UserPlus, Bookmark, SlidersHorizontal, BookOpen, MessageSquare, UserCheck, Calendar } from 'lucide-react';
+import PopOutAvatar from '../components/PopOutAvatar';
+import PopOutAvatarConfigModal from '../components/PopOutAvatarConfigModal';
+import { getAvatarConfig } from '../utils/avatarStorage';
 import './Users.css';
 
 export default function Users({ currentUser }) {
   const user = currentUser || { username: 'curator', displayName: 'Curator' };
+
+  const [avatarConfig, setAvatarConfig] = useState(() => getAvatarConfig());
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleAvatarChange = (e) => {
+      if (e.detail) setAvatarConfig(e.detail);
+    };
+    window.addEventListener('myatlas_avatar_changed', handleAvatarChange);
+    return () => window.removeEventListener('myatlas_avatar_changed', handleAvatarChange);
+  }, []);
 
   const [activeMode, setActiveMode] = React.useState('atlases');
   const [hoveredItem, setHoveredItem] = React.useState(null);
@@ -351,80 +365,31 @@ export default function Users({ currentUser }) {
   return (
     <div className="user-profile-page">
       <div className="user-profile-container">
-        {/* Left Side: Twitter/X Style Profile Card and Gelbooru Vertical Link Stack */}
+        {/* Left Side: 2.5D Orb Showcase Card Centered */}
         <aside className="user-profile-left">
-          {/* Twitter / X Style Curator Profile Card (320px sidebar width) */}
-          <div className="twitter-profile-card">
-            <div className="twitter-card-banner"></div>
-            <div className="twitter-card-body">
-              <div className="twitter-avatar-row">
-                <div className="twitter-avatar-circle">
-                  {currentUser?.avatarUrl ? (
-                    <img src={currentUser.avatarUrl} alt={currentUser.username} className="twitter-avatar-img" />
-                  ) : (
-                    <span className="twitter-avatar-initial">{(currentUser?.displayName || 'C').charAt(0).toUpperCase()}</span>
-                  )}
-                </div>
-              </div>
+          {/* Minimalist 2.5D Orb Showcase Card */}
+          <div className="orb-showcase-card">
+            <div className="orb-avatar-stage" onClick={() => setIsConfigModalOpen(true)}>
+              <PopOutAvatar
+                size={160}
+                config={avatarConfig}
+                className="user-orb-avatar"
+                title="Click to configure avatar & pop-out settings"
+              />
+            </div>
 
-              <div className="twitter-user-identity">
-                <h3 className="twitter-display-name">{currentUser?.displayName || 'Curator'}</h3>
-                <span className="twitter-user-handle">@{currentUser?.username || 'curator'}</span>
-              </div>
+            <div className="orb-user-identity">
+              <h3 className="orb-display-name">{currentUser?.displayName || 'Curator'}</h3>
+              <span className="orb-user-handle">@{currentUser?.username || 'curator'}</span>
+            </div>
 
-              <p className="twitter-card-bio">
-                Curating local hard drive archives, high-density booru taxonomy, and custom Valve hardware accessories.
-              </p>
-
-              <div className="twitter-meta-row">
-                <span className="twitter-meta-item">
-                  <Calendar size={13} className="meta-icon" /> Joined Sep 2026
-                </span>
-                <span className="twitter-stat-item-inline">
-                  <strong>1,000</strong> <span className="stat-label">Friends</span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Vertically Stacked Gelbooru My Account Style Links & Descriptions */}
-          <div className="user-action-vertical-stack">
-            <div className="gelbooru-link-item">
-              <a href="#posts" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
-                <FileText size={14} className="link-icon" /> Posts / Submitted
-              </a>
-              <span className="gelbooru-link-desc">View your uploaded local media, scrapes, and tagged posts across your hard drive archive.</span>
-            </div>
-            <div className="gelbooru-link-item">
-              <a href="#favorites" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
-                <Heart size={14} className="link-icon" /> My Favorites
-              </a>
-              <span className="gelbooru-link-desc">View a condensed list of all your favorited photos and videos on your local atlas.</span>
-            </div>
-            <div className="gelbooru-link-item">
-              <a href="#shop" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
-                <ShoppingBag size={14} className="link-icon" /> Curator Shop
-              </a>
-              <span className="gelbooru-link-desc">Browse Valve hardware, custom 3D printed accessories, and handmade add-ons crafted by yours truly.</span>
-            </div>
-            <div className="gelbooru-link-item">
-              <a href="#searches" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
-                <Bookmark size={14} className="link-icon" /> Saved Searches
-              </a>
-              <span className="gelbooru-link-desc">All of the tag searches you have bookmarked on your atlas in a single area.</span>
-            </div>
-            <div className="gelbooru-link-item">
-              <a href="#options" className="gelbooru-title-link" onClick={(e) => e.preventDefault()}>
-                <SlidersHorizontal size={14} className="link-icon" /> Options & Blacklists
-              </a>
-              <span className="gelbooru-link-desc">Account options such as tag blacklists, auto-tagging rules, and SQLite cache preferences.</span>
-            </div>
-            <div className="gelbooru-link-item">
-              <a href="#logout" className="gelbooru-title-link logout-link" onClick={(e) => e.preventDefault()}>
-                <LogOut size={14} className="link-icon" /> Logout
-              </a>
-              <span className="gelbooru-link-desc">End your active curator session and clear authentication cookies for this account.</span>
-            </div>
+            <button
+              type="button"
+              className="configure-avatar-btn"
+              onClick={() => setIsConfigModalOpen(true)}
+            >
+              <Sparkles size={14} /> Configure Avatar
+            </button>
           </div>
         </aside>
 
@@ -539,9 +504,15 @@ export default function Users({ currentUser }) {
           </div>
           {hoveredItem.desc && <p className="tooltip-desc">{hoveredItem.desc}</p>}
           {hoveredItem.count && <div className="tooltip-meta">Stats: <strong>{hoveredItem.count}</strong></div>}
-          {hoveredItem.status && <div className="tooltip-meta">Status: <strong>{hoveredItem.status}</strong></div>}
         </div>
       )}
+
+      {/* 2.5D Pop-Out Avatar Configurator Modal */}
+      <PopOutAvatarConfigModal
+        isOpen={isConfigModalOpen}
+        onClose={() => setIsConfigModalOpen(false)}
+        onSaved={(newCfg) => setAvatarConfig(newCfg)}
+      />
     </div>
   );
 }

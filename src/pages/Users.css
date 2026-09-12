@@ -35,13 +35,81 @@
   max-height: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.85rem;
   box-sizing: border-box;
-  overflow-y: auto;
+  overflow: visible;
   padding-right: 0.25rem;
 }
 
-/* Twitter / X Style Curator Profile Card (320px Sidebar Width - Cardless Backdrop) */
+/* 2.5D Orb Avatar Showcase Card (Cardless Backdrop) */
+.orb-showcase-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 0.5rem;
+  background-color: transparent;
+  border-bottom: none;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.orb-avatar-stage {
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb-user-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  margin-bottom: 0.85rem;
+  text-align: center;
+}
+
+.orb-display-name {
+  font-family: var(--font-serif, 'Lora', serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #2A2825);
+  margin: 0;
+}
+
+.orb-user-handle {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary, #78716C);
+}
+
+.configure-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  background-color: var(--bg-secondary, #F5F2EB);
+  border: 1px solid var(--border-color, #E5E0D8);
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary, #2A2825);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.configure-avatar-btn:hover {
+  background-color: var(--accent-color-light, rgba(204, 90, 1, 0.1));
+  border-color: var(--accent-color, #CC5A01);
+  color: var(--accent-color, #CC5A01);
+  transform: translateY(-1px);
+}
+
+/* Twitter / X Style Curator Profile Card (Legacy Fallback) */
 .twitter-profile-card {
   width: 100%;
   background-color: transparent;

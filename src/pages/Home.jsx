@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { renderDynamicTitle } from '../utils/subAtlasUtils';
+import PopOutAvatar from '../components/PopOutAvatar';
+import { getAvatarConfig } from '../utils/avatarStorage';
 import './Home.css';
 
 import keysImg from '/aesthetic-value-of-vintage-keys-free-png.webp';
@@ -85,6 +87,15 @@ export default function Home({
   onConnectAtlas
 }) {
   const [localQuery, setLocalQuery] = useState(searchQuery);
+  const [avatarConfig, setAvatarConfig] = useState(() => getAvatarConfig());
+
+  useEffect(() => {
+    const handleAvatarChange = (e) => {
+      if (e.detail) setAvatarConfig(e.detail);
+    };
+    window.addEventListener('myatlas_avatar_changed', handleAvatarChange);
+    return () => window.removeEventListener('myatlas_avatar_changed', handleAvatarChange);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -176,13 +187,21 @@ export default function Home({
         })}
       </div>
 
-      {/* Bottom Centered Account Button */}
+      {/* Bottom Centered Prominent Pop-Out Avatar Account Entrance */}
       <div className="home-account-container">
-        <div className="home-option-item home-account-item" onClick={() => setView('users')}>
-          <div className="home-option-icon">
-            <AccountRingIcon size={26} color={accentColor} />
+        <div
+          className="home-account-prominent-item"
+          onClick={() => setView('users')}
+          title="Open Curator Profile"
+        >
+          <div className="home-avatar-stage">
+            <PopOutAvatar
+              size={168}
+              config={avatarConfig}
+              className="home-prominent-avatar"
+            />
           </div>
-          <span className="home-option-link">Account</span>
+          <span className="home-account-label">Curator Profile</span>
         </div>
       </div>
     </main>

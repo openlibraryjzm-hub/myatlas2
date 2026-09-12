@@ -11,8 +11,8 @@ The Curator Profile page fully adheres to the application-wide **Claude.ai visua
 - **Accent Palette**: Claude warm amber orange (`--accent-color: #CC5A01`, hover `#B24D00`, light tint `#FDF5E6`).
 - **Typography**: `Lora` serif headings for user titles paired with `Plus Jakarta Sans` body and button labels. Monospace typography used for numerical counters.
 - **Floating Cardless Architecture**:
-  - The left sidebar profile card (`.twitter-profile-card`), Gelbooru account links stack (`.user-action-vertical-stack`), and right grid container (`.jei-card-container`) feature `background: transparent`, `border: none`, and `box-shadow: none`, floating seamlessly on the primary cream page background (`#FBFAF7`).
-  - The cover banner (`.twitter-card-banner`) features a warm amber gradient with rounded corners (`10px`), while the circular profile picture (`.twitter-avatar-circle`) uses a 3px ring matching the primary page background (`--bg-primary`).
+  - The left column orb showcase card (`.orb-showcase-card`) and right grid container (`.jei-card-container`) feature `background: transparent`, `border: none`, and `box-shadow: none`, floating seamlessly on the primary cream page background (`#FBFAF7`).
+  - Highlights the centerpiece 160px 2.5D Orb Avatar (`PopOutAvatar.jsx`) with customizable orb accent colors (`#CC5A01`), ring stroke thickness, outer glow, image positioning, and 4-quadrant pop-out overlays.
 
 ---
 
@@ -28,15 +28,15 @@ The Curator Profile view uses a two-column responsive flex layout (`.user-profil
 │            (320px)           │                 (Flex 1)                 │
 │                              │                                          │
 │  ┌────────────────────────┐  │  ┌────────────────────────────────────┐  │
-│  │ [COVER BANNER ~80px]   │  │  │  🌐    💬    🏆    ✨    👥       │  │
-│  │ (👤)  Curator @curator │  │  │ ---ATLAS--FORUMS-BADGES-LINKS-FRIENDS │  │
-│  │ "Short curator bio..." │  │  ├────────────────────────────────────┤  │
-│  │ 📅Joined 👥1,000 Friends│  │ ┌──┐ ┌──┐ ┌──┐ ┌──┐ ┌──┐ ┌──┐ ┌──┐ │  │
+│  │ 🔮 160px 2.5D Orb Stage│  │  │  🌐    💬    🏆    ✨    👥       │  │
+│  │    (Click to Config)   │  │  │ ---ATLAS--FORUMS-BADGES-LINKS-FRIENDS │  │
+│  │    Curator @curator    │  │  ├────────────────────────────────────┤  │
+│  │ [✨ Configure Avatar]  │  │ ┌──┐ ┌──┐ ┌──┐ ┌──┐ ┌──┐ ┌──┐ ┌──┐ │  │
 │  └────────────────────────┘  │  │ │🌐│ │💎│ │📺│ │📚│ │🎮│ │🛠️│ │⚡│ │  │
-│  │ 📄 Posts / Submitted   │  │  │ └──┘ └──┘ └──┘ └──┘ └──┘ └──┘ └──┘ │  │
-│  │ ❤️ Favorites          │  │  │ High-Density Minecraft JEI/NEI Grid│  │
-│  │ 🛍️ Curator Shop        │  │  │ [ 💬 Floating Rich Hover Tooltip ] │  │
-│  └────────────────────────┘  │  ├────────────────────────────────────┤  │
+│                              │  │ └──┘ └──┘ └──┘ └──┘ └──┘ └──┘ └──┘ │  │
+│                              │  │ High-Density Minecraft JEI/NEI Grid│  │
+│                              │  │ [ 💬 Floating Rich Hover Tooltip ] │  │
+│                              │  ├────────────────────────────────────┤  │
 │                              │  │ Showing 1-200 of 1,000  ◄ Page 1 ►  │  │
 │                              │  └────────────────────────────────────┘  │
 └──────────────────────────────┴──────────────────────────────────────────┘
@@ -46,29 +46,22 @@ The Curator Profile view uses a two-column responsive flex layout (`.user-profil
 
 ## 👤 Left Column System (`.user-profile-left`)
 
-### 1. Twitter / X Style Curator Profile Card (`.twitter-profile-card`)
-- **Dimensions**: Strictly bounded within the 320px left column.
-- **Style**: Floating cardless layout on page background (`background: transparent`, `border: none`, `box-shadow: none`).
-- **Content**:
-  - **Cover Banner**: Warm amber gradient cover banner (`height: 80px`).
-  - **Overlapping Avatar Circle**: 60px circular avatar with a 3px border ring, overlapping 50% of the banner bottom edge (`margin-top: -30px`).
-  - **User Identity**: Display name (`Curator`) and handle badge (`@curator`).
-  - **Short Bio Snippet**: 1–2 line curator bio snippet.
-  - **Joined Date & Inline Friends Counter**: `<Calendar size={13} /> Joined Sep 2026` aligned horizontally on the same line with **`1,000 Friends`**.
+### 1. Minimalist 2.5D Orb Showcase Card (`.orb-showcase-card`)
+- **Dimensions**: Centered within the 320px left column.
+- **Interactive Stage**: Houses a prominent **160px 2.5D Pop-Out Avatar** (`<PopOutAvatar size={160} config={avatarConfig} />`).
+- **Trigger**: Clicking either the avatar stage (`.orb-avatar-stage`) or the `"Configure Avatar"` action button (`.configure-avatar-btn`) launches the **Pop-Out Avatar Configurator Modal** (`PopOutAvatarConfigModal.jsx`).
+- **User Identity**: Display name (`Curator`) rendered in `Lora` serif heading style alongside the handle badge (`@curator`).
+- **Action Button**: `<Sparkles size={14} /> Configure Avatar` pill button featuring warm amber hover transitions.
 
-### 2. Gelbooru-Style Account Links & Descriptions (`.user-action-vertical-stack`)
-Vertically stacked list of Gelbooru-inspired hyperlink titles with accompanying description text:
-
-| Hyperlink Title | Lucide Icon | Accompanying Description Text |
-| :--- | :--- | :--- |
-| **Posts / Submitted** | `<FileText size={14} />` | View your uploaded local media, scrapes, and tagged posts across your hard drive archive. |
-| **My Favorites** | `<Heart size={14} />` | View a condensed list of all your favorited photos and videos on your local atlas. |
-| **Curator Shop** | `<ShoppingBag size={14} />` | Browse Valve hardware, custom 3D printed accessories, and handmade add-ons crafted by yours truly. |
-| **Saved Searches** | `<Bookmark size={14} />` | All of the tag searches you have bookmarked on your atlas in a single area. |
-| **Options & Blacklists** | `<SlidersHorizontal size={14} />` | Account options such as tag blacklists, auto-tagging rules, and SQLite cache preferences. |
-| **Logout** | `<LogOut size={14} />` | End your active curator session and clear authentication cookies for this account. |
-
-- **Style**: Floating cardless layout directly on the page background (`background: transparent`, `border: none`, `box-shadow: none`), featuring amber links (`var(--accent-color)`), red hover accent for Logout (`#EF4444`), hover underline effect, and compact secondary descriptions (`--text-secondary`).
+### 2. Avatar Configurator Modal Workflow (`PopOutAvatarConfigModal.jsx`)
+When triggered from the Curator Profile page, the modal overlay enables live customization:
+- **340px Interactive Studio Stage**: Renders `<PopOutAvatar size={340} config={config} />` updating in real-time as controls adjust.
+- **Image Source**: URL text input field and local file uploader (`FileReader` base64 Data URL conversion).
+- **Scale & Aspect Fit**: Continuous slider (`0.5x` to `2.5x`) and `contain` vs `cover` aspect fit toggle.
+- **XY Shift Sliders**: Horizontal & Vertical position shift controls (`-40%` to `+40%`).
+- **4-Quadrant Pop-Out Matrix**: 2×2 toggle grid (`topLeft`, `topRight`, `bottomLeft`, `bottomRight`) controlling extended clip paths (`-400%` to `+500%`).
+- **Orb Styling**: Color palette swatches + native color picker, border stroke thickness (`2px` to `12px`), and outer glow shadow toggle.
+- **State Persistence**: Saving writes to `localStorage` key `myatlas_popout_avatar_config` and broadcasts custom window event `myatlas_avatar_changed` to update all active views synchronously.
 
 ---
 

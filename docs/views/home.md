@@ -44,8 +44,9 @@ Centered below the search input, a spatially fixed row of 5 tactile sub-atlas sw
 
 ---
 
-## 👤 Bottom Centered Account Button
+## 👤 Bottom Centered Prominent 2.5D Pop-Out Avatar Entrance
 
-- Positioned centered below the 5 sub-atlas option links.
-- Displays `AccountRingIcon` (`26px`) + `"Account"` text label.
-- Clicking transitions to the Curator Profile view (`view === 'users'`).
+- **Positioning**: Centered below the 5 sub-atlas option links (`.home-account-container`).
+- **Visual Design**: Displays a prominent centerpiece **168px 2.5D Pop-Out Avatar** (`<PopOutAvatar size={168} config={avatarConfig} />`) inside an interactive stage (`.home-avatar-stage`) stacked above the `"Curator Profile"` serif label.
+- **Real-Time Synchronization**: Listens for global `myatlas_avatar_changed` custom events on `window`, instantly updating character artwork, orb color, scale, positioning shifts, and 4-quadrant pop-out clipping when edited via the configurator modal.
+- **Navigation**: Clicking anywhere on the avatar stage or text label transitions directly to the Curator Profile view (`view === 'users'`).
