@@ -1,6 +1,8 @@
 # Sub-Atlas System Architecture: Multi-Atlas Scoping (`docs/sub_atlases.md`)
 
-This document defines the technical specifications, atlas scoping rules, atlas switcher, dynamic title logo integration, and backend storage engine for **Atlases** in **MyAtlas**.
+> [!NOTE]
+> **Archived Feature Specification (Retained for Reference)**
+> Multi-atlas cloud scoping and Supabase cloud synchronization specs are archived. MyAtlas operates as a 100% offline personal local Booru desktop manager.
 
 ---
 

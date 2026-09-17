@@ -1,5 +1,9 @@
 # 2.5D Pop-Out Avatar System Specifications (`docs/architecture/popout_avatar_system.md`)
 
+> [!NOTE]
+> **Archived Feature Specification (Retained for Reference)**
+> 2.5D Pop-Out Avatar system and studio configurator specs are archived.
+
 This document defines the technical architecture, 4-layer z-index stack, 4-quadrant polygon clipping system, persistent configuration contract, and configurator modal for the **2.5D Pop-Out Avatar System** across MyAtlas (`PopOutAvatar.jsx`, `PopOutAvatarConfigModal.jsx`, `avatarStorage.js`).
 
 ---

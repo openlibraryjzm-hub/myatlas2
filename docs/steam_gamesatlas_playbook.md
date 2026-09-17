@@ -1,5 +1,11 @@
 # Curated Sub-Atlases Ingestion Playbook: GamesAtlas & WikiAtlas (`docs/steam_gamesatlas_playbook.md`)
 
+> [!NOTE]
+> **Archived Feature Specification (Retained for Reference)**
+> Cloud GamesAtlas catalog specs are archived.
+
+---
+
 This playbook provides a comprehensive reference and step-by-step operational guide for expanding curated sub-atlases in MyAtlas (**`gamesatlas`** and **`wikiatlas`**) using external APIs, automated taxonomy enrichment, batch subfolder partitioning, and Supabase Cloud seeding.
 
 ---

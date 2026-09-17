@@ -1,4 +1,10 @@
-# Support View Specifications (`docs/views/support.md`)
+# Support & Community View Specifications (`docs/views/support.md`)
+
+> [!NOTE]
+> **Archived Feature Specification (Retained for Reference)**
+> Support Center view specs are archived.
+
+---
 
 This document defines the specifications, split 2-column layout, Amberlyn portrait video player, extra-large pop-out circular icons, avatar image mappings, and category link stacks for the **Support & Community** view (`view === 'support'`).
 

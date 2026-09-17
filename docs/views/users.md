@@ -1,4 +1,8 @@
-# Curator Profile Specifications (`docs/views/users.md`)
+# Curator Profile View Specifications (`docs/views/users.md`)
+
+> [!NOTE]
+> **Archived Feature Specification (Retained for Reference)**
+> Curator Profile view specs are archived.
 
 This document defines the layout architecture, visual design system, action bar, mode switcher with embedded count line dividers, and JEI / NEI high-density item matrix for the **Curator Profile Page** (`view === 'users'`).
 

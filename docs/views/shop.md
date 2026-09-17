@@ -1,6 +1,8 @@
-# Shop View Specifications (`docs/views/shop.md`)
+# Curator Shop View Specifications (`docs/views/shop.md`)
 
-This document defines the specifications, layout metrics, top navigation tabs, Minecraft splash text badge styling, and unconstrained viewport for the **Curator Shop** view (`view === 'shop'`).
+> [!NOTE]
+> **Archived Feature Specification (Retained for Reference)**
+> Curator Shop view specs are archived.
 
 ---
 

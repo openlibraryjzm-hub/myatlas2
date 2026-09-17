@@ -1,6 +1,8 @@
-# Categories & Collections Directory Specifications (`docs/views/subreddits.md`)
+# Categories & Subreddits Management View Specifications (`docs/views/subreddits.md`)
 
-This document defines the layout, aggregation, sidebar control panel, and management specifications for the **Categories Directory** (`view === 'subreddits'`).
+> [!NOTE]
+> **Archived Feature Specification (Retained for Reference)**
+> Subreddits manager view specs are archived.
 
 ---
 

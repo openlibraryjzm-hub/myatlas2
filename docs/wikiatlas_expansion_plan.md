@@ -1,4 +1,10 @@
-# WikiAtlas Expansion Strategy & Architecture (`docs/wikiatlas_expansion_plan.md`)
+# WikiAtlas Expansion Plan (`docs/wikiatlas_expansion_plan.md`)
+
+> [!NOTE]
+> **Archived Feature Specification (Retained for Reference)**
+> Cloud WikiAtlas expansion specs are archived.
+
+---
 
 This document defines the technical strategy, SPARQL query engine, Wikipedia sitelink saliency filtering, multi-batch execution roadmap, and 7-category taxonomy mapping for **`wikiatlas`** in MyAtlas.
 

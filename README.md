@@ -1,8 +1,8 @@
 # MyAtlas
 
-A minimalist, high-density **local hard drive media & booru manager** designed in the **Claude.ai** visual aesthetic (warm creams, Lora serif headings, Plus Jakarta Sans typography, and amber accents).
+A minimalist, high-density **100% offline local hard drive media & booru desktop manager** designed in the **Claude.ai** visual aesthetic (warm creams, Lora serif headings, Plus Jakarta Sans typography, and amber accents).
 
-Engineered for 100% offline hard drive media curation, speed tagging, instant WebP thumbnail caching, folder directory indexing, and local booru classification across photos (`.jpg`, `.png`, `.webp`, `.gif`) and videos (`.mp4`, `.webm`, `.mov`, `.mkv`, `.avi`).
+Engineered for 100% offline hard drive media curation, speed tagging, instant WebP thumbnail caching, folder directory indexing, local booru classification, and YouTube video bookmarking across photos (`.jpg`, `.png`, `.webp`, `.gif`), videos (`.mp4`, `.webm`, `.mov`, `.mkv`, `.avi`), and YouTube links.
 
 ---
 
@@ -26,25 +26,26 @@ my atlas 2/
 ├── README.md               # Quickstart & project overview
 ├── docs/
 │   ├── big_picture_dream.md # Strategic vision: offline desktop app & booru platform roadmap
-│   ├── sub_atlases.md      # Atlas architecture: personal myatlas workspace & curated read-only Atlases
-│   ├── youtubeatlas.md     # YouTube Atlas architecture, API ingestion, taxonomy & Supabase cloud pipeline
+│   ├── sub_atlases.md      # [Archived Spec] Multi-atlas cloud syncing specs (Retained for reference)
+│   ├── youtubeatlas.md     # YouTube bookmark ingestion specs & local taxonomy tags
 │   ├── architecture.md     # Desktop app runtime, C# sidecar engine, WebP proxy & STA video frame extractor
 │   ├── taxonomy.md         # Tag categories, boolean namespaces & expandable slot config
 │   ├── storage/
-│   │   ├── sqlite.md       # SQLite schema, dual storage model & reset endpoints
+│   │   ├── sqlite.md       # SQLite schema, storage model & reset endpoints
 │   │   └── file_loader.md  # Asset protocol, HTTP 206 range streaming & WebP thumbnail routing
 │   └── views/
 │       ├── grid.md         # Browse Grid specs, Gelbooru flat sidebar tag stream & direct Tagger navigation
-│       ├── viewer_overlay.md # Archived Overlay Viewer specs & 3-tab morphing specs
+│       ├── viewer_overlay.md # Overlay Viewer specs & 3-tab morphing specs
 │       ├── tagger.md       # Speed Tagger specs, Full Media View mode, Q/W navigation & category auto-coloring
 │       ├── upload.md       # Hard drive folder scanner, local file ingestion & background pre-caching
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning
 │       ├── injector.md     # Bulk Tag Injector specs, dual input match filtering & batch tag injection
 │       ├── folderhealth.md # Folders & Library Health Manager specs, path relocator & manifest sidecars
-│       ├── home.md         # Home View specs, Option A dynamic word-split title logo & transparent PNG quick-links
-│       ├── shop.md         # Curator Shop specs, full-width top navigation tabs & Minecraft FREE splash badges
-│       ├── support.md      # Support Center specs, Amberlyn portrait video player & social/dono/code link stacks
-│       └── users.md        # Curator Profile specs, cardless Twitter/X profile card, Gelbooru link stack & 5-tab JEI grid
+│       ├── home.md         # Home View specs, Option A word-split title logo & search input
+│       ├── shop.md         # [Archived Spec] Curator Shop specs (Retained for reference)
+│       ├── support.md      # [Archived Spec] Support Center specs (Retained for reference)
+│       ├── users.md        # [Archived Spec] Curator Profile specs (Retained for reference)
+│       └── subreddits.md   # [Archived Spec] Subreddits manager specs (Retained for reference)
 └── src/
     ├── main.jsx            # Application entry mount
     ├── index.css           # Claude visual tokens and design system metrics
@@ -57,17 +58,13 @@ my atlas 2/
     │   ├── Navbar.jsx      # Header navigation bar & brand logo
     │   └── PostCard.jsx    # High-density card, WebP thumbnail rendering & video hover player
     └── pages/
-        ├── Home.jsx        # Minimalist home view with search input & tactile PNG quick-links
-        ├── Posts.jsx       # Browse Grid view with scale slider (4c-10c) & 3-col tag matrix
-        ├── Shop.jsx        # Curator Shop page with top navigation tabs & blank viewport
-        ├── Support.jsx     # Support & Community page with Amberlyn video player & social link stacks
+        ├── Home.jsx        # Minimalist home view with search input & total count indicator
+        ├── Posts.jsx       # Browse Grid view with 8-column thumbnail grid & Gelbooru sidebar
         ├── Tagger.jsx      # Speed tagging interface with category slots
         ├── Injector.jsx    # Bulk Tag Injector interface for mass tag appending
-        ├── Upload.jsx      # Hard drive folder scanner & local file batch ingestion
+        ├── Upload.jsx      # Hard drive folder scanner & local file/YouTube batch ingestion
         ├── Deletor.jsx     # Mass Deletor Studio for batch tag pruning
-        ├── Folders.jsx     # Folders & Library Health Manager with Orteil Nested tree view
-        ├── AtlasSwitcher.jsx # Quick switcher modal (Ctrl+K) for myatlas & curated atlases
-        └── Users.jsx       # Curator Profile view with avatar, Titan Atlas icon, bio & showcase bars
+        └── Folders.jsx     # Folders & Library Health Manager with Orteil Nested tree view
 ```
 
 ---
