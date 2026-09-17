@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Compass, Upload, Trash2, Wrench, Layers, User, Folder } from 'lucide-react';
-import { renderDynamicTitle } from '../utils/subAtlasUtils';
+import { Search, Compass, Upload, Trash2, Wrench, Layers, Folder } from 'lucide-react';
 import './Navbar.css';
 
 export default function Navbar({ 
@@ -8,9 +7,7 @@ export default function Navbar({
   setView, 
   searchQuery, 
   setSearchQuery, 
-  onSearchSubmit, 
-  currentAtlas = 'myatlas', 
-  activeAtlasDetails
+  onSearchSubmit
 }) {
   const [searchOpen, setSearchOpen] = useState(!!searchQuery);
   const [hoveredLabel, setHoveredLabel] = useState('');
@@ -29,17 +26,12 @@ export default function Navbar({
     }
   };
 
-  const renderLogo = () => {
-    const titleText = activeAtlasDetails?.title || currentAtlas;
-    const accentColor = activeAtlasDetails?.accentColor || '#CC5A01';
-    return renderDynamicTitle(titleText, accentColor);
-  };
-
   return (
     <header className="nav-header">
       <div className="nav-left-group">
         <div className="nav-logo" onClick={handleLogoClick} title="Go to Home Page">
-          {renderLogo()}
+          <span className="title-highlighted" style={{ color: 'var(--accent-color)' }}>my</span>
+          <span className="title-rest">atlas</span>
         </div>
         
         <div className="nav-icon-buttons">
@@ -137,16 +129,6 @@ export default function Navbar({
           title="Mass Deletor Studio"
         >
           <Trash2 size={16} />
-        </button>
-
-        <button 
-          className={`nav-icon-btn ${view === 'users' ? 'active' : ''}`}
-          onClick={() => setView('users')}
-          onMouseEnter={() => setHoveredLabel('curator profile')}
-          onMouseLeave={() => setHoveredLabel('')}
-          title="Curator Profile"
-        >
-          <User size={16} />
         </button>
       </div>
     </header>
