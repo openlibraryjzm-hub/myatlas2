@@ -22,6 +22,47 @@ export function isDesktopApp() {
 }
 
 /**
+ * Toggle native Tauri OS desktop window borderless fullscreen
+ */
+export async function setNativeWindowFullscreen(isFullscreen) {
+  try {
+    // 1. Try Tauri v2 Window API if running inside Tauri desktop container
+    if (typeof window !== 'undefined' && window.__TAURI_INTERNALS__) {
+      const { getCurrentWindow } = await import('@tauri-apps/api/window');
+      const appWindow = getCurrentWindow();
+      if (appWindow && typeof appWindow.setFullscreen === 'function') {
+        await appWindow.setFullscreen(isFullscreen);
+        return;
+      }
+    }
+
+    // 2. HTML5 Root Document Fallback (hides browser / app window bars in all environments)
+    if (typeof document !== 'undefined') {
+      if (isFullscreen) {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          const docEl = document.documentElement;
+          if (docEl.requestFullscreen) {
+            await docEl.requestFullscreen().catch(() => {});
+          } else if (docEl.webkitRequestFullscreen) {
+            docEl.webkitRequestFullscreen();
+          }
+        }
+      } else {
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen().catch(() => {});
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Error setting window fullscreen:', err);
+  }
+}
+
+/**
  * Convert a local hard drive file path to a valid webview asset URL or blob URL
  */
 export function formatLocalAssetUrl(filePath) {

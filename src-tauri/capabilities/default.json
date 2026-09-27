@@ -30,6 +30,7 @@
     "fs:allow-write",
     "sql:default",
     "sql:allow-execute",
-    "sql:allow-select"
+    "sql:allow-select",
+    "core:window:allow-set-fullscreen"
   ]
 }

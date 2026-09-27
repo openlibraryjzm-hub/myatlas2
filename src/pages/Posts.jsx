@@ -8,7 +8,7 @@ import { getTagCategory, getDisplayTagName, getCategoryObj } from '../data/mockD
 import Tagger from './Tagger';
 
 import { getLocalScrapes, getLocalMediaFiles, importScrapedJsonArray, addLocalMediaFile } from '../services/localDb';
-import { selectLocalFiles, selectLocalDirectory, isDesktopApp, formatLocalAssetUrl } from '../utils/localFiles';
+import { selectLocalFiles, selectLocalDirectory, isDesktopApp, formatLocalAssetUrl, setNativeWindowFullscreen } from '../utils/localFiles';
 
 function AddToPoolIcon({ size = 17, ...props }) {
   return (
@@ -168,6 +168,17 @@ export default function Posts({
   useEffect(() => {
     setViewerMode('none');
   }, [activeFilters, viewMode]);
+
+  // Sync native Tauri OS window fullscreen when viewerMode changes to 'image'
+  useEffect(() => {
+    const isImageFullscreen = viewerMode === 'image';
+    setNativeWindowFullscreen(isImageFullscreen);
+    return () => {
+      if (isImageFullscreen) {
+        setNativeWindowFullscreen(false);
+      }
+    };
+  }, [viewerMode]);
 
   const inspectTimerRef = React.useRef(null);
   const activeInspectTargetRef = React.useRef(null);
@@ -879,8 +890,8 @@ export default function Posts({
 
                 const isTagger = viewerMode === 'tagger' || viewerMode === 'edit';
                 const mediaStyle = {
-                  maxHeight: isTagger ? '180px' : '60vh',
-                  maxWidth: isTagger ? '240px' : '88vw',
+                  maxHeight: isTagger ? '180px' : '96vh',
+                  maxWidth: isTagger ? '240px' : '98vw',
                   objectFit: isTagger ? 'cover' : 'contain',
                   borderRadius: '8px',
                   boxShadow: isTagger ? '0 4px 16px rgba(0,0,0,0.15)' : '0 10px 30px rgba(0,0,0,0.12)',
@@ -900,6 +911,7 @@ export default function Posts({
                       src={activeSrc} 
                       style={mediaStyle}
                       controls={!isTagger}
+                      controlsList="nofullscreen"
                       autoPlay
                       loop
                       muted={isTagger}

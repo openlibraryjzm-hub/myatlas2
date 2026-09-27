@@ -1,5 +1,5 @@
 /* --- Subreddits Management Page --- */
-.posts-layout {
+.subreddits-page.posts-layout {
   display: flex;
   flex: 1;
   max-width: var(--max-width);
@@ -9,7 +9,7 @@
   gap: 2rem;
 }
 
-.sidebar-container-dense {
+.subreddits-page .sidebar-container-dense {
   width: 180px;
   flex-shrink: 0;
   display: flex;
@@ -18,7 +18,7 @@
   font-size: 0.8rem;
 }
 
-.gallery-container {
+.subreddits-page .gallery-container {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -37,21 +37,19 @@
   background-color: var(--bg-secondary);
 }
 
-/* Grid layout with exactly 8 columns on desktop/tablets, 4 on mobile */
-.gallery-grid-dense {
+.subreddits-page .gallery-grid-dense {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.5rem;
 }
 
 @media (min-width: 600px) {
-  .gallery-grid-dense {
+  .subreddits-page .gallery-grid-dense {
     grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 }
 
-/* Minimalist Post Card (Thumbnails Only) */
-.post-card-minimal {
+.subreddits-page .post-card-minimal {
   position: relative;
   aspect-ratio: 1 / 1;
   border: 1px solid var(--border-color);

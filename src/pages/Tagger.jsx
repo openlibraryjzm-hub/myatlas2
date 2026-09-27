@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj, getSourceUrl } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache, getPaginatedItems } from '../services/localDb';
-import { formatLocalAssetUrl, openExternalUrl } from '../utils/localFiles';
+import { formatLocalAssetUrl, openExternalUrl, setNativeWindowFullscreen } from '../utils/localFiles';
 import QueueTimeline from '../components/QueueTimeline';
 import './Tagger.css';
 
@@ -16,7 +16,7 @@ export default function Tagger({
   searchQuery = '',
   currentPage = 1,
   selectedPostId = null,
-  initialMediaMode = true
+  initialMediaMode = false
 } = {}) {
   const namespaces = getActiveCategories();
   const [posts, setPosts] = useState(propPosts || []);
@@ -59,6 +59,15 @@ export default function Tagger({
 
   // Fullscreen state
   const [isFullscreenMedia, setIsFullscreenMedia] = useState(initialMediaMode);
+  const [mediaFitMode, setMediaFitMode] = useState('cover'); // 'cover' (Fill) | 'contain' (Fit)
+
+  // Sync native Tauri OS window fullscreen when isFullscreenMedia changes
+  useEffect(() => {
+    setNativeWindowFullscreen(isFullscreenMedia);
+    return () => {
+      setNativeWindowFullscreen(false);
+    };
+  }, [isFullscreenMedia]);
 
   // Settings Modal State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -80,27 +89,7 @@ export default function Tagger({
 
   const inputRef = useRef(null);
   const timelineRef = useRef(null);
-  const fullscreenImgContainerRef = useRef(null);
   const isInitializedRef = useRef(!!(selectedPostId && propPosts && propPosts.length > 0));
-
-  const handleTriggerNativeFullscreen = (e) => {
-    if (e) e.stopPropagation();
-    const elem = fullscreenImgContainerRef.current;
-    if (!elem) return;
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      }
-    }
-  };
 
   const parseTagsArray = (raw) => {
   if (!raw) return [];
@@ -493,9 +482,9 @@ export default function Tagger({
         if (e.key === 'Escape' || e.key === 'Tab' || e.key === 'f' || e.key === 'F') {
           e.preventDefault();
           setIsFullscreenMedia(false);
-        } else if (e.key === 'e' || e.key === 'E') {
+        } else if (e.key === 'z' || e.key === 'Z') {
           e.preventDefault();
-          handleTriggerNativeFullscreen(e);
+          setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover');
         } else if (e.key === 'q' || e.key === 'Q' || e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === '`' || e.code === 'Backquote') {
           e.preventDefault();
           regressPrev();
@@ -1273,99 +1262,94 @@ export default function Tagger({
           </div>
         </div>
       )}
-      {/* Fullscreen Media Overlay */}
+      {/* Improved Total Fullscreen Media Overlay */}
       {isFullscreenMedia && currentPost && (
         <div className="tagger-fullscreen-overlay" onClick={() => setIsFullscreenMedia(false)}>
-          {/* Centered Floating Control Pill */}
-          <div className="tagger-fullscreen-control-pill" onClick={(e) => e.stopPropagation()}>
-            {/* Top Row: Navigation & Exit */}
-            <div className="tagger-fullscreen-pill-top-row">
-              <button 
-                className="tagger-fullscreen-pill-btn"
-                onClick={() => regressPrev()}
-                disabled={currentIndex === 0}
-                title="Previous item (← / Backtick)"
-              >
-                <ChevronLeft size={18} />
-              </button>
-
-              <span className="tagger-fullscreen-pill-counter">
-                {currentIndex + 1} / {posts.length}
-              </span>
-
-              <button 
-                className="tagger-fullscreen-pill-btn"
-                onClick={() => advanceNext()}
-                disabled={currentIndex >= posts.length - 1}
-                title="Next item (→ / Space)"
-              >
-                <ChevronRight size={18} />
-              </button>
-
-              <span className="tagger-fullscreen-pill-divider" />
-
-              <button 
-                className="tagger-fullscreen-pill-close" 
-                onClick={() => setIsFullscreenMedia(false)}
-                title="Switch to Tags View (Esc / F)"
-              >
-                <Tag size={15} /> Tags
-              </button>
-            </div>
-
-            {/* Bottom Row: Filename */}
-            <div className="tagger-fullscreen-pill-bottom-row" title={activeSourceUrl ? `Source: ${activeSourceUrl} (Click to open)` : getPostFilename(currentPost)}>
-              {activeSourceUrl ? (
-                <a 
-                  href={activeSourceUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="tagger-fullscreen-pill-source-link"
-                  onClick={(e) => openExternalUrl(activeSourceUrl, e)}
-                >
-                  {getPostFilename(currentPost)} <ExternalLink size={12} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '3px' }} />
-                </a>
-              ) : (
-                <span className="tagger-fullscreen-pill-filename">
-                  {getPostFilename(currentPost)}
-                </span>
-              )}
-            </div>
+          
+          {/* Left Hover Navigation Zone */}
+          <div 
+            className="tagger-hover-zone-left" 
+            onClick={(e) => {
+              e.stopPropagation();
+              regressPrev();
+            }}
+            title="Previous item (Q / ←)"
+          >
+            <button 
+              className="tagger-hover-nav-btn left"
+              disabled={currentIndex === 0}
+              onClick={(e) => {
+                e.stopPropagation();
+                regressPrev();
+              }}
+              title="Previous item (Q / ←)"
+            >
+              <ChevronLeft size={32} />
+            </button>
           </div>
 
+          {/* Right Hover Navigation Zone */}
+          <div 
+            className="tagger-hover-zone-right" 
+            onClick={(e) => {
+              e.stopPropagation();
+              advanceNext();
+            }}
+            title="Next item (W / →)"
+          >
+            <button 
+              className="tagger-hover-nav-btn right"
+              disabled={currentIndex >= posts.length - 1}
+              onClick={(e) => {
+                e.stopPropagation();
+                advanceNext();
+              }}
+              title="Next item (W / →)"
+            >
+              <ChevronRight size={32} />
+            </button>
+          </div>
+
+          {/* Main Media Content */}
           <div className="tagger-fullscreen-content" onClick={(e) => e.stopPropagation()}>
             {isVideoFormat(currentPost.url, currentPost.tags) ? (
               <video 
                 key={currentPost.id || currentPost.url}
                 src={currentPost.id ? `http://127.0.0.1:7171/api/stream/${encodeURIComponent(currentPost.id)}` : formatLocalAssetUrl(currentPost.filePath || currentPost.url)} 
-                className="tagger-fullscreen-media"
+                className={`tagger-fullscreen-media ${mediaFitMode}`}
                 controls
+                controlsList="nofullscreen"
                 autoPlay 
                 loop 
                 referrerPolicy="no-referrer"
+                onLoadedMetadata={(e) => {
+                  const v = e.target;
+                  if (v && v.videoWidth && v.videoHeight) {
+                    setMediaFitMode(v.videoWidth >= v.videoHeight ? 'cover' : 'portrait-fill');
+                  }
+                }}
+                onDoubleClick={() => setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover')}
+                title="Double click or press Z to toggle Fill / Fit mode"
                 onError={(e) => {
                   e.target.src = formatLocalAssetUrl(currentPost.filePath || currentPost.url);
                 }}
               />
             ) : (
-              <div 
-                className="tagger-fullscreen-image-wrapper"
-                ref={fullscreenImgContainerRef}
-              >
+              <div className="tagger-fullscreen-image-wrapper" onDoubleClick={() => setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover')}>
                 <img 
                   key={currentPost.id || currentPost.url}
                   src={formatLocalAssetUrl(currentPost.filePath || currentPost.url)} 
                   alt="" 
-                  className="tagger-fullscreen-media" 
+                  className={`tagger-fullscreen-media ${mediaFitMode}`}
                   referrerPolicy="no-referrer"
+                  onLoad={(e) => {
+                    const img = e.target;
+                    if (img && img.naturalWidth && img.naturalHeight) {
+                      setMediaFitMode(img.naturalWidth >= img.naturalHeight ? 'cover' : 'portrait-fill');
+                    }
+                  }}
+                  title="Double click or press Z to toggle Fill / Fit mode"
                 />
-                <button 
-                  className="tagger-total-fullscreen-btn"
-                  onClick={handleTriggerNativeFullscreen}
-                  title="Total Fullscreen Mode (Press E / Click)"
-                >
-                  <Maximize2 size={13} /> Fullscreen (E)
-                </button>
               </div>
             )}
           </div>
@@ -1430,24 +1414,23 @@ export default function Tagger({
                   <h4>Keyboard Shortcuts Reference</h4>
                   <div className="tagger-shortcuts-grid">
                     <div className="tagger-shortcuts-column">
-                      <h5>Typing Mode</h5>
+                      <h5>Tag Studio View</h5>
                       <ul className="tagger-shortcuts-list">
                         <li><kbd>,</kbd> Stage current tag</li>
                         <li><kbd>ENTER</kbd> Save & next post</li>
                         <li><kbd>ESC</kbd> Skip post</li>
                         <li><kbd>`</kbd> Previous post</li>
-                        <li><kbd>TAB</kbd> Toggle Media / Tags View</li>
+                        <li><kbd>TAB</kbd> Toggle Fullscreen Mode</li>
                         <li><kbd>CapsLock</kbd> Toggle Command Mode</li>
                       </ul>
                     </div>
 
                     <div className="tagger-shortcuts-column">
-                      <h5>Full Media View</h5>
+                      <h5>Total Fullscreen View</h5>
                       <ul className="tagger-shortcuts-list">
                         <li><kbd>q</kbd> / <kbd>←</kbd> Previous item</li>
                         <li><kbd>w</kbd> / <kbd>→</kbd> Next item</li>
-                        <li><kbd>e</kbd> Total Fullscreen toggle</li>
-                        <li><kbd>TAB</kbd> / <kbd>ESC</kbd> / <kbd>f</kbd> Return to Tags View</li>
+                        <li><kbd>TAB</kbd> / <kbd>ESC</kbd> / <kbd>f</kbd> Return to Tag Studio</li>
                       </ul>
                     </div>
 

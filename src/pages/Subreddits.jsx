@@ -178,7 +178,7 @@ export default function Subreddits({ onSubredditClick }) {
   };
 
   return (
-    <div className="posts-layout">
+    <div className="subreddits-page posts-layout">
       {/* Left Sidebar with placeholder tags */}
       <aside className="sidebar-container-dense">
         {/* Inspector Mode */}
