@@ -48,11 +48,18 @@ export default function Posts({
   currentAtlas = 'redditbooru',
   currentPage: propCurrentPage,
   setCurrentPage: propSetCurrentPage,
+  onTotalCountChange,
   onNavigateTagger
 }) {
   const [posts, setPosts] = useState([]);
   const [totalFilteredCount, setTotalFilteredCount] = useState(0);
   const [loadingPosts, setLoadingPosts] = useState(true);
+
+  useEffect(() => {
+    if (onTotalCountChange) {
+      onTotalCountChange(totalFilteredCount);
+    }
+  }, [totalFilteredCount, onTotalCountChange]);
   
   const [tags, setTags] = useState([]);
   const [loadingTags, setLoadingTags] = useState(true);
@@ -729,7 +736,7 @@ export default function Posts({
                   index={idx}
                   onPostClick={(selected) => {
                     if (onNavigateTagger) {
-                      onNavigateTagger(selected.id, posts, currentPage);
+                      onNavigateTagger(selected.id, posts, currentPage, true);
                     } else {
                       setSelectedPost(selected);
                       setViewerMode('image');
@@ -737,7 +744,7 @@ export default function Posts({
                   }}
                   onRightClick={(selected) => {
                     if (onNavigateTagger) {
-                      onNavigateTagger(selected.id, posts, currentPage);
+                      onNavigateTagger(selected.id, posts, currentPage, false);
                     } else {
                       setSelectedPost(selected);
                       setViewerMode('image');
@@ -746,47 +753,6 @@ export default function Posts({
                 />
               ))}
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="pagination-container-minimal">
-                <button 
-                  className="pagination-btn-minimal"
-                  onClick={() => handlePageChange(1)}
-                  disabled={currentPage === 1}
-                  title="First Page"
-                >
-                  &lt;&lt;
-                </button>
-                <button 
-                  className="pagination-btn-minimal"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  title="Previous Page"
-                >
-                  &lt;
-                </button>
-                
-                {renderPaginationButtons()}
-                
-                <button 
-                  className="pagination-btn-minimal"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  title="Next Page"
-                >
-                  &gt;
-                </button>
-                <button 
-                  className="pagination-btn-minimal"
-                  onClick={() => handlePageChange(totalPages)}
-                  disabled={currentPage === totalPages}
-                  title="Last Page"
-                >
-                  &gt;&gt;
-                </button>
-              </div>
-            )}
           </>
         ) : (
           <div className="no-results-minimal">

@@ -61,6 +61,10 @@ export default function Tagger({
   const [isFullscreenMedia, setIsFullscreenMedia] = useState(initialMediaMode);
   const [mediaFitMode, setMediaFitMode] = useState('cover'); // 'cover' (Fill) | 'contain' (Fit)
 
+  useEffect(() => {
+    setIsFullscreenMedia(initialMediaMode);
+  }, [initialMediaMode, selectedPostId]);
+
   // Sync native Tauri OS window fullscreen when isFullscreenMedia changes
   useEffect(() => {
     setNativeWindowFullscreen(isFullscreenMedia);

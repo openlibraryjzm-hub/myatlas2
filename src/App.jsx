@@ -30,6 +30,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalFilteredCount, setTotalFilteredCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [savedPostIds, setSavedPostIds] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
@@ -113,8 +114,9 @@ export default function App() {
 
   const [selectedTaggerPostId, setSelectedTaggerPostId] = useState(null);
   const [selectedTaggerPosts, setSelectedTaggerPosts] = useState(null);
+  const [taggerInitialMediaMode, setTaggerInitialMediaMode] = useState(true);
 
-  const handleNavigateTagger = (postId, pagePosts, page) => {
+  const handleNavigateTagger = (postId, pagePosts, page, initialMediaMode = true) => {
     setSelectedTaggerPostId(postId);
     if (pagePosts) {
       setSelectedTaggerPosts(pagePosts);
@@ -122,6 +124,7 @@ export default function App() {
     if (page) {
       setCurrentPage(page);
     }
+    setTaggerInitialMediaMode(initialMediaMode);
     setView('tagger');
   };
 
@@ -135,6 +138,9 @@ export default function App() {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           onSearchSubmit={handleSearchSubmit}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalFilteredCount={totalFilteredCount}
         />
       )}
 
@@ -161,6 +167,7 @@ export default function App() {
           activeFilters={activeFilters}
           searchQuery={searchQuery}
           currentPage={currentPage}
+          initialMediaMode={taggerInitialMediaMode}
           onExit={() => {
             setSelectedTaggerPosts(null);
             setView('posts');
@@ -184,6 +191,7 @@ export default function App() {
           currentAtlas={currentAtlas}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
+          onTotalCountChange={setTotalFilteredCount}
           onNavigateHome={() => setView('home')}
           onNavigateUpload={() => setView('upload')}
           onNavigateDeletor={() => setView('deletor')}

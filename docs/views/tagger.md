@@ -37,24 +37,16 @@ Distraction-free media viewer mode toggled via <kbd>Tab</kbd>, <kbd>F</kbd>, or 
 ```
                        ┌────────────────────────┐
                        │  Browse Grid (Posts)   │
-                       └───────────┬────────────┘
-                                   │ Click card
-                                   ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                         Tag Studio View                              │
-│ - Caret tag typing                                                   │
-│ - Queue timeline & drag-scroll                                       │
-│ - CapsLock Command Mode                                              │
-└───────────────────────────┬──────────────────────────────────────────┘
-                            │ Press TAB / F / Click Media
-                            │ (Press TAB / ESC / F to return)
-                            ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                    Improved Total Fullscreen View                    │
-│ - Native window fullscreen                                           │
-│ - Q / W side chevrons                                                │
-│ - Z toggle: Smart Fill (cover / portrait-fill) vs. Fit (contain)     │
-└──────────────────────────────────────────────────────────────────────┘
+                       └─────┬────────────┬─────┘
+           Left Click        │            │        Right Click
+           (Fullscreen)      │            │        (Tag Studio)
+                             ▼            ▼
+┌──────────────────────────────────┐    ┌──────────────────────────────────┐
+│  Improved Total Fullscreen View  │◄───┤         Tag Studio View          │
+│ - Edge-to-edge media viewer      │Tab/│ - Caret tag typing               │
+│ - Q / W side chevrons            │ F  │ - Queue timeline & drag-scroll   │
+│ - Smart Fill (cover / portrait)  ├───►│ - CapsLock Command Mode          │
+└──────────────────────────────────┘Esc └──────────────────────────────────┘
 ```
 
 ---

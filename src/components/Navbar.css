@@ -154,28 +154,95 @@
   border-bottom-color: var(--accent-color);
 }
 
-/* Centered Hover Label text */
-.nav-center-text {
+/* Centered Container for Hover Label or Pagination */
+.nav-center-container {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.nav-center-text {
   font-family: var(--font-serif);
   font-size: 1.05rem;
   font-weight: 500;
   color: var(--accent-color);
   letter-spacing: 0.08em;
   font-style: italic;
-  pointer-events: none; /* Make sure it doesn't block mouse movements */
+  pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s ease, transform 0.15s ease;
   user-select: none;
-  text-transform: uppercase; /* Force uppercase text format */
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .nav-center-text.visible {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1.02);
+  transform: scale(1.02);
+}
+
+.nav-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-pagination .pagination-btn-minimal {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono, monospace);
+  transition: var(--transition-smooth);
+}
+
+.nav-pagination .pagination-btn-minimal:hover:not(:disabled) {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background-color: var(--accent-light);
+}
+
+.nav-pagination .pagination-btn-minimal:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.nav-pagination .pagination-number {
+  min-width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  transition: var(--transition-smooth);
+  cursor: pointer;
+}
+
+.nav-pagination .pagination-number:hover:not(.active) {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.nav-pagination .pagination-number.active {
+  background-color: var(--accent-color, #cc5a01);
+  border-color: var(--accent-color, #cc5a01);
+  color: #ffffff;
+  font-weight: 700;
 }
 
 /* Right-aligned user profile group */

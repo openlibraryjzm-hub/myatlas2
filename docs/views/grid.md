@@ -42,3 +42,11 @@ This document defines the layout architecture, visual design system, left sideba
 - **Priority Image Waterfall**:
   - **Rows 1 & 2 (Cards 0–15)**: Assigned `fetchPriority="high"` and `loading="eager"` for immediate top-of-fold rendering.
   - **Rows 3+ (Cards 16+)**: Assigned `fetchPriority="low"` and `loading="lazy"` to defer off-screen network requests.
+
+---
+
+## 🧭 Header-Centered Page Navigation (`Navbar.jsx`)
+
+- **Centered Position**: When viewing the Browse Grid (`view === 'posts'`), the minimal page navigation bar (`<<`, `<`, page numbers, `>`, `>>`) renders in the centered position of the sticky header (`Navbar.jsx`).
+- **Dynamic View Context**: When navigating away from `posts` to another view (e.g. `tagger`, `folders`), the header navigation buttons hide automatically, allowing centered title/hover labels to take precedence.
+- **Scroll Reset**: Navigating pages via the header controls automatically executes a smooth scroll reset (`top: 0`).

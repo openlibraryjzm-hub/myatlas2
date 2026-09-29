@@ -7,10 +7,46 @@ export default function Navbar({
   setView, 
   searchQuery, 
   setSearchQuery, 
-  onSearchSubmit
+  onSearchSubmit,
+  currentPage = 1,
+  setCurrentPage,
+  totalFilteredCount = 0,
+  itemsPerPage = 40
 }) {
   const [searchOpen, setSearchOpen] = useState(!!searchQuery);
   const [hoveredLabel, setHoveredLabel] = useState('');
+
+  const totalPages = Math.ceil(totalFilteredCount / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages && setCurrentPage) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const renderPaginationButtons = () => {
+    const buttons = [];
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+
+    if (endPage - startPage < 4) {
+      startPage = Math.max(1, endPage - 4);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <button
+          key={i}
+          className={`pagination-number ${currentPage === i ? 'active' : ''}`}
+          onClick={() => handlePageChange(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return buttons;
+  };
 
   const handleLogoClick = () => {
     setView('home');
@@ -95,9 +131,51 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* Centered Hover Label */}
-      <div className={`nav-center-text ${hoveredLabel ? 'visible' : ''}`}>
-        {hoveredLabel}
+      {/* Centered Area: Hover Label or Posts View Pagination */}
+      <div className="nav-center-container">
+        {hoveredLabel ? (
+          <div className="nav-center-text visible">
+            {hoveredLabel}
+          </div>
+        ) : view === 'posts' && totalPages > 1 ? (
+          <div className="pagination-container-minimal nav-pagination">
+            <button 
+              className="pagination-btn-minimal"
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+              title="First Page"
+            >
+              &lt;&lt;
+            </button>
+            <button 
+              className="pagination-btn-minimal"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              title="Previous Page"
+            >
+              &lt;
+            </button>
+            
+            {renderPaginationButtons()}
+            
+            <button 
+              className="pagination-btn-minimal"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              title="Next Page"
+            >
+              &gt;
+            </button>
+            <button 
+              className="pagination-btn-minimal"
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage === totalPages}
+              title="Last Page"
+            >
+              &gt;&gt;
+            </button>
+          </div>
+        ) : null}
       </div>
 
       <div className="nav-right-group">
