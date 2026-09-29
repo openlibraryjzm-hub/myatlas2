@@ -40,8 +40,9 @@ The viewer automatically evaluates media dimensions (`naturalWidth` / `naturalHe
   - Hovering the left 15% of the screen reveals a left navigation chevron button (`<ChevronLeft />`) for the previous item (<kbd>Q</kbd> / <kbd>←</kbd>).
   - Hovering the right 15% of the screen reveals a right navigation chevron button (`<ChevronRight />`) for the next item (<kbd>W</kbd> / <kbd>→</kbd>).
 - **Top Frosted Glass Header Bar**:
-  - Hovering over the upper viewport edge slides down a top bar containing:
-    - **Back to Tag Studio** button (<kbd>Tab</kbd> / <kbd>Esc</kbd> / <kbd>F</kbd>).
+  - Hovering over the upper viewport edge slides down a top header bar containing:
+    - **Browse Grid** button: Primary back button (`<ArrowLeft />`) to auto-save staged metadata and exit back to the main Browse Grid view.
+    - **Tag Studio** button: Secondary standalone button (`<Tag />`) to open the Speed Tagger studio workspace (<kbd>Tab</kbd> / <kbd>Esc</kbd> / <kbd>F</kbd>).
     - Item filename & external source hyperlink (`openExternalUrl`).
     - Queue position counter badge `(Current / Total)`.
 

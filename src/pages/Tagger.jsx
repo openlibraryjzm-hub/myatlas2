@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon, ChevronLeft, ChevronRight, ExternalLink, ArrowLeft, Grid } from 'lucide-react';
 import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj, getSourceUrl } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache, getPaginatedItems } from '../services/localDb';
 import { formatLocalAssetUrl, openExternalUrl, setNativeWindowFullscreen } from '../utils/localFiles';
@@ -1270,6 +1270,64 @@ export default function Tagger({
       {isFullscreenMedia && currentPost && (
         <div className="tagger-fullscreen-overlay" onClick={() => setIsFullscreenMedia(false)}>
           
+          {/* Top Hover Navigation & Header Zone */}
+          <div 
+            className="tagger-hover-zone-top" 
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFullscreenMedia(false);
+            }}
+            title="Back to Tag Studio (Tab / Esc / F)"
+          >
+            <div className="tagger-fullscreen-header-bar" onClick={(e) => e.stopPropagation()}>
+              <div className="tagger-fullscreen-btn-group">
+                {onExit && (
+                  <button 
+                    className="tagger-fullscreen-back-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleExitTagger();
+                    }}
+                    title="Exit to Browse Grid (Auto-saves staged tags)"
+                  >
+                    <ArrowLeft size={16} />
+                    <span>Browse Grid</span>
+                  </button>
+                )}
+                <button 
+                  className="tagger-fullscreen-grid-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsFullscreenMedia(false);
+                  }}
+                  title="Open Tag Studio workspace (Tab / Esc / F)"
+                >
+                  <Tag size={15} />
+                  <span>Tag Studio</span>
+                </button>
+              </div>
+              <div className="tagger-fullscreen-header-title">
+                {activeSourceUrl ? (
+                  <a 
+                    href={activeSourceUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="tagger-source-link"
+                    title={`Source: ${activeSourceUrl} (Click to open)`}
+                    onClick={(e) => openExternalUrl(activeSourceUrl, e)}
+                  >
+                    {currentPost.title || getPostFilename(currentPost)} <ExternalLink size={14} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }} />
+                  </a>
+                ) : (
+                  <span>{currentPost.title || getPostFilename(currentPost)}</span>
+                )}
+              </div>
+              <div className="tagger-fullscreen-header-counter">
+                ({currentIndex + 1} / {posts.length})
+              </div>
+            </div>
+          </div>
+
           {/* Left Hover Navigation Zone */}
           <div 
             className="tagger-hover-zone-left" 
