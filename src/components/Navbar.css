@@ -12,7 +12,7 @@
 .nav-left-group {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 /* Logo styling matching Home page logo styling */
@@ -154,15 +154,12 @@
   border-bottom-color: var(--accent-color);
 }
 
-/* Centered Container for Hover Label or Pagination */
+/* Inline Container for Hover Label or Pagination */
 .nav-center-container {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  margin-left: 0.5rem;
   pointer-events: auto;
 }
 
@@ -171,14 +168,16 @@
   font-size: 1.05rem;
   font-weight: 500;
   color: var(--accent-color);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   font-style: italic;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s ease, transform 0.15s ease;
   user-select: none;
-  text-transform: uppercase;
   white-space: nowrap;
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .nav-center-text.visible {

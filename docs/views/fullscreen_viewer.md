@@ -37,8 +37,11 @@ The viewer automatically evaluates media dimensions (`naturalWidth` / `naturalHe
 ## 🕹️ Hover Zones & UI Controls
 
 - **Side Hover Navigation Zones**:
-  - Hovering the left 15% of the screen reveals a left navigation chevron button (`<ChevronLeft />`) for the previous item (<kbd>Q</kbd> / <kbd>←</kbd>).
-  - Hovering the right 15% of the screen reveals a right navigation chevron button (`<ChevronRight />`) for the next item (<kbd>W</kbd> / <kbd>→</kbd>).
+  - Hovering the left 15% of the screen (bounded vertically between `top: 72px` and `bottom: 80px`) reveals a left navigation chevron button (`<ChevronLeft />`) for the previous item (<kbd>Q</kbd> / <kbd>←</kbd>).
+  - Hovering the right 15% of the screen (bounded vertically between `top: 72px` and `bottom: 80px`) reveals a right navigation chevron button (`<ChevronRight />`) for the next item (<kbd>W</kbd> / <kbd>→</kbd>).
+  - **Unobstructed Video Controls Access**: The bottom 80px region of the viewport is completely excluded from side hover navigation zones, ensuring native video controls (play/pause, seekbar, volume, timestamp, fullscreen/PiP) are always 100% accessible without accidental queue navigation triggers.
+- **Clean Tooltip Design**:
+  - All native browser title tooltips across hover navigation controls, media elements, and top header buttons are suppressed for a clean, distraction-free viewing experience (external source hyperlinks retain tooltip context).
 - **Top Frosted Glass Header Bar**:
   - Hovering over the upper viewport edge slides down a top header bar containing:
     - **Browse Grid** button: Primary back button (`<ArrowLeft />`) to auto-save staged metadata and exit back to the main Browse Grid view.

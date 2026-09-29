@@ -49,7 +49,8 @@ export default function Posts({
   currentPage: propCurrentPage,
   setCurrentPage: propSetCurrentPage,
   onTotalCountChange,
-  onNavigateTagger
+  onNavigateTagger,
+  onPostHover
 }) {
   const [posts, setPosts] = useState([]);
   const [totalFilteredCount, setTotalFilteredCount] = useState(0);
@@ -734,6 +735,7 @@ export default function Posts({
                   key={post.id} 
                   post={post} 
                   index={idx}
+                  onPostHover={onPostHover}
                   onPostClick={(selected) => {
                     if (onNavigateTagger) {
                       onNavigateTagger(selected.id, posts, currentPage, true);

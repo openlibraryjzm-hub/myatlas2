@@ -38,6 +38,7 @@ This document defines the layout architecture, visual design system, left sideba
 - **Zero Artificial Delay**: Grid navigation, filtering, and tagger exits load instantly with 0ms artificial skeleton delay.
 - **Instant Cache Detection**: `PostCard.jsx` checks `imgRef.current.complete` on mount. If an image is already in memory or disk cache, it renders immediately with `opacity: 1`, bypassing 0.25s fade delays.
 - **Video Card Mechanics**: Local disk video cards render lightweight 300px static WebP thumbnails with a `VIDEO` play badge overlay when idle; hovering triggers a muted video preview loop (`<video src={assetUrl} muted autoPlay loop />`). External YouTube video cards (`youtubeatlas`) render a red `YOUTUBE` platform badge overlay and preserve static thumbnail previews on hover.
+- **Clean Thumbnail Presentation**: Grid cards display pure image/video media thumbnails with clean hover zoom and subtle border highlights, completely omitting bottom text overlays for a distraction-free booru grid experience.
 - **Direct Speed Tagger View Navigation**: Right-clicking or clicking any post card on the Browse Grid transitions directly to the full-page **Speed Tagger** view ([`tagger.md`](tagger.md)) with initial focus on that post, enabling seamless high-density tag display, full post media mode, and rapid keyboard tagging.
 - **Priority Image Waterfall**:
   - **Rows 1 & 2 (Cards 0–15)**: Assigned `fetchPriority="high"` and `loading="eager"` for immediate top-of-fold rendering.
@@ -45,8 +46,9 @@ This document defines the layout architecture, visual design system, left sideba
 
 ---
 
-## 🧭 Header-Centered Page Navigation (`Navbar.jsx`)
+## 🧭 Header Page Navigation (`Navbar.jsx`)
 
-- **Centered Position**: When viewing the Browse Grid (`view === 'posts'`), the minimal page navigation bar (`<<`, `<`, page numbers, `>`, `>>`) renders in the centered position of the sticky header (`Navbar.jsx`).
-- **Dynamic View Context**: When navigating away from `posts` to another view (e.g. `tagger`, `folders`), the header navigation buttons hide automatically, allowing centered title/hover labels to take precedence.
+- **Right-Anchored Position**: When viewing the Browse Grid (`view === 'posts'`), the minimal page navigation bar (`<<`, `<`, page numbers, `>`, `>>`) renders anchored on the far right edge of the header bar in [Navbar.jsx](../../src/components/Navbar.jsx).
+- **Left Action Group & Breathing Space**: All 7 view action icons sit tightly grouped next to the `myatlas` logo on the left, with flexible middle space displaying italicized hover text labels (e.g. `browse media`, `speed tagger`) when hovering icons.
+- **Thumbnail Header Filename Feedback**: Hovering any grid thumbnail card dynamically projects the item's disk filename/title directly into the header bar's italicized context label container (`max-width: 420px` with ellipsis truncation). Hovering a header icon button overrides the card title with the button's action label.
 - **Scroll Reset**: Navigating pages via the header controls automatically executes a smooth scroll reset (`top: 0`).

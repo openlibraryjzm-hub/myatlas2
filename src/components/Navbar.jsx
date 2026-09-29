@@ -11,10 +11,13 @@ export default function Navbar({
   currentPage = 1,
   setCurrentPage,
   totalFilteredCount = 0,
-  itemsPerPage = 40
+  itemsPerPage = 40,
+  cardHoverTitle = ''
 }) {
   const [searchOpen, setSearchOpen] = useState(!!searchQuery);
   const [hoveredLabel, setHoveredLabel] = useState('');
+
+  const activeDisplayLabel = hoveredLabel || cardHoverTitle;
 
   const totalPages = Math.ceil(totalFilteredCount / itemsPerPage);
 
@@ -128,16 +131,47 @@ export default function Navbar({
               />
             )}
           </div>
+
+          <button 
+            className={`nav-icon-btn ${view === 'folders' ? 'active' : ''}`}
+            onClick={() => setView('folders')}
+            onMouseEnter={() => setHoveredLabel('folders & health')}
+            onMouseLeave={() => setHoveredLabel('')}
+            title="Folders & Library Health"
+          >
+            <Folder size={16} />
+          </button>
+
+          <button 
+            className={`nav-icon-btn ${view === 'upload' ? 'active' : ''}`}
+            onClick={() => setView('upload')}
+            onMouseEnter={() => setHoveredLabel('ingest media')}
+            onMouseLeave={() => setHoveredLabel('')}
+            title="Ingest Media"
+          >
+            <Upload size={16} />
+          </button>
+
+          <button 
+            className={`nav-icon-btn ${view === 'deletor' ? 'active' : ''}`}
+            onClick={() => setView('deletor')}
+            onMouseEnter={() => setHoveredLabel('mass deletor')}
+            onMouseLeave={() => setHoveredLabel('')}
+            title="Mass Deletor Studio"
+          >
+            <Trash2 size={16} />
+          </button>
         </div>
+
+        {activeDisplayLabel && (
+          <div className="nav-center-text visible" title={activeDisplayLabel}>
+            {activeDisplayLabel}
+          </div>
+        )}
       </div>
 
-      {/* Centered Area: Hover Label or Posts View Pagination */}
-      <div className="nav-center-container">
-        {hoveredLabel ? (
-          <div className="nav-center-text visible">
-            {hoveredLabel}
-          </div>
-        ) : view === 'posts' && totalPages > 1 ? (
+      <div className="nav-right-group">
+        {view === 'posts' && totalPages > 1 && (
           <div className="pagination-container-minimal nav-pagination">
             <button 
               className="pagination-btn-minimal"
@@ -175,39 +209,7 @@ export default function Navbar({
               &gt;&gt;
             </button>
           </div>
-        ) : null}
-      </div>
-
-      <div className="nav-right-group">
-        <button 
-          className={`nav-icon-btn ${view === 'folders' ? 'active' : ''}`}
-          onClick={() => setView('folders')}
-          onMouseEnter={() => setHoveredLabel('folders & health')}
-          onMouseLeave={() => setHoveredLabel('')}
-          title="Folders & Library Health"
-        >
-          <Folder size={16} />
-        </button>
-
-        <button 
-          className={`nav-icon-btn ${view === 'upload' ? 'active' : ''}`}
-          onClick={() => setView('upload')}
-          onMouseEnter={() => setHoveredLabel('ingest media')}
-          onMouseLeave={() => setHoveredLabel('')}
-          title="Ingest Media"
-        >
-          <Upload size={16} />
-        </button>
-
-        <button 
-          className={`nav-icon-btn ${view === 'deletor' ? 'active' : ''}`}
-          onClick={() => setView('deletor')}
-          onMouseEnter={() => setHoveredLabel('mass deletor')}
-          onMouseLeave={() => setHoveredLabel('')}
-          title="Mass Deletor Studio"
-        >
-          <Trash2 size={16} />
-        </button>
+        )}
       </div>
     </header>
   );

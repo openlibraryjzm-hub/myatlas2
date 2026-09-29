@@ -1277,7 +1277,6 @@ export default function Tagger({
               e.stopPropagation();
               setIsFullscreenMedia(false);
             }}
-            title="Back to Tag Studio (Tab / Esc / F)"
           >
             <div className="tagger-fullscreen-header-bar" onClick={(e) => e.stopPropagation()}>
               <div className="tagger-fullscreen-btn-group">
@@ -1288,7 +1287,6 @@ export default function Tagger({
                       e.stopPropagation();
                       handleExitTagger();
                     }}
-                    title="Exit to Browse Grid (Auto-saves staged tags)"
                   >
                     <ArrowLeft size={16} />
                     <span>Browse Grid</span>
@@ -1300,7 +1298,6 @@ export default function Tagger({
                     e.stopPropagation();
                     setIsFullscreenMedia(false);
                   }}
-                  title="Open Tag Studio workspace (Tab / Esc / F)"
                 >
                   <Tag size={15} />
                   <span>Tag Studio</span>
@@ -1335,7 +1332,6 @@ export default function Tagger({
               e.stopPropagation();
               regressPrev();
             }}
-            title="Previous item (Q / ←)"
           >
             <button 
               className="tagger-hover-nav-btn left"
@@ -1344,7 +1340,6 @@ export default function Tagger({
                 e.stopPropagation();
                 regressPrev();
               }}
-              title="Previous item (Q / ←)"
             >
               <ChevronLeft size={32} />
             </button>
@@ -1357,7 +1352,6 @@ export default function Tagger({
               e.stopPropagation();
               advanceNext();
             }}
-            title="Next item (W / →)"
           >
             <button 
               className="tagger-hover-nav-btn right"
@@ -1366,7 +1360,6 @@ export default function Tagger({
                 e.stopPropagation();
                 advanceNext();
               }}
-              title="Next item (W / →)"
             >
               <ChevronRight size={32} />
             </button>
@@ -1391,7 +1384,6 @@ export default function Tagger({
                   }
                 }}
                 onDoubleClick={() => setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover')}
-                title="Double click or press Z to toggle Fill / Fit mode"
                 onError={(e) => {
                   e.target.src = formatLocalAssetUrl(currentPost.filePath || currentPost.url);
                 }}
@@ -1410,7 +1402,6 @@ export default function Tagger({
                       setMediaFitMode(img.naturalWidth >= img.naturalHeight ? 'cover' : 'portrait-fill');
                     }
                   }}
-                  title="Double click or press Z to toggle Fill / Fit mode"
                 />
               </div>
             )}

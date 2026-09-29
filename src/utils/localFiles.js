@@ -15,6 +15,21 @@ try {
 import { convertFileSrc } from '@tauri-apps/api/core';
 
 /**
+ * Helper to extract clean filename or title for a post item
+ */
+export function getPostFilename(post) {
+  if (!post) return '';
+  if (post.title) return post.title;
+  if (post.fileName) return post.fileName;
+  if (post.filePath) return post.filePath.split(/[\\/]/).pop();
+  if (post.url) {
+    const urlFileName = post.url.split('/').pop().split('?')[0];
+    if (urlFileName && urlFileName.includes('.')) return urlFileName;
+  }
+  return `Item #${post.id}`;
+}
+
+/**
  * Check whether the application is running inside a Tauri desktop container
  */
 export function isDesktopApp() {

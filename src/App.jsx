@@ -128,6 +128,12 @@ export default function App() {
     setView('tagger');
   };
 
+  const [cardHoverTitle, setCardHoverTitle] = useState('');
+
+  useEffect(() => {
+    setCardHoverTitle('');
+  }, [view]);
+
   return (
     <div className={`app-container theme-myatlas ${view === 'posts' ? 'users-view-active' : ''}`}>
       {/* Shared Navbar - Hidden on Home Page */}
@@ -141,6 +147,7 @@ export default function App() {
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           totalFilteredCount={totalFilteredCount}
+          cardHoverTitle={cardHoverTitle}
         />
       )}
 
@@ -196,6 +203,7 @@ export default function App() {
           onNavigateUpload={() => setView('upload')}
           onNavigateDeletor={() => setView('deletor')}
           onNavigateTagger={handleNavigateTagger}
+          onPostHover={setCardHoverTitle}
           isReadOnly={isReadOnly}
         />
       )}

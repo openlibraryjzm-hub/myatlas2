@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Image, Play } from 'lucide-react';
-import { formatLocalAssetUrl, openExternalUrl } from '../utils/localFiles';
+import { formatLocalAssetUrl, openExternalUrl, getPostFilename } from '../utils/localFiles';
 import './PostCard.css';
 
 function YoutubeIcon({ size = 16, color = "currentColor", style, ...props }) {
@@ -33,7 +33,7 @@ const parseTagsArray = (raw) => {
   return [];
 };
 
-function PostCard({ post, index = 0, onPostClick, onRightClick }) {
+function PostCard({ post, index = 0, onPostClick, onRightClick, onPostHover }) {
   const { id, title, subreddit, colorTheme, url, permalink, thumbnail, tags, derivedTags, filePath, mediaUrl } = post;
   
   const tagsList = parseTagsArray(tags);
@@ -141,8 +141,14 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
       data-post-id={id}
       data-tags={tagsAttribute}
       style={isToolAtlas ? { backgroundColor: 'transparent' } : { backgroundColor: safeTheme.bg }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        if (onPostHover) onPostHover(getPostFilename(post));
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        if (onPostHover) onPostHover('');
+      }}
       onClick={handleCardClick}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -271,23 +277,6 @@ function PostCard({ post, index = 0, onPostClick, onRightClick }) {
         </>
       )}
 
-      {/* Elegant Hover Info Overlay */}
-      <div className="post-card-hover-overlay">
-        <span className="post-card-hover-id">#{id}</span>
-        {permalink ? (
-          <a 
-            href={permalink} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="post-card-hover-sub link"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {subreddit} ↗
-          </a>
-        ) : (
-          <span className="post-card-hover-sub">{subreddit}</span>
-        )}
-      </div>
     </article>
   );
 }

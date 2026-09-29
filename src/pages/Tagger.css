@@ -767,8 +767,8 @@
 .tagger-hover-zone-left,
 .tagger-hover-zone-right {
   position: fixed;
-  top: 0;
-  bottom: 0;
+  top: 72px;
+  bottom: 80px;
   width: 15vw;
   min-width: 80px;
   z-index: 10001;
