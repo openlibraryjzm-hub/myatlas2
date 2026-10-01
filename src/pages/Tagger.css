@@ -601,6 +601,20 @@
   user-select: none;
 }
 
+/* Mouse Idle Auto-Hide (2.5s) */
+.tagger-fullscreen-overlay.idle,
+.tagger-fullscreen-overlay.idle * {
+  cursor: none !important;
+}
+
+.tagger-fullscreen-overlay.idle .tagger-hover-zone-top,
+.tagger-fullscreen-overlay.idle .tagger-hover-zone-left,
+.tagger-fullscreen-overlay.idle .tagger-hover-zone-right {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
+}
+
 .tagger-fullscreen-content {
   position: relative;
   width: 100vw;
@@ -824,6 +838,31 @@
 .tagger-hover-nav-btn:disabled {
   opacity: 0.2;
   cursor: not-allowed;
+}
+
+/* Fullscreen HUD Badge (Volume & Zoom overlay) */
+.tagger-fullscreen-hud {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10005;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 0.45rem 1.1rem;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  animation: fadeInOverlay 0.15s ease-out;
 }
 
 @keyframes fadeInOverlay {

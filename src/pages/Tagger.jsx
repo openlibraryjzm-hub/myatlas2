@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon, ChevronLeft, ChevronRight, ExternalLink, ArrowLeft, Grid } from 'lucide-react';
+import { Tag, HelpCircle, Check, RefreshCw, AlertCircle, Settings, Maximize2, X, Image as ImageIcon, ChevronLeft, ChevronRight, ExternalLink, ArrowLeft, Grid, Volume2, Volume1, VolumeX, ZoomIn, ZoomOut } from 'lucide-react';
 import { getTagCategory, getDisplayTagName, getActiveCategories, getCategoryObj, getSourceUrl } from '../data/mockData';
 import { getLocalScrapes, getLocalMediaFiles, getLocalDb, updateItemTags, invalidateItemsCache, getPaginatedItems } from '../services/localDb';
 import { formatLocalAssetUrl, openExternalUrl, setNativeWindowFullscreen } from '../utils/localFiles';
@@ -61,6 +61,62 @@ export default function Tagger({
   const [isFullscreenMedia, setIsFullscreenMedia] = useState(initialMediaMode);
   const [mediaFitMode, setMediaFitMode] = useState('cover'); // 'cover' (Fill) | 'contain' (Fit)
 
+  // Fullscreen Zoom, Pan, Video Volume & HUD states
+  const [zoomScale, setZoomScale] = useState(1.0);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const videoRef = useRef(null);
+  const fullscreenOverlayRef = useRef(null);
+  const [hudState, setHudState] = useState({ visible: false, text: '', iconType: 'zoom', val: 1.0 });
+  const hudTimeoutRef = useRef(null);
+  const [isMouseIdle, setIsMouseIdle] = useState(false);
+  const idleTimerRef = useRef(null);
+
+  const showHud = ({ text, iconType, val }) => {
+    setHudState({ visible: true, text, iconType, val });
+    if (hudTimeoutRef.current) {
+      clearTimeout(hudTimeoutRef.current);
+    }
+    hudTimeoutRef.current = setTimeout(() => {
+      setHudState(prev => ({ ...prev, visible: false }));
+    }, 1200);
+  };
+
+  // Idle timer for mouse cursor & hover controls auto-hide (2.5s) in fullscreen
+  useEffect(() => {
+    if (!isFullscreenMedia) {
+      setIsMouseIdle(false);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      return;
+    }
+
+    const resetIdleTimer = () => {
+      setIsMouseIdle(false);
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
+      idleTimerRef.current = setTimeout(() => {
+        setIsMouseIdle(true);
+      }, 2500);
+    };
+
+    resetIdleTimer();
+
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('mousedown', resetIdleTimer);
+    window.addEventListener('wheel', resetIdleTimer);
+    window.addEventListener('keydown', resetIdleTimer);
+
+    return () => {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      window.removeEventListener('mousemove', resetIdleTimer);
+      window.removeEventListener('mousedown', resetIdleTimer);
+      window.removeEventListener('wheel', resetIdleTimer);
+      window.removeEventListener('keydown', resetIdleTimer);
+    };
+  }, [isFullscreenMedia]);
+
   useEffect(() => {
     setIsFullscreenMedia(initialMediaMode);
   }, [initialMediaMode, selectedPostId]);
@@ -68,6 +124,10 @@ export default function Tagger({
   // Sync native Tauri OS window fullscreen when isFullscreenMedia changes
   useEffect(() => {
     setNativeWindowFullscreen(isFullscreenMedia);
+    if (!isFullscreenMedia) {
+      setZoomScale(1.0);
+      setPanOffset({ x: 0, y: 0 });
+    }
     return () => {
       setNativeWindowFullscreen(false);
     };
@@ -272,8 +332,133 @@ export default function Tagger({
       setCollapsedCategories([]);
       setEditingTag(null);
       setEditValue('');
+      setZoomScale(1.0);
+      setPanOffset({ x: 0, y: 0 });
     }
   }, [currentPost]);
+
+  // Fullscreen Mouse Wheel handler (Non-passive listener for zoom & volume)
+  useEffect(() => {
+    const overlayEl = fullscreenOverlayRef.current;
+    if (!overlayEl || !isFullscreenMedia || !currentPost) return;
+
+    const handleWheel = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const isVideo = isVideoFormat(currentPost.url, currentPost.tags);
+
+      if (isVideo) {
+        // Video volume control (VLC style)
+        const videoEl = videoRef.current;
+        if (!videoEl) return;
+
+        const delta = e.deltaY;
+        let currentVol = videoEl.muted ? 0 : videoEl.volume;
+        let newVol = delta < 0 ? Math.min(1.0, currentVol + 0.05) : Math.max(0.0, currentVol - 0.05);
+
+        videoEl.muted = false;
+        videoEl.volume = newVol;
+
+        showHud({
+          text: newVol === 0 ? 'Muted' : `${Math.round(newVol * 100)}%`,
+          iconType: 'volume',
+          val: newVol
+        });
+      } else {
+        // Image free zoom control towards mouse cursor focal point
+        const delta = e.deltaY;
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+
+        setZoomScale((prevScale) => {
+          const factor = delta < 0 ? 1.15 : 1 / 1.15;
+          let newScale = Math.min(Math.max(prevScale * factor, 0.2), 5.0);
+
+          if (Math.abs(newScale - 1.0) < 0.04) {
+            newScale = 1.0;
+          }
+
+          const mouseX = clientX - window.innerWidth / 2;
+          const mouseY = clientY - window.innerHeight / 2;
+
+          setPanOffset((prevPan) => {
+            if (newScale <= 1.0) {
+              return { x: 0, y: 0 };
+            }
+            const ratio = 1 - (newScale / prevScale);
+            return {
+              x: prevPan.x + (mouseX - prevPan.x) * ratio,
+              y: prevPan.y + (mouseY - prevPan.y) * ratio
+            };
+          });
+
+          showHud({
+            text: `${Math.round(newScale * 100)}%`,
+            iconType: 'zoom',
+            val: newScale
+          });
+          return newScale;
+        });
+      }
+    };
+
+    overlayEl.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      overlayEl.removeEventListener('wheel', handleWheel);
+    };
+  }, [isFullscreenMedia, currentPost]);
+
+  // Window-level Mouse Dragging for image panning when zoomed in
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const onWindowMouseMove = (e) => {
+      e.preventDefault();
+      setPanOffset({
+        x: e.clientX - dragStartRef.current.x,
+        y: e.clientY - dragStartRef.current.y
+      });
+    };
+
+    const onWindowMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener('mousemove', onWindowMouseMove);
+    window.addEventListener('mouseup', onWindowMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', onWindowMouseMove);
+      window.removeEventListener('mouseup', onWindowMouseUp);
+    };
+  }, [isDragging]);
+
+  const handleImageMouseDown = (e) => {
+    if (zoomScale > 1.0 && e.button === 0) {
+      e.preventDefault();
+      setIsDragging(true);
+      dragStartRef.current = {
+        x: e.clientX - panOffset.x,
+        y: e.clientY - panOffset.y
+      };
+    }
+  };
+
+  const handleImageDoubleClick = (e) => {
+    e.stopPropagation();
+    if (zoomScale !== 1.0 || panOffset.x !== 0 || panOffset.y !== 0) {
+      setZoomScale(1.0);
+      setPanOffset({ x: 0, y: 0 });
+      showHud({ text: '100% (Reset)', iconType: 'zoom', val: 1.0 });
+    } else {
+      setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover');
+    }
+  };
+
+  const handleVideoDoubleClick = (e) => {
+    e.stopPropagation();
+    setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover');
+  };
 
   // Extract active source URL from current item tags (existing + staged) or post metadata
   const activeSourceUrl = useMemo(() => {
@@ -488,7 +673,13 @@ export default function Tagger({
           setIsFullscreenMedia(false);
         } else if (e.key === 'z' || e.key === 'Z') {
           e.preventDefault();
-          setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover');
+          if (zoomScale !== 1.0 || panOffset.x !== 0 || panOffset.y !== 0) {
+            setZoomScale(1.0);
+            setPanOffset({ x: 0, y: 0 });
+            showHud({ text: '100% (Reset)', iconType: 'zoom', val: 1.0 });
+          } else {
+            setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover');
+          }
         } else if (e.key === 'q' || e.key === 'Q' || e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === '`' || e.code === 'Backquote') {
           e.preventDefault();
           regressPrev();
@@ -1268,8 +1459,20 @@ export default function Tagger({
       )}
       {/* Improved Total Fullscreen Media Overlay */}
       {isFullscreenMedia && currentPost && (
-        <div className="tagger-fullscreen-overlay" onClick={() => setIsFullscreenMedia(false)}>
+        <div ref={fullscreenOverlayRef} className={`tagger-fullscreen-overlay ${isMouseIdle ? 'idle' : ''}`} onClick={() => setIsFullscreenMedia(false)}>
           
+          {/* HUD Status Overlay */}
+          {hudState.visible && (
+            <div className="tagger-fullscreen-hud">
+              {hudState.iconType === 'volume' ? (
+                hudState.val === 0 ? <VolumeX size={18} /> : (hudState.val < 0.5 ? <Volume1 size={18} /> : <Volume2 size={18} />)
+              ) : (
+                hudState.val > 1.0 ? <ZoomIn size={18} /> : (hudState.val < 1.0 ? <ZoomOut size={18} /> : <Maximize2 size={18} />)
+              )}
+              <span>{hudState.text}</span>
+            </div>
+          )}
+
           {/* Top Hover Navigation & Header Zone */}
           <div 
             className="tagger-hover-zone-top" 
@@ -1369,6 +1572,7 @@ export default function Tagger({
           <div className="tagger-fullscreen-content" onClick={(e) => e.stopPropagation()}>
             {isVideoFormat(currentPost.url, currentPost.tags) ? (
               <video 
+                ref={videoRef}
                 key={currentPost.id || currentPost.url}
                 src={currentPost.id ? `http://127.0.0.1:7171/api/stream/${encodeURIComponent(currentPost.id)}` : formatLocalAssetUrl(currentPost.filePath || currentPost.url)} 
                 className={`tagger-fullscreen-media ${mediaFitMode}`}
@@ -1383,18 +1587,28 @@ export default function Tagger({
                     setMediaFitMode(v.videoWidth >= v.videoHeight ? 'cover' : 'portrait-fill');
                   }
                 }}
-                onDoubleClick={() => setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover')}
+                onDoubleClick={handleVideoDoubleClick}
                 onError={(e) => {
                   e.target.src = formatLocalAssetUrl(currentPost.filePath || currentPost.url);
                 }}
               />
             ) : (
-              <div className="tagger-fullscreen-image-wrapper" onDoubleClick={() => setMediaFitMode(prev => (prev === 'cover' || prev === 'portrait-fill') ? 'contain' : 'cover')}>
+              <div 
+                className="tagger-fullscreen-image-wrapper" 
+                onMouseDown={handleImageMouseDown}
+                onDoubleClick={handleImageDoubleClick}
+              >
                 <img 
                   key={currentPost.id || currentPost.url}
                   src={formatLocalAssetUrl(currentPost.filePath || currentPost.url)} 
                   alt="" 
                   className={`tagger-fullscreen-media ${mediaFitMode}`}
+                  style={{
+                    transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomScale})`,
+                    transition: isDragging ? 'none' : 'transform 0.05s ease-out',
+                    cursor: zoomScale > 1.0 ? (isDragging ? 'grabbing' : 'grab') : 'default'
+                  }}
+                  draggable={false}
                   referrerPolicy="no-referrer"
                   onLoad={(e) => {
                     const img = e.target;
@@ -1481,9 +1695,13 @@ export default function Tagger({
                     <div className="tagger-shortcuts-column">
                       <h5>Total Fullscreen View</h5>
                       <ul className="tagger-shortcuts-list">
+                        <li><kbd>Scroll Wheel</kbd> Zoom Image / Video Volume</li>
+                        <li><kbd>Click + Drag</kbd> Pan Zoomed Image</li>
+                        <li><kbd>Double-Click</kbd> Reset Zoom / Toggle Fit</li>
+                        <li><kbd>z</kbd> Reset Zoom / Toggle Fit</li>
                         <li><kbd>q</kbd> / <kbd>←</kbd> Previous item</li>
                         <li><kbd>w</kbd> / <kbd>→</kbd> Next item</li>
-                        <li><kbd>TAB</kbd> / <kbd>ESC</kbd> / <kbd>f</kbd> Return to Tag Studio</li>
+                        <li><kbd>TAB</kbd> / <kbd>ESC</kbd> / <kbd>f</kbd> Exit Fullscreen</li>
                       </ul>
                     </div>
 

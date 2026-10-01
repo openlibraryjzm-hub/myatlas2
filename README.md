@@ -36,6 +36,8 @@ my atlas 2/
 │   └── views/
 │       ├── grid.md         # Browse Grid specs, Gelbooru flat sidebar tag stream & direct Tagger navigation
 │       ├── viewer_overlay.md # Overlay Viewer specs & 3-tab morphing specs
+│       ├── fullscreen_viewer.md # Total Fullscreen specs, Tauri window integration & Fit/Fill engine
+│       ├── fullscreen_scroll_controls.md # Fullscreen scroll controls, VLC video volume & cursor focal zoom math
 │       ├── tagger.md       # Speed Tagger specs, Full Media View mode, Q/W navigation & category auto-coloring
 │       ├── upload.md       # Hard drive folder scanner, local file ingestion & background pre-caching
 │       ├── deletor.md      # Mass Deletor Studio specs & batch tag pruning

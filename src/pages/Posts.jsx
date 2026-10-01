@@ -520,9 +520,23 @@ export default function Posts({
     }
   };
 
-  // Reset page index on active filter changes
+  const isFirstRenderRef = useRef(true);
+  const prevFiltersRef = useRef(activeFilters);
+  const prevAtlasRef = useRef(currentAtlas);
+
+  // Reset page index only when active filters or currentAtlas actually change (skip initial mount)
   useEffect(() => {
-    setCurrentPage(1);
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+    const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(activeFilters);
+    const atlasChanged = prevAtlasRef.current !== currentAtlas;
+    if (filtersChanged || atlasChanged) {
+      prevFiltersRef.current = activeFilters;
+      prevAtlasRef.current = currentAtlas;
+      setCurrentPage(1);
+    }
     setHoveredPostTags(null);
   }, [activeFilters, currentAtlas]);
 
